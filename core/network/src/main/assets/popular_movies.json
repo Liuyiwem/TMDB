@@ -1,0 +1,31 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "id": 533535,
+      "title": "Deadpool & Wolverine",
+      "overview": "A listless Wade Wilson toils away in civilian life with his days as the morally flexible mercenary, Deadpool, behind him. But when his homeworld faces an existential threat, Wade must reluctantly suit-up again with an even more reluctant Wolverine.",
+      "release_date": "2024-07-24",
+      "poster_path": "/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",
+      "backdrop_path": "/yDHYTfA3R0jFYba4jL7iUOiIGEk.jpg",
+      "vote_average": 7.7,
+      "vote_count": 5011,
+      "popularity": 3476.948,
+      "genre_ids": [28, 35, 878]
+    },
+    {
+      "id": 1022789,
+      "title": "Inside Out 2",
+      "overview": "Teenager Riley's mind headquarters is undergoing a sudden demolition to make room for something entirely unexpected: new Emotions! Joy, Sadness, Anger, Fear and Disgust, who've long been running a successful operation by all accounts, aren't sure how to feel when Anxiety shows up.",
+      "release_date": "2024-06-11",
+      "poster_path": "/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg",
+      "backdrop_path": "/stKGOm8UyhuLPR9sZLjs5AkmncA.jpg",
+      "vote_average": 7.6,
+      "vote_count": 4514,
+      "popularity": 2843.335,
+      "genre_ids": [16, 10751, 12, 35, 18]
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 2
+}

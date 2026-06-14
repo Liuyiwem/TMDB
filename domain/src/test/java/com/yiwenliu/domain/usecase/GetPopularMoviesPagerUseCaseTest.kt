@@ -1,0 +1,33 @@
+package com.yiwenliu.domain.usecase
+
+import androidx.paging.testing.asSnapshot
+import com.yiwenliu.core.testing.data.moviesTestData
+import com.yiwenliu.core.testing.repository.TestMovieRepository
+import com.yiwenliu.core.testing.util.MainDispatcherRule
+import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class GetPopularMoviesPagerUseCaseTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule(StandardTestDispatcher())
+
+    private val movieRepository = TestMovieRepository()
+    private val useCase = GetPopularMoviesPagerUseCase(movieRepository)
+
+    @Test
+    fun `invoke delegates to repository and emits popular movies`() =
+        runTest {
+            movieRepository.sendPopularMovies(moviesTestData)
+
+            val movies = useCase().asSnapshot()
+
+            assertEquals(2, movies.size)
+            assertEquals(533535, movies[0].id)
+            assertEquals("Deadpool & Wolverine", movies[0].title)
+        }
+}

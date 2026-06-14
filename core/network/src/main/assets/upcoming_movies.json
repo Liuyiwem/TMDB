@@ -1,0 +1,31 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "id": 1184918,
+      "title": "The Wild Robot",
+      "overview": "After a shipwreck, an intelligent robot called Roz is stranded on an uninhabited island. To survive the harsh environment, Roz bonds with the island's animals and cares for an orphaned baby goose.",
+      "release_date": "2024-09-12",
+      "poster_path": "/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg",
+      "backdrop_path": "/417tYZ4XUyJrtyZXj7HpvWf1E8f.jpg",
+      "vote_average": 8.5,
+      "vote_count": 2234,
+      "popularity": 3462.096,
+      "genre_ids": [16, 878, 10751]
+    },
+    {
+      "id": 933260,
+      "title": "The Substance",
+      "overview": "A fading celebrity decides to use a black market drug, a cell-replicating substance that temporarily creates a younger, better version of herself.",
+      "release_date": "2024-09-07",
+      "poster_path": "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
+      "backdrop_path": "/7h6TqPB3ESmjuVbxCxAeB1c9OB1.jpg",
+      "vote_average": 7.3,
+      "vote_count": 1857,
+      "popularity": 2411.305,
+      "genre_ids": [27, 878, 53]
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 2
+}

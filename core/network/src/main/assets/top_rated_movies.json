@@ -1,0 +1,31 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "id": 238,
+      "title": "The Godfather",
+      "overview": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Don Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the assassins.",
+      "release_date": "1972-03-14",
+      "poster_path": "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+      "backdrop_path": "/tmU7GeKVybMWFButWEGl2M4GeiP.jpg",
+      "vote_average": 8.7,
+      "vote_count": 19846,
+      "popularity": 150.956,
+      "genre_ids": [18, 80]
+    },
+    {
+      "id": 278,
+      "title": "The Shawshank Redemption",
+      "overview": "Framed in the 1940s for the double murder of his wife and her lover, upstanding banker Andy Dufresne begins a new life at the Shawshank prison, where he puts his accounting skills to work for an amoral warden.",
+      "release_date": "1994-09-23",
+      "poster_path": "/9cqNxx0GxF0bflyCy3FpPiy3BXW.jpg",
+      "backdrop_path": "/kGzFbGhp99zva6oZODW5atUtnqi.jpg",
+      "vote_average": 8.7,
+      "vote_count": 26498,
+      "popularity": 136.054,
+      "genre_ids": [18, 80]
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 2
+}

@@ -1,0 +1,19 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "id": 550,
+      "title": "Fight Club",
+      "overview": "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+      "release_date": "1999-10-15",
+      "poster_path": "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+      "backdrop_path": "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+      "vote_average": 8.4,
+      "vote_count": 26959,
+      "popularity": 86.012,
+      "genre_ids": [18]
+    }
+  ],
+  "total_pages": 1,
+  "total_results": 1
+}
