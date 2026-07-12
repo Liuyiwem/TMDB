@@ -10,7 +10,9 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.ui)
     implementation(projects.domain)
+    implementation(projects.feature.movie.api)
 
+    implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)

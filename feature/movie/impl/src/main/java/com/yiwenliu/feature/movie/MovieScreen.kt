@@ -44,7 +44,7 @@ import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
-fun MovieRoute(
+fun MovieScreen(
     modifier: Modifier = Modifier,
     viewModel: MovieViewModel = hiltViewModel(),
 ) {

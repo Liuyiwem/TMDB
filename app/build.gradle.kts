@@ -38,8 +38,12 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.data)
     implementation(projects.core.model)
-    implementation(projects.feature.movie)
+    implementation(projects.core.navigation)
+    implementation(projects.feature.movie.impl)
+    implementation(projects.feature.movie.api)
 
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

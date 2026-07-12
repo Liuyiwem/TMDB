@@ -8,6 +8,8 @@ espressoCore = "3.7.0"
 androidxTestRunner = "1.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.4"
+androidxNavigation3 = "1.0.0"
+androidxSavedStateCompose = "1.3.1"
 composeBom = "2025.09.01"
 coil-compose = "2.7.0"
 
@@ -35,6 +37,10 @@ ksp = "2.3.4"
 # AndroidX
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "androidxNavigation3" }
+androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "androidxNavigation3" }
+androidx-savedstate-compose = { group = "androidx.savedstate", name = "savedstate-compose", version.ref = "androidxSavedStateCompose" }
+androidx-lifecycle-viewModel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleRuntimeKtx" }
 
 # Compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
