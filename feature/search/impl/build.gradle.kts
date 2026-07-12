@@ -3,14 +3,14 @@ plugins {
 }
 
 android {
-    namespace = "com.yiwenliu.feature.movie.impl"
+    namespace = "com.yiwenliu.feature.search.impl"
 }
 
 dependencies {
     implementation(projects.core.common)
     implementation(projects.core.ui)
     implementation(projects.domain)
-    implementation(projects.feature.movie.api)
+    implementation(projects.feature.search.api)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.ui)

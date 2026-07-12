@@ -1,4 +1,4 @@
-package com.yiwenliu.feature.movie
+package com.yiwenliu.feature.movie.impl
 
 import androidx.paging.testing.asSnapshot
 import com.yiwenliu.core.testing.data.moviesTestData

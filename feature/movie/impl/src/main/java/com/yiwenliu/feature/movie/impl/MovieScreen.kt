@@ -1,4 +1,4 @@
-package com.yiwenliu.feature.movie
+package com.yiwenliu.feature.movie.impl
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.yiwenliu.feature.movie
+package com.yiwenliu.feature.movie.impl
 
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.MaterialTheme
