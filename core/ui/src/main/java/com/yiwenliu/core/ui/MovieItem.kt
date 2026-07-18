@@ -21,34 +21,35 @@ import com.yiwenliu.core.model.Movie
 @Composable
 fun MovieItem(
     movie: Movie,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Column(modifier = modifier) {
         DynamicAsyncImage(
             imageUrl = movie.posterPath,
             contentDescription = movie.title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2 / 3f)
-                .clip(RoundedCornerShape(12.dp))
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(2 / 3f)
+                    .clip(RoundedCornerShape(12.dp)),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = movie.title,
             style = MaterialTheme.typography.titleSmall,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = movie.releaseDate,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "⭐️ %.1f".format(movie.voteAverage),
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }
@@ -56,12 +57,12 @@ fun MovieItem(
 @Preview()
 @Composable
 private fun MovieItemPreview(
-    @PreviewParameter(MoviePreviewParameterProvider::class) movies: List<Movie>
+    @PreviewParameter(MoviePreviewParameterProvider::class) movies: List<Movie>,
 ) {
     MaterialTheme {
         MovieItem(
             movie = movies[0],
-            modifier = Modifier.width(150.dp)
+            modifier = Modifier.width(150.dp),
         )
     }
 }

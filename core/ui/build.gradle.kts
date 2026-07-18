@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.tmdb.android.library)
     alias(libs.plugins.tmdb.android.library.compose)
+    alias(libs.plugins.tmdb.ktlint)
 }
 
 android {
@@ -10,6 +11,7 @@ android {
 dependencies {
     api(projects.core.model)
 
+    implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.material3)
     implementation(libs.coil.compose)
 

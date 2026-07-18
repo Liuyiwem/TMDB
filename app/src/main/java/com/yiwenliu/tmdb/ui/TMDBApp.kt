@@ -2,9 +2,7 @@ package com.yiwenliu.tmdb.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -16,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
+import com.yiwenliu.core.ui.TmdbNavItem
 import com.yiwenliu.feature.favorite.impl.navigation.favoriteEntry
 import com.yiwenliu.feature.movie.impl.navigation.movieEntry
 import com.yiwenliu.feature.search.impl.navigation.searchEntry
@@ -49,29 +48,18 @@ fun TMDBApp(
         }
 
     NavigationSuiteScaffold(
-        navigationSuiteItems = {
+        navigationItems = {
             TOP_LEVEL_NAV_ITEMS.forEach { (navKey, navItem) ->
-                val selected = navKey == navigationState.currentTopLevelKey
-                item(
-                    selected = selected,
+                TmdbNavItem(
+                    selected = navKey == navigationState.currentTopLevelKey,
                     onClick = { navigator.navigate(navKey) },
-                    icon = {
-                        Icon(
-                            imageVector =
-                                if (selected) {
-                                    navItem.selectedIcon
-                                } else {
-                                    navItem.unselectedIcon
-                                },
-                            contentDescription = stringResource(navItem.iconTextId),
-                        )
-                    },
-                    label = { Text(stringResource(navItem.iconTextId)) },
+                    icon = navItem.icon,
+                    label = stringResource(navItem.iconTextId),
                 )
             }
         },
         modifier = modifier,
-        layoutType = layoutType,
+        navigationSuiteType = layoutType,
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             NavDisplay(

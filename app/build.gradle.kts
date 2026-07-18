@@ -39,6 +39,7 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.model)
     implementation(projects.core.navigation)
+    implementation(projects.core.ui)
     implementation(projects.feature.movie.impl)
     implementation(projects.feature.movie.api)
     implementation(projects.feature.search.impl)
