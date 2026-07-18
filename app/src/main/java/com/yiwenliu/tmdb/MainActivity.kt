@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.yiwenliu.feature.movie.api.navigation.MovieNavKey
+import com.yiwenliu.feature.home.api.navigation.HomeNavKey
 import com.yiwenliu.navigation.rememberNavigationState
 import com.yiwenliu.tmdb.navigation.TOP_LEVEL_NAV_ITEMS
 import com.yiwenliu.tmdb.ui.TMDBApp
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
             TMDBTheme {
                 val navigationState =
                     rememberNavigationState(
-                        startKey = MovieNavKey,
+                        startKey = HomeNavKey,
                         topLevelKeys = TOP_LEVEL_NAV_ITEMS.keys,
                     )
                 TMDBApp(navigationState = navigationState)

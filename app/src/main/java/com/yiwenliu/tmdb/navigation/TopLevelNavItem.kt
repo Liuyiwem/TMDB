@@ -7,7 +7,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.yiwenliu.feature.favorite.api.navigation.FavoriteNavKey
-import com.yiwenliu.feature.movie.api.navigation.MovieNavKey
+import com.yiwenliu.feature.home.api.navigation.HomeNavKey
 import com.yiwenliu.feature.search.api.navigation.SearchNavKey
 import com.yiwenliu.tmdb.R
 
@@ -16,7 +16,7 @@ data class TopLevelNavItem(
     @param:StringRes val iconTextId: Int,
 )
 
-val MOVIE =
+val HOME =
     TopLevelNavItem(
         Icons.Rounded.Home,
         R.string.feature_home,
@@ -37,6 +37,6 @@ val FAVORITE =
 val TOP_LEVEL_NAV_ITEMS =
     mapOf(
         SearchNavKey to SEARCH,
-        MovieNavKey to MOVIE,
+        HomeNavKey to HOME,
         FavoriteNavKey to FAVORITE,
     )

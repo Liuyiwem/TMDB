@@ -22,14 +22,13 @@ class TestTMDBApiService : TMDBApiService {
 
     var errorToThrow: Throwable? = null
 
-    override suspend fun getPopularMovies(page: Int): MovieResponse {
+    override suspend fun getMoviesByCategory(
+        category: String,
+        page: Int,
+    ): MovieResponse {
         errorToThrow?.let { throw it }
-        return source.getPopularMovies(page)
+        return source.getMoviesByCategory(category, page)
     }
-
-    override suspend fun getTopRatedMovies(page: Int) = source.getTopRatedMovies(page)
-
-    override suspend fun getUpcomingMovies(page: Int) = source.getUpcomingMovies(page)
 
     override suspend fun searchMovies(
         query: String,

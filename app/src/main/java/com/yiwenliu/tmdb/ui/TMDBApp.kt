@@ -16,7 +16,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.yiwenliu.core.ui.TmdbNavItem
 import com.yiwenliu.feature.favorite.impl.navigation.favoriteEntry
-import com.yiwenliu.feature.movie.impl.navigation.movieEntry
+import com.yiwenliu.feature.home.impl.navigation.homeEntry
 import com.yiwenliu.feature.search.impl.navigation.searchEntry
 import com.yiwenliu.navigation.NavigationState
 import com.yiwenliu.navigation.Navigator
@@ -42,7 +42,7 @@ fun TMDBApp(
 
     val entryProvider =
         entryProvider {
-            movieEntry()
+            homeEntry()
             searchEntry()
             favoriteEntry()
         }

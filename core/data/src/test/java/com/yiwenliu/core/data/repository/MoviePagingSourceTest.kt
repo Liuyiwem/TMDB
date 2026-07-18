@@ -7,6 +7,7 @@ import androidx.paging.testing.TestPager
 import com.yiwenliu.core.common.domain.util.NetworkError
 import com.yiwenliu.core.common.domain.util.NetworkException
 import com.yiwenliu.core.data.testdoubles.TestTMDBApiService
+import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.testing.data.moviesTestData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -28,7 +29,7 @@ class MoviePagingSourceTest {
     @Before
     fun setup() {
         apiService = TestTMDBApiService()
-        pagingSource = MoviePagingSource(apiService, testDispatcher)
+        pagingSource = MoviePagingSource(apiService, MovieCategory.POPULAR, testDispatcher)
     }
 
     @Test
