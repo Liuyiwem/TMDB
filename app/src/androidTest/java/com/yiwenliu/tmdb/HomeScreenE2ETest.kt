@@ -1,7 +1,7 @@
 package com.yiwenliu.tmdb
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -30,7 +30,7 @@ class HomeScreenE2ETest {
 
     @Test
     fun nowPlaying_loadFromMock_render() {
-        composeTestRule.onNodeWithTag("movie:tabRow").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tabRow").assertIsDisplayed()
         awaitText(nowPlayingMovie)
         composeTestRule.onNodeWithText(nowPlayingMovie).assertIsDisplayed()
     }
@@ -39,7 +39,7 @@ class HomeScreenE2ETest {
     fun selectPopularTab_loadsPopularMovies() {
         awaitText(nowPlayingMovie)
 
-        composeTestRule.onNodeWithTag("movie:tab:POPULAR").performClick()
+        composeTestRule.onNodeWithTag("tab:POPULAR").performClick()
 
         awaitText(popularMovie)
         composeTestRule.onNodeWithText(popularMovie).assertIsDisplayed()

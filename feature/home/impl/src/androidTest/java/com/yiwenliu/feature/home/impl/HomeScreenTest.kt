@@ -15,6 +15,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
+import com.yiwenliu.core.ui.ErrorItem
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
@@ -41,7 +42,7 @@ class HomeScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithTag("movie:tabRow").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("tabRow").assertIsDisplayed()
         composeTestRule
             .onNodeWithText(composeTestRule.activity.getString(R.string.tab_now_playing))
             .assertIsDisplayed()
@@ -62,7 +63,7 @@ class HomeScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithTag("movie:tab:TOP_RATED").performClick()
+        composeTestRule.onNodeWithTag("tab:TOP_RATED").performClick()
         assertEquals(HomeAction.OnCategorySelected(MovieCategory.TOP_RATED), lastAction)
     }
 
@@ -88,7 +89,7 @@ class HomeScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithTag("movie:error").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("error").assertIsDisplayed()
         composeTestRule
             .onNodeWithText(composeTestRule.activity.getString(R.string.retry))
             .assertIsDisplayed()
@@ -117,9 +118,9 @@ class HomeScreenTest {
         }
 
         composeTestRule
-            .onNodeWithTag("movie:grid")
-            .performScrollToNode(hasTestTag("movie:appendLoading"))
-        composeTestRule.onNodeWithTag("movie:appendLoading").assertIsDisplayed()
+            .onNodeWithTag("home:grid")
+            .performScrollToNode(hasTestTag("home:appendLoading"))
+        composeTestRule.onNodeWithTag("home:appendLoading").assertIsDisplayed()
     }
 
     @Test
@@ -127,11 +128,15 @@ class HomeScreenTest {
         var retried = false
         composeTestRule.setContent {
             MaterialTheme {
-                ErrorItem(error = RuntimeException("boom"), onRetry = { retried = true })
+                ErrorItem(
+                    errorMessage = "boom",
+                    retryText = "Retry",
+                    onRetry = { retried = true },
+                )
             }
         }
 
-        composeTestRule.onNodeWithTag("movie:retry").performClick()
+        composeTestRule.onNodeWithTag("retry").performClick()
         assertTrue(retried)
     }
 }

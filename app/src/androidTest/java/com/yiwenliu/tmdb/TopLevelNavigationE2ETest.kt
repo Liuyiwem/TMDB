@@ -1,7 +1,7 @@
 package com.yiwenliu.tmdb
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -25,7 +25,7 @@ class TopLevelNavigationE2ETest {
 
     private val searchMarker = "Search Screen"
     private val favoriteMarker = "Favorite Screen"
-    private val homeMarkerTag = "movie:tabRow"
+    private val homeMarkerTag = "tabRow"
 
     @Before
     fun setup() {

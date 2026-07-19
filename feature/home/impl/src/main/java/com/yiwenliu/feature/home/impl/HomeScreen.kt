@@ -5,22 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -28,11 +21,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -47,6 +38,8 @@ import com.yiwenliu.core.common.domain.util.NetworkException
 import com.yiwenliu.core.common.presentation.util.toString
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
+import com.yiwenliu.core.ui.ErrorItem
+import com.yiwenliu.core.ui.MovieCategoryTabs
 import com.yiwenliu.core.ui.MovieItem
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
@@ -81,6 +74,7 @@ internal fun HomeScreen(
     Column(modifier = modifier.fillMaxSize()) {
         MovieCategoryTabs(
             categories = state.categories,
+            titles = state.categories.map { stringResource(it.titleRes()) },
             selectedCategory = state.selectedCategory,
             onCategorySelected = { onAction(HomeAction.OnCategorySelected(it)) },
         )
@@ -91,7 +85,7 @@ internal fun HomeScreen(
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 120.dp),
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).testTag("movie:grid"),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).testTag("home:grid"),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp),
@@ -100,7 +94,11 @@ internal fun HomeScreen(
                     is LoadState.Error -> {
                         val error = (movies.loadState.refresh as LoadState.Error).error
                         item(span = { GridItemSpan(maxLineSpan) }) {
-                            ErrorItem(error = error, onRetry = { movies.retry() })
+                            ErrorItem(
+                                errorMessage = errorMessageFor(error),
+                                retryText = stringResource(R.string.retry),
+                                onRetry = { movies.retry() },
+                            )
                         }
                     }
                     else -> {}
@@ -119,7 +117,7 @@ internal fun HomeScreen(
                     is LoadState.Loading -> {
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("movie:appendLoading"),
+                                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("home:appendLoading"),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 CircularProgressIndicator()
@@ -130,7 +128,11 @@ internal fun HomeScreen(
                     is LoadState.Error -> {
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             val error = (movies.loadState.append as LoadState.Error).error
-                            ErrorItem(error = error, onRetry = { movies.retry() })
+                            ErrorItem(
+                                errorMessage = errorMessageFor(error),
+                                retryText = stringResource(R.string.retry),
+                                onRetry = { movies.retry() },
+                            )
                         }
                     }
 
@@ -142,33 +144,12 @@ internal fun HomeScreen(
 }
 
 @Composable
-private fun MovieCategoryTabs(
-    categories: List<MovieCategory>,
-    selectedCategory: MovieCategory,
-    onCategorySelected: (MovieCategory) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val selectedIndex = categories.indexOf(selectedCategory).coerceAtLeast(0)
-    PrimaryScrollableTabRow(
-        selectedTabIndex = selectedIndex,
-        modifier = modifier.testTag("movie:tabRow"),
-        containerColor = Color.Transparent,
-        edgePadding = 16.dp,
-        indicator = {},
-        divider = {},
-    ) {
-        categories.forEach { category ->
-            FilterChip(
-                selected = category == selectedCategory,
-                onClick = { onCategorySelected(category) },
-                label = { Text(stringResource(category.titleRes())) },
-                shape = RoundedCornerShape(percent = 50),
-                modifier =
-                    Modifier
-                        .padding(horizontal = 4.dp, vertical = 8.dp)
-                        .testTag("movie:tab:${category.name}"),
-            )
-        }
+private fun errorMessageFor(error: Throwable): String {
+    val context = LocalContext.current
+    return if (error is NetworkException) {
+        error.networkError.toString(context)
+    } else {
+        stringResource(R.string.unknown_error)
     }
 }
 
@@ -180,39 +161,6 @@ private fun MovieCategory.titleRes(): Int =
         MovieCategory.TOP_RATED -> R.string.tab_top_rated
         MovieCategory.UPCOMING -> R.string.tab_upcoming
     }
-
-@Composable
-internal fun ErrorItem(
-    error: Throwable,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .testTag("movie:error"),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        val context = LocalContext.current
-        val message =
-            if (error is NetworkException) {
-                error.networkError.toString(context)
-            } else {
-                stringResource(R.string.unknown_error)
-            }
-        Text(
-            text = message,
-            color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRetry, modifier = Modifier.testTag("movie:retry")) {
-            Text(stringResource(R.string.retry))
-        }
-    }
-}
 
 @Preview(showBackground = true, widthDp = 400)
 @Composable
@@ -261,17 +209,6 @@ private fun HomeScreenRefreshingPreview() {
             state = HomeUiState(),
             movies = pagingItems,
             onAction = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ErrorItemPreview() {
-    MaterialTheme {
-        ErrorItem(
-            error = Exception("Network Error"),
-            onRetry = {},
         )
     }
 }
