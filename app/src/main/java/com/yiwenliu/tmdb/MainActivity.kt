@@ -4,11 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
-import com.yiwenliu.feature.movie.MovieRoute
+import com.yiwenliu.feature.movie.api.navigation.MovieNavKey
+import com.yiwenliu.navigation.rememberNavigationState
+import com.yiwenliu.tmdb.navigation.TOP_LEVEL_NAV_ITEMS
+import com.yiwenliu.tmdb.ui.TMDBApp
 import com.yiwenliu.tmdb.ui.theme.TMDBTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,11 +18,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TMDBTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MovieRoute(
-                        modifier = Modifier.padding(innerPadding),
+                val navigationState =
+                    rememberNavigationState(
+                        startKey = MovieNavKey,
+                        topLevelKeys = TOP_LEVEL_NAV_ITEMS.keys,
                     )
-                }
+                TMDBApp(navigationState = navigationState)
             }
         }
     }

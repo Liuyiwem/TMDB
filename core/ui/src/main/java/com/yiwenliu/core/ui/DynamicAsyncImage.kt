@@ -40,6 +40,6 @@ fun DynamicAsyncImage(
         },
         error = {
             Spacer(modifier = Modifier.fillMaxSize())
-        }
+        },
     )
 }
