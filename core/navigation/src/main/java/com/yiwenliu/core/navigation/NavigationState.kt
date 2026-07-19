@@ -1,4 +1,4 @@
-package com.yiwenliu.navigation
+package com.yiwenliu.core.navigation
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable

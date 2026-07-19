@@ -19,7 +19,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
-                defaultConfig.targetSdk = 36
+                testOptions.targetSdk = 36
                 lint.targetSdk = 36
                 @Suppress("UnstableApiUsage")
                 testOptions.animationsDisabled = true

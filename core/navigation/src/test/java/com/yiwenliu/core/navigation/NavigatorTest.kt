@@ -1,4 +1,4 @@
-package com.yiwenliu.navigation
+package com.yiwenliu.core.navigation
 
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey

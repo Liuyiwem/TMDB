@@ -1,13 +1,8 @@
 plugins {
-    alias(libs.plugins.tmdb.android.library)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.tmdb.android.feature.api)
     alias(libs.plugins.tmdb.ktlint)
 }
 
 android {
     namespace = "com.yiwenliu.feature.favorite.api"
-}
-
-dependencies {
-    api(libs.androidx.navigation3.runtime)
 }

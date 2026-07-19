@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.yiwenliu.core.navigation.rememberNavigationState
 import com.yiwenliu.feature.home.api.navigation.HomeNavKey
-import com.yiwenliu.navigation.rememberNavigationState
 import com.yiwenliu.tmdb.navigation.TOP_LEVEL_NAV_ITEMS
 import com.yiwenliu.tmdb.ui.TMDBApp
 import com.yiwenliu.tmdb.ui.theme.TMDBTheme
