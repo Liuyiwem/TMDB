@@ -79,5 +79,9 @@ gradlePlugin {
             id = libs.plugins.tmdb.ktlint.get().pluginId
             implementationClass = "KtlintConventionPlugin"
         }
+        register("androidBuildConfigSecrets") {
+            id = libs.plugins.tmdb.android.buildConfig.secrets.get().pluginId
+            implementationClass = "BuildConfigSecretsConventionPlugin"
+        }
     }
 }

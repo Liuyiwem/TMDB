@@ -130,4 +130,5 @@ tmdb-android-hilt = { id = "tmdb.android.hilt" }
 tmdb-android-feature-impl = { id = "tmdb.android.feature.impl" }
 tmdb-android-feature-api = { id = "tmdb.android.feature.api" }
 tmdb-ktlint = { id = "tmdb.ktlint" }
+tmdb-android-buildConfig-secrets = { id = "tmdb.android.buildconfig.secrets" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
