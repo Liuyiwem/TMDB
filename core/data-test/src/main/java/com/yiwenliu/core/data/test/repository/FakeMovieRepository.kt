@@ -8,9 +8,9 @@ import com.yiwenliu.core.common.network.TMDBDispatchers.IO
 import com.yiwenliu.core.data.model.asExternalModel
 import com.yiwenliu.core.data.repository.MovieRepository
 import com.yiwenliu.core.model.Movie
+import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.model.MoviePage
 import com.yiwenliu.core.network.mock.MockTMDBApiService
-import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -24,24 +24,16 @@ internal class FakeMovieRepository
         @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
         private val datasource: MockTMDBApiService,
     ) : MovieRepository {
-        override fun getPopularMoviesPager(): Flow<PagingData<Movie>> =
+        override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> =
             flow {
-                val response = datasource.getPopularMovies()
+                val response = datasource.getMoviesByCategory(category.path)
                 val movies = response.results.map { it.asExternalModel() }
                 emit(PagingData.from(movies))
             }.flowOn(ioDispatcher)
 
-        override suspend fun getPopularMovies(page: Int) = success(datasource.getPopularMovies(page))
-
-        override suspend fun getTopRatedMovies(page: Int) = success(datasource.getTopRatedMovies(page))
-
-        override suspend fun getUpcomingMovies(page: Int) = success(datasource.getUpcomingMovies(page))
-
         override suspend fun searchMovies(
             query: String,
             page: Int,
-        ) = success(datasource.searchMovies(query, page))
-
-        private suspend fun success(call: MovieResponse): Result<MoviePage, NetworkError> =
-            withContext(ioDispatcher) { Result.Success(call.asExternalModel()) }
+        ): Result<MoviePage, NetworkError> =
+            withContext(ioDispatcher) { Result.Success(datasource.searchMovies(query, page).asExternalModel()) }
     }

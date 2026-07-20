@@ -23,20 +23,13 @@ class MockTMDBApiService
     ) : TMDBApiService {
         var errorToThrow: Exception? = null
 
-        override suspend fun getPopularMovies(page: Int): MovieResponse {
+        override suspend fun getMoviesByCategory(
+            category: String,
+            page: Int,
+        ): MovieResponse {
             errorToThrow?.let { throw it }
-            return getDataFromJsonFile(POPULAR_MOVIES_ASSET)
+            return getDataFromJsonFile("${category}_movies.json")
         }
-
-        override suspend fun getTopRatedMovies(page: Int): MovieResponse =
-            getDataFromJsonFile(
-                TOP_RATED_MOVIES_ASSET,
-            )
-
-        override suspend fun getUpcomingMovies(page: Int): MovieResponse =
-            getDataFromJsonFile(
-                UPCOMING_MOVIES_ASSET,
-            )
 
         override suspend fun searchMovies(
             query: String,
@@ -59,9 +52,6 @@ class MockTMDBApiService
             }
 
         companion object {
-            private const val POPULAR_MOVIES_ASSET = "popular_movies.json"
-            private const val TOP_RATED_MOVIES_ASSET = "top_rated_movies.json"
-            private const val UPCOMING_MOVIES_ASSET = "upcoming_movies.json"
             private const val SEARCH_MOVIES_ASSET = "search_movies.json"
         }
     }

@@ -1,40 +1,16 @@
-import java.util.Properties
-import kotlin.properties.Delegates
-
 plugins {
     alias(libs.plugins.tmdb.android.library)
     alias(libs.plugins.tmdb.android.hilt)
     alias(libs.plugins.tmdb.ktlint)
+    alias(libs.plugins.tmdb.android.buildConfig.secrets)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "com.yiwenliu.core.network"
 
-    buildTypes {
-        var baseUrl by Delegates.notNull<String>()
-        var apiKey by Delegates.notNull<String>()
-        var apiToken by Delegates.notNull<String>()
-        Properties().apply {
-            load(project.rootProject.file("local.properties").inputStream())
-            baseUrl = getProperty("BASE_URL")
-            apiKey = getProperty("API_KEY")
-            apiToken = getProperty("API_TOKEN")
-        }
-        debug {
-            buildConfigField("String", "BASE_URL", baseUrl)
-            buildConfigField("String", "API_KEY", apiKey)
-            buildConfigField("String", "API_TOKEN", apiToken)
-        }
-        release {
-            buildConfigField("String", "BASE_URL", baseUrl)
-            buildConfigField("String", "API_KEY", apiKey)
-            buildConfigField("String", "API_TOKEN", apiToken)
-        }
-    }
-
-    buildFeatures {
-        buildConfig = true
+    buildConfigSecrets {
+        keys = listOf("BASE_URL", "API_TOKEN")
     }
 
     testOptions.unitTests.isIncludeAndroidResources = true

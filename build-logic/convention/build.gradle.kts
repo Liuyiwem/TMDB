@@ -67,13 +67,21 @@ gradlePlugin {
             id = libs.plugins.tmdb.android.hilt.get().pluginId
             implementationClass = "AndroidHiltConventionPlugin"
         }
-        register("androidFeature") {
-            id = libs.plugins.tmdb.android.feature.get().pluginId
-            implementationClass = "AndroidFeatureConventionPlugin"
+        register("androidFeatureImpl") {
+            id = libs.plugins.tmdb.android.feature.impl.get().pluginId
+            implementationClass = "AndroidFeatureImplConventionPlugin"
+        }
+        register("androidFeatureApi") {
+            id = libs.plugins.tmdb.android.feature.api.get().pluginId
+            implementationClass = "AndroidFeatureApiConventionPlugin"
         }
         register("ktlint") {
             id = libs.plugins.tmdb.ktlint.get().pluginId
             implementationClass = "KtlintConventionPlugin"
+        }
+        register("androidBuildConfigSecrets") {
+            id = libs.plugins.tmdb.android.buildConfig.secrets.get().pluginId
+            implementationClass = "BuildConfigSecretsConventionPlugin"
         }
     }
 }

@@ -9,39 +9,34 @@ import com.yiwenliu.core.common.domain.util.NetworkError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.data.repository.MovieRepository
 import com.yiwenliu.core.model.Movie
+import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.model.MoviePage
 import kotlinx.coroutines.flow.Flow
 
 class TestMovieRepository : MovieRepository {
-    private var popularMovies: List<Movie> = emptyList()
+    private var movies: List<Movie> = emptyList()
 
-    override fun getPopularMoviesPager(): Flow<PagingData<Movie>> =
+    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> =
         Pager(PagingConfig(pageSize = 20)) {
             object : PagingSource<Int, Movie>() {
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> =
-                    LoadResult.Page(data = popularMovies, prevKey = null, nextKey = null)
+                    LoadResult.Page(data = movies, prevKey = null, nextKey = null)
 
                 override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = null
             }
         }.flow
 
-    fun sendPopularMovies(movies: List<Movie>) {
-        popularMovies = movies
+    fun sendMovies(movies: List<Movie>) {
+        this.movies = movies
     }
 
     private val emptyResponse =
         MoviePage(page = 1, movies = emptyList(), totalPages = 1, totalResults = 0)
 
-    var popularMoviesResult: Result<MoviePage, NetworkError> = Result.Success(emptyResponse)
-
-    override suspend fun getPopularMovies(page: Int) = popularMoviesResult
-
-    override suspend fun getTopRatedMovies(page: Int) = popularMoviesResult
-
-    override suspend fun getUpcomingMovies(page: Int) = popularMoviesResult
+    var searchResult: Result<MoviePage, NetworkError> = Result.Success(emptyResponse)
 
     override suspend fun searchMovies(
         query: String,
         page: Int,
-    ) = popularMoviesResult
+    ) = searchResult
 }

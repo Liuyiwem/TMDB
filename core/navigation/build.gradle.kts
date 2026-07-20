@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.yiwenliu.navigation"
+    namespace = "com.yiwenliu.core.navigation"
 }
 
 dependencies {
