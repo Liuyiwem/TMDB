@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.yiwenliu.tmdb.configureKotlinAndroid
+import com.yiwenliu.tmdb.configureSpotlessForAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -11,6 +12,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             apply(plugin = "com.android.application")
             apply(plugin = "org.jetbrains.kotlin.android")
             apply(plugin = "tmdb.lint")
+            configureSpotlessForAndroid()
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)

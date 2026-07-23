@@ -25,12 +25,11 @@ class MovieRepositoryTest {
     }
 
     @Test
-    fun `getMoviesByCategoryPager firstLoad returns CorrectMovies`() =
-        runTest(testDispatcher) {
-            val movies = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
+    fun `getMoviesByCategoryPager firstLoad returns CorrectMovies`() = runTest(testDispatcher) {
+        val movies = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
 
-            assertEquals(2, movies.size)
-            assertEquals(533535, movies[0].id)
-            assertEquals("Deadpool & Wolverine", movies[0].title)
-        }
+        assertEquals(2, movies.size)
+        assertEquals(533535, movies[0].id)
+        assertEquals("Deadpool & Wolverine", movies[0].title)
+    }
 }

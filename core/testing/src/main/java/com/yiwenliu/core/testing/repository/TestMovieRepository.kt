@@ -16,15 +16,13 @@ import kotlinx.coroutines.flow.Flow
 class TestMovieRepository : MovieRepository {
     private var movies: List<Movie> = emptyList()
 
-    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> =
-        Pager(PagingConfig(pageSize = 20)) {
-            object : PagingSource<Int, Movie>() {
-                override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> =
-                    LoadResult.Page(data = movies, prevKey = null, nextKey = null)
+    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = Pager(PagingConfig(pageSize = 20)) {
+        object : PagingSource<Int, Movie>() {
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> = LoadResult.Page(data = movies, prevKey = null, nextKey = null)
 
-                override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = null
-            }
-        }.flow
+            override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = null
+        }
+    }.flow
 
     fun sendMovies(movies: List<Movie>) {
         this.movies = movies

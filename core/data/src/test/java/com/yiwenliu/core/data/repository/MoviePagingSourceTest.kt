@@ -33,56 +33,52 @@ class MoviePagingSourceTest {
     }
 
     @Test
-    fun `load firstPage returns Movies With Correct PagingKeys`() =
-        runTest(testDispatcher) {
-            val pager = TestPager(PagingConfig(pageSize = 20), pagingSource)
+    fun `load firstPage returns Movies With Correct PagingKeys`() = runTest(testDispatcher) {
+        val pager = TestPager(PagingConfig(pageSize = 20), pagingSource)
 
-            val result = pager.refresh() as LoadResult.Page
+        val result = pager.refresh() as LoadResult.Page
 
-            assertEquals(2, result.data.size)
-            assertNull(result.prevKey)
-            assertNull(result.nextKey)
-        }
-
-    @Test
-    fun `load singlePage endsPagination`() =
-        runTest(testDispatcher) {
-            val pager = TestPager(PagingConfig(pageSize = 20), pagingSource)
-            pager.refresh()
-
-            assertNull(pager.append())
-        }
+        assertEquals(2, result.data.size)
+        assertNull(result.prevKey)
+        assertNull(result.nextKey)
+    }
 
     @Test
-    fun `load networkError returns LoadResultError`() =
-        runTest(testDispatcher) {
-            apiService.errorToThrow = NetworkException(NetworkError.NO_INTERNET)
+    fun `load singlePage endsPagination`() = runTest(testDispatcher) {
+        val pager = TestPager(PagingConfig(pageSize = 20), pagingSource)
+        pager.refresh()
 
-            val pager = TestPager(PagingConfig(pageSize = 20), pagingSource)
-            val result = pager.refresh()
-
-            assertTrue(result is LoadResult.Error)
-            assertTrue(result.throwable is NetworkException)
-        }
+        assertNull(pager.append())
+    }
 
     @Test
-    fun `getRefreshKey returns CorrectKey`() =
-        runTest(testDispatcher) {
-            val page =
-                LoadResult.Page(
-                    data = moviesTestData,
-                    prevKey = 1,
-                    nextKey = 3,
-                )
-            val pagingState =
-                PagingState(
-                    pages = listOf(page),
-                    anchorPosition = 0,
-                    config = PagingConfig(pageSize = 20),
-                    leadingPlaceholderCount = 0,
-                )
+    fun `load networkError returns LoadResultError`() = runTest(testDispatcher) {
+        apiService.errorToThrow = NetworkException(NetworkError.NO_INTERNET)
 
-            val refreshKey = pagingSource.getRefreshKey(pagingState)
-            assertEquals(2, refreshKey)
-        }
+        val pager = TestPager(PagingConfig(pageSize = 20), pagingSource)
+        val result = pager.refresh()
+
+        assertTrue(result is LoadResult.Error)
+        assertTrue(result.throwable is NetworkException)
+    }
+
+    @Test
+    fun `getRefreshKey returns CorrectKey`() = runTest(testDispatcher) {
+        val page =
+            LoadResult.Page(
+                data = moviesTestData,
+                prevKey = 1,
+                nextKey = 3,
+            )
+        val pagingState =
+            PagingState(
+                pages = listOf(page),
+                anchorPosition = 0,
+                config = PagingConfig(pageSize = 20),
+                leadingPlaceholderCount = 0,
+            )
+
+        val refreshKey = pagingSource.getRefreshKey(pagingState)
+        assertEquals(2, refreshKey)
+    }
 }

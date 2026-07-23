@@ -28,10 +28,10 @@ fun MovieItem(
             imageUrl = movie.posterPath,
             contentDescription = movie.title,
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(2 / 3f)
-                    .clip(RoundedCornerShape(12.dp)),
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(2 / 3f)
+                .clip(RoundedCornerShape(12.dp)),
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(

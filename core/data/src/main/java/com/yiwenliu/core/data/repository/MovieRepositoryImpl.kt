@@ -20,24 +20,22 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 internal class MovieRepositoryImpl
-    @Inject
-    constructor(
-        private val apiService: TMDBApiService,
-        @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-    ) : MovieRepository {
-        override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> =
-            Pager(
-                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
-                pagingSourceFactory = { MoviePagingSource(apiService, category, ioDispatcher) },
-            ).flow
+@Inject
+constructor(
+    private val apiService: TMDBApiService,
+    @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
+) : MovieRepository {
+    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = Pager(
+        config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+        pagingSourceFactory = { MoviePagingSource(apiService, category, ioDispatcher) },
+    ).flow
 
-        override suspend fun searchMovies(
-            query: String,
-            page: Int,
-        ): Result<MoviePage, NetworkError> =
-            withContext(ioDispatcher) {
-                safeCall {
-                    apiService.searchMovies(query, page)
-                }.map { it.asExternalModel() }
-            }
+    override suspend fun searchMovies(
+        query: String,
+        page: Int,
+    ): Result<MoviePage, NetworkError> = withContext(ioDispatcher) {
+        safeCall {
+            apiService.searchMovies(query, page)
+        }.map { it.asExternalModel() }
     }
+}

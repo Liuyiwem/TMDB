@@ -35,7 +35,7 @@ class MoviePreviewParameterProvider : PreviewParameterProvider<List<Movie>> {
                     id = 3,
                     title = "The Dark Knight",
                     overview =
-                        "When the menace known as the Joker wreaks havoc on Gotham City, Batman must accept one of the greatest tests.",
+                    "When the menace known as the Joker wreaks havoc on Gotham City, Batman must accept one of the greatest tests.",
                     releaseDate = "2008-07-18",
                     posterPath = "",
                     backdropPath = "",
@@ -48,7 +48,7 @@ class MoviePreviewParameterProvider : PreviewParameterProvider<List<Movie>> {
                     id = 4,
                     title = "Schindler's List",
                     overview =
-                        "In German-occupied Poland during World War II, industrialist Oskar Schindler saves Jewish refugees.",
+                    "In German-occupied Poland during World War II, industrialist Oskar Schindler saves Jewish refugees.",
                     releaseDate = "1993-12-15",
                     posterPath = "",
                     backdropPath = "",
@@ -61,7 +61,7 @@ class MoviePreviewParameterProvider : PreviewParameterProvider<List<Movie>> {
                     id = 5,
                     title = "Pulp Fiction",
                     overview =
-                        "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
+                    "The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.",
                     releaseDate = "1994-10-14",
                     posterPath = "",
                     backdropPath = "",

@@ -25,10 +25,10 @@ fun ErrorItem(
 ) {
     Column(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .testTag("error"),
+        modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .testTag("error"),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(

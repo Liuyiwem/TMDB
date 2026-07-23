@@ -45,9 +45,9 @@ fun MovieCategoryTab(
         label = text,
         shape = RoundedCornerShape(percent = 50),
         modifier =
-            modifier
-                .padding(horizontal = 4.dp, vertical = 8.dp)
-                .testTag("tab:${category.name}"),
+        modifier
+            .padding(horizontal = 4.dp, vertical = 8.dp)
+            .testTag("tab:${category.name}"),
     )
 }
 

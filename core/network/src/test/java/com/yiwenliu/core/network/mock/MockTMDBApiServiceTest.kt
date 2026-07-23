@@ -27,40 +27,35 @@ class MockTMDBApiServiceTest {
     }
 
     @Test
-    fun `getMoviesByCategory popular loads popular_movies asset`() =
-        runTest(testDispatcher) {
-            val response = apiService.getMoviesByCategory("popular")
+    fun `getMoviesByCategory popular loads popular_movies asset`() = runTest(testDispatcher) {
+        val response = apiService.getMoviesByCategory("popular")
 
-            assertEquals(2, response.results.size)
-            assertEquals(533535, response.results[0].id)
-            assertEquals("Deadpool & Wolverine", response.results[0].title)
-        }
-
-    @Test
-    fun `getMoviesByCategory now_playing loads now_playing_movies asset`() =
-        runTest(testDispatcher) {
-            val response = apiService.getMoviesByCategory("now_playing")
-
-            assertEquals(2, response.results.size)
-            assertEquals(1241982, response.results[0].id)
-            assertEquals("Moana 2", response.results[0].title)
-        }
+        assertEquals(2, response.results.size)
+        assertEquals(533535, response.results[0].id)
+        assertEquals("Deadpool & Wolverine", response.results[0].title)
+    }
 
     @Test
-    fun `getMoviesByCategory top_rated loads top_rated_movies asset`() =
-        runTest(testDispatcher) {
-            assertTrue(apiService.getMoviesByCategory("top_rated").results.isNotEmpty())
-        }
+    fun `getMoviesByCategory now_playing loads now_playing_movies asset`() = runTest(testDispatcher) {
+        val response = apiService.getMoviesByCategory("now_playing")
+
+        assertEquals(2, response.results.size)
+        assertEquals(1241982, response.results[0].id)
+        assertEquals("Moana 2", response.results[0].title)
+    }
 
     @Test
-    fun `getMoviesByCategory upcoming loads upcoming_movies asset`() =
-        runTest(testDispatcher) {
-            assertTrue(apiService.getMoviesByCategory("upcoming").results.isNotEmpty())
-        }
+    fun `getMoviesByCategory top_rated loads top_rated_movies asset`() = runTest(testDispatcher) {
+        assertTrue(apiService.getMoviesByCategory("top_rated").results.isNotEmpty())
+    }
 
     @Test
-    fun `searchMovies loads search_movies asset`() =
-        runTest(testDispatcher) {
-            assertTrue(apiService.searchMovies(query = "fight").results.isNotEmpty())
-        }
+    fun `getMoviesByCategory upcoming loads upcoming_movies asset`() = runTest(testDispatcher) {
+        assertTrue(apiService.getMoviesByCategory("upcoming").results.isNotEmpty())
+    }
+
+    @Test
+    fun `searchMovies loads search_movies asset`() = runTest(testDispatcher) {
+        assertTrue(apiService.searchMovies(query = "fight").results.isNotEmpty())
+    }
 }

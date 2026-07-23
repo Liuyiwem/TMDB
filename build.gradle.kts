@@ -5,7 +5,8 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.tmdb.root)
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
 }
