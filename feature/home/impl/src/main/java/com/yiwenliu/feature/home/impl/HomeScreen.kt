@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -39,7 +40,8 @@ import com.yiwenliu.core.common.presentation.util.toString
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.ui.ErrorItem
-import com.yiwenliu.core.ui.MovieCategoryTabs
+import com.yiwenliu.core.ui.MovieCategoryTab
+import com.yiwenliu.core.ui.MovieCategoryTabRow
 import com.yiwenliu.core.ui.MovieItem
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
@@ -72,12 +74,18 @@ internal fun HomeScreen(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        MovieCategoryTabs(
-            categories = state.categories,
-            titles = state.categories.map { stringResource(it.titleRes()) },
-            selectedCategory = state.selectedCategory,
-            onCategorySelected = { onAction(HomeAction.OnCategorySelected(it)) },
-        )
+        MovieCategoryTabRow(
+            selectedTabIndex = MovieCategory.entries.indexOf(state.selectedCategory).coerceAtLeast(0),
+        ) {
+            MovieCategory.entries.forEach { category ->
+                MovieCategoryTab(
+                    category = category,
+                    selected = category == state.selectedCategory,
+                    onClick = { onAction(HomeAction.OnCategorySelected(category)) },
+                    text = { Text(stringResource(category.titleRes())) },
+                )
+            }
+        }
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = { movies.refresh() },
