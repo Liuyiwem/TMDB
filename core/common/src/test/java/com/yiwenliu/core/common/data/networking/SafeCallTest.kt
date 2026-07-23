@@ -14,80 +14,74 @@ import kotlin.test.assertTrue
 
 class SafeCallTest {
     @Test
-    fun `safeCall returns Success when execution succeeds`() =
-        runTest {
-            val expectedData = "test data"
+    fun `safeCall returns Success when execution succeeds`() = runTest {
+        val expectedData = "test data"
 
-            val result = safeCall { expectedData }
+        val result = safeCall { expectedData }
 
-            assertTrue(result is Result.Success)
-            assertEquals(expectedData, result.data)
-        }
-
-    @Test
-    fun `safeCall returns NO_INTERNET error for UnresolvedAddressException`() =
-        runTest {
-            val result =
-                safeCall<String> {
-                    throw UnresolvedAddressException()
-                }
-
-            assertTrue(result is Result.Error)
-            assertEquals(NetworkError.NO_INTERNET, result.error)
-        }
+        assertTrue(result is Result.Success)
+        assertEquals(expectedData, result.data)
+    }
 
     @Test
-    fun `safeCall returns NO_INTERNET error for IOException`() =
-        runTest {
-            val result =
-                safeCall<String> {
-                    throw IOException("Network connection failed")
-                }
+    fun `safeCall returns NO_INTERNET error for UnresolvedAddressException`() = runTest {
+        val result =
+            safeCall<String> {
+                throw UnresolvedAddressException()
+            }
 
-            assertTrue(result is Result.Error)
-            assertEquals(NetworkError.NO_INTERNET, result.error)
-        }
-
-    @Test
-    fun `safeCall returns SERIALIZATION error for SerializationException`() =
-        runTest {
-            val result =
-                safeCall<String> {
-                    throw SerializationException("Failed to parse JSON")
-                }
-
-            assertTrue(result is Result.Error)
-            assertEquals(NetworkError.SERIALIZATION, result.error)
-        }
+        assertTrue(result is Result.Error)
+        assertEquals(NetworkError.NO_INTERNET, result.error)
+    }
 
     @Test
-    fun `safeCall handles HttpException and delegates to handleHttpException`() =
-        runTest {
-            val httpException =
-                HttpException(
-                    Response.error<Any>(404, okhttp3.ResponseBody.create(null, "Not Found")),
-                )
+    fun `safeCall returns NO_INTERNET error for IOException`() = runTest {
+        val result =
+            safeCall<String> {
+                throw IOException("Network connection failed")
+            }
 
-            val result =
-                safeCall<String> {
-                    throw httpException
-                }
-
-            assertTrue(result is Result.Error)
-            assertEquals(NetworkError.CLIENT_ERROR, result.error)
-        }
+        assertTrue(result is Result.Error)
+        assertEquals(NetworkError.NO_INTERNET, result.error)
+    }
 
     @Test
-    fun `safeCall returns UNKNOWN error for generic Exception`() =
-        runTest {
-            val result =
-                safeCall<String> {
-                    throw RuntimeException("Something went wrong")
-                }
+    fun `safeCall returns SERIALIZATION error for SerializationException`() = runTest {
+        val result =
+            safeCall<String> {
+                throw SerializationException("Failed to parse JSON")
+            }
 
-            assertTrue(result is Result.Error)
-            assertEquals(NetworkError.UNKNOWN, result.error)
-        }
+        assertTrue(result is Result.Error)
+        assertEquals(NetworkError.SERIALIZATION, result.error)
+    }
+
+    @Test
+    fun `safeCall handles HttpException and delegates to handleHttpException`() = runTest {
+        val httpException =
+            HttpException(
+                Response.error<Any>(404, okhttp3.ResponseBody.create(null, "Not Found")),
+            )
+
+        val result =
+            safeCall<String> {
+                throw httpException
+            }
+
+        assertTrue(result is Result.Error)
+        assertEquals(NetworkError.CLIENT_ERROR, result.error)
+    }
+
+    @Test
+    fun `safeCall returns UNKNOWN error for generic Exception`() = runTest {
+        val result =
+            safeCall<String> {
+                throw RuntimeException("Something went wrong")
+            }
+
+        assertTrue(result is Result.Error)
+        assertEquals(NetworkError.UNKNOWN, result.error)
+    }
 
     @Test
     fun `handleHttpException returns REQUEST_TIMEOUT for 408`() {

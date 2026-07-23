@@ -48,6 +48,7 @@ fun TMDBTheme(
             }
 
             darkTheme -> DarkColorScheme
+
             else -> LightColorScheme
         }
 

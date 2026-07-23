@@ -109,6 +109,7 @@ internal fun HomeScreen(
                             )
                         }
                     }
+
                     else -> {}
                 }
 
@@ -162,13 +163,12 @@ private fun errorMessageFor(error: Throwable): String {
 }
 
 @StringRes
-private fun MovieCategory.titleRes(): Int =
-    when (this) {
-        MovieCategory.NOW_PLAYING -> R.string.tab_now_playing
-        MovieCategory.POPULAR -> R.string.tab_popular
-        MovieCategory.TOP_RATED -> R.string.tab_top_rated
-        MovieCategory.UPCOMING -> R.string.tab_upcoming
-    }
+private fun MovieCategory.titleRes(): Int = when (this) {
+    MovieCategory.NOW_PLAYING -> R.string.tab_now_playing
+    MovieCategory.POPULAR -> R.string.tab_popular
+    MovieCategory.TOP_RATED -> R.string.tab_top_rated
+    MovieCategory.UPCOMING -> R.string.tab_upcoming
+}
 
 @Preview(showBackground = true, widthDp = 400)
 @Composable

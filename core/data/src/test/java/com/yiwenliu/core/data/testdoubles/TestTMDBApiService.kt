@@ -13,11 +13,11 @@ class TestTMDBApiService : TMDBApiService {
         MockTMDBApiService(
             ioDispatcher = UnconfinedTestDispatcher(),
             networkJson =
-                Json {
-                    ignoreUnknownKeys = true
-                    coerceInputValues = true
-                    isLenient = true
-                },
+            Json {
+                ignoreUnknownKeys = true
+                coerceInputValues = true
+                isLenient = true
+            },
         )
 
     var errorToThrow: Throwable? = null

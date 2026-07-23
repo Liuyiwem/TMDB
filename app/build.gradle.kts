@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.tmdb.android.application.compose)
     alias(libs.plugins.tmdb.android.application.flavors)
     alias(libs.plugins.tmdb.android.hilt)
-    alias(libs.plugins.tmdb.ktlint)
 }
 
 android {

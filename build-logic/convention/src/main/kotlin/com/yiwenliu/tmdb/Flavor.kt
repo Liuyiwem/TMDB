@@ -7,7 +7,7 @@ import com.android.build.api.dsl.ProductFlavor
 
 @Suppress("EnumEntryName")
 enum class FlavorDimension {
-    contentType
+    contentType,
 }
 
 @Suppress("EnumEntryName")

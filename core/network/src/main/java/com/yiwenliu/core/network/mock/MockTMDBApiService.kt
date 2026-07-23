@@ -15,43 +15,42 @@ import java.io.BufferedReader
 import javax.inject.Inject
 
 class MockTMDBApiService
-    @Inject
-    constructor(
-        @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-        private val networkJson: Json,
-        private val assets: MockAssetManager = JvmUnitTestDemoAssetManager,
-    ) : TMDBApiService {
-        var errorToThrow: Exception? = null
+@Inject
+constructor(
+    @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
+    private val networkJson: Json,
+    private val assets: MockAssetManager = JvmUnitTestDemoAssetManager,
+) : TMDBApiService {
+    var errorToThrow: Exception? = null
 
-        override suspend fun getMoviesByCategory(
-            category: String,
-            page: Int,
-        ): MovieResponse {
-            errorToThrow?.let { throw it }
-            return getDataFromJsonFile("${category}_movies.json")
-        }
+    override suspend fun getMoviesByCategory(
+        category: String,
+        page: Int,
+    ): MovieResponse {
+        errorToThrow?.let { throw it }
+        return getDataFromJsonFile("${category}_movies.json")
+    }
 
-        override suspend fun searchMovies(
-            query: String,
-            page: Int,
-        ): MovieResponse = getDataFromJsonFile(SEARCH_MOVIES_ASSET)
+    override suspend fun searchMovies(
+        query: String,
+        page: Int,
+    ): MovieResponse = getDataFromJsonFile(SEARCH_MOVIES_ASSET)
 
-        @OptIn(ExperimentalSerializationApi::class)
-        private suspend inline fun <reified T> getDataFromJsonFile(fileName: String): T =
-            withContext(ioDispatcher) {
-                assets.open(fileName).use { inputStream ->
-                    if (SDK_INT <= M) {
-                        inputStream
-                            .bufferedReader()
-                            .use(BufferedReader::readText)
-                            .let(networkJson::decodeFromString)
-                    } else {
-                        networkJson.decodeFromStream(inputStream)
-                    }
-                }
+    @OptIn(ExperimentalSerializationApi::class)
+    private suspend inline fun <reified T> getDataFromJsonFile(fileName: String): T = withContext(ioDispatcher) {
+        assets.open(fileName).use { inputStream ->
+            if (SDK_INT <= M) {
+                inputStream
+                    .bufferedReader()
+                    .use(BufferedReader::readText)
+                    .let(networkJson::decodeFromString)
+            } else {
+                networkJson.decodeFromStream(inputStream)
             }
-
-        companion object {
-            private const val SEARCH_MOVIES_ASSET = "search_movies.json"
         }
     }
+
+    companion object {
+        private const val SEARCH_MOVIES_ASSET = "search_movies.json"
+    }
+}

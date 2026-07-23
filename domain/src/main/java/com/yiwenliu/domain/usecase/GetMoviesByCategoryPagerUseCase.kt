@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetMoviesByCategoryPagerUseCase
-    @Inject
-    constructor(
-        private val movieRepository: MovieRepository,
-    ) {
-        operator fun invoke(category: MovieCategory): Flow<PagingData<Movie>> = movieRepository.getMoviesByCategoryPager(category)
-    }
+@Inject
+constructor(
+    private val movieRepository: MovieRepository,
+) {
+    operator fun invoke(category: MovieCategory): Flow<PagingData<Movie>> = movieRepository.getMoviesByCategoryPager(category)
+}

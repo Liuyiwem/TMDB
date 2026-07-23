@@ -19,11 +19,10 @@ internal class MoviePagingSource(
 ) : PagingSource<Int, Movie>() {
     private val seenIds = mutableSetOf<Int>()
 
-    override fun getRefreshKey(state: PagingState<Int, Movie>): Int? =
-        state.anchorPosition?.let { anchor ->
-            state.closestPageToPosition(anchor)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchor)?.nextKey?.minus(1)
-        }
+    override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = state.anchorPosition?.let { anchor ->
+        state.closestPageToPosition(anchor)?.prevKey?.plus(1)
+            ?: state.closestPageToPosition(anchor)?.nextKey?.minus(1)
+    }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: 1
@@ -42,6 +41,7 @@ internal class MoviePagingSource(
                     nextKey = if (page >= result.data.totalPages) null else page + 1,
                 )
             }
+
             is Result.Error -> LoadResult.Error(NetworkException(result.error))
         }
     }

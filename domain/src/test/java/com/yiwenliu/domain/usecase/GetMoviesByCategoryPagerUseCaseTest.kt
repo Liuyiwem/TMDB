@@ -21,14 +21,13 @@ class GetMoviesByCategoryPagerUseCaseTest {
     private val useCase = GetMoviesByCategoryPagerUseCase(movieRepository)
 
     @Test
-    fun `invoke delegates to repository and emits movies`() =
-        runTest {
-            movieRepository.sendMovies(moviesTestData)
+    fun `invoke delegates to repository and emits movies`() = runTest {
+        movieRepository.sendMovies(moviesTestData)
 
-            val movies = useCase(MovieCategory.POPULAR).asSnapshot()
+        val movies = useCase(MovieCategory.POPULAR).asSnapshot()
 
-            assertEquals(2, movies.size)
-            assertEquals(533535, movies[0].id)
-            assertEquals("Deadpool & Wolverine", movies[0].title)
-        }
+        assertEquals(2, movies.size)
+        assertEquals(533535, movies[0].id)
+        assertEquals("Deadpool & Wolverine", movies[0].title)
+    }
 }

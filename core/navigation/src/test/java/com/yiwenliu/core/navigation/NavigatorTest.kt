@@ -43,13 +43,13 @@ class NavigatorTest {
     }
 
     @Test
-    fun testStartKey() {
+    fun `startKey is the initial top-level key`() {
         assertEquals(TestFirstTopLevelKey, navigationState.startKey)
         assertEquals(TestFirstTopLevelKey, navigationState.currentTopLevelKey)
     }
 
     @Test
-    fun testNavigate() {
+    fun `navigate pushes key to sub-stack`() {
         navigator.navigate(TestKeyFirst)
 
         assertEquals(TestFirstTopLevelKey, navigationState.currentTopLevelKey)
@@ -57,13 +57,13 @@ class NavigatorTest {
     }
 
     @Test
-    fun testNavigateTopLevel() {
+    fun `navigate switches top-level`() {
         navigator.navigate(TestSecondTopLevelKey)
         assertEquals(TestSecondTopLevelKey, navigationState.currentTopLevelKey)
     }
 
     @Test
-    fun testNavigateSingleTop() {
+    fun `navigate to same key is single-top`() {
         navigator.navigate(TestKeyFirst)
 
         assertEquals(
@@ -80,7 +80,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun testNavigateTopLevelSingleTop() {
+    fun `navigate to active top-level resets its stack`() {
         navigator.navigate(TestSecondTopLevelKey)
         navigator.navigate(TestKeyFirst)
 
@@ -98,7 +98,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun testSubStack() {
+    fun `navigate builds the sub-stack`() {
         navigator.navigate(TestKeyFirst)
 
         assertEquals(TestKeyFirst, navigationState.currentKey)
@@ -111,7 +111,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun testMultiStack() {
+    fun `each top-level keeps its own sub-stack`() {
         navigator.navigate(TestKeyFirst)
 
         assertEquals(TestKeyFirst, navigationState.currentKey)
@@ -134,7 +134,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun testPopOneNonTopLevel() {
+    fun `goBack pops one sub key`() {
         navigator.navigate(TestKeyFirst)
         navigator.navigate(TestKeySecond)
 
@@ -155,7 +155,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun testPopOneTopLevel() {
+    fun `goBack from root returns to previous top-level`() {
         navigator.navigate(TestKeyFirst)
         navigator.navigate(TestSecondTopLevelKey)
 
@@ -179,7 +179,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun popMultipleNonTopLevel() {
+    fun `goBack pops to sub-stack root`() {
         navigator.navigate(TestKeyFirst)
         navigator.navigate(TestKeySecond)
 
@@ -201,7 +201,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun popMultipleTopLevel() {
+    fun `goBack unwinds across top-levels`() {
         navigator.navigate(TestSecondTopLevelKey)
         navigator.navigate(TestKeyFirst)
 
@@ -232,7 +232,7 @@ class NavigatorTest {
     }
 
     @Test
-    fun throwOnEmptyBackStack() {
+    fun `goBack on empty stack throws`() {
         assertFailsWith<IllegalStateException> {
             navigator.goBack()
         }

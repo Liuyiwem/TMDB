@@ -30,7 +30,7 @@ dependencies {
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.hilt.gradlePlugin)
-    compileOnly(libs.ktlint.gradlePlugin)
+    compileOnly(libs.spotless.gradlePlugin)
 }
 
 gradlePlugin {
@@ -75,9 +75,9 @@ gradlePlugin {
             id = libs.plugins.tmdb.android.feature.api.get().pluginId
             implementationClass = "AndroidFeatureApiConventionPlugin"
         }
-        register("ktlint") {
-            id = libs.plugins.tmdb.ktlint.get().pluginId
-            implementationClass = "KtlintConventionPlugin"
+        register("root") {
+            id = libs.plugins.tmdb.root.get().pluginId
+            implementationClass = "RootConventionPlugin"
         }
         register("androidBuildConfigSecrets") {
             id = libs.plugins.tmdb.android.buildConfig.secrets.get().pluginId

@@ -20,25 +20,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel
-    @Inject
-    constructor(
-        private val getMoviesByCategoryPager: GetMoviesByCategoryPagerUseCase,
-    ) : ViewModel() {
-        private val _state = MutableStateFlow(HomeUiState())
-        val state: StateFlow<HomeUiState> = _state.asStateFlow()
+@Inject
+constructor(
+    private val getMoviesByCategoryPager: GetMoviesByCategoryPagerUseCase,
+) : ViewModel() {
+    private val _state = MutableStateFlow(HomeUiState())
+    val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
-        @OptIn(ExperimentalCoroutinesApi::class)
-        val moviesPager: Flow<PagingData<Movie>> =
-            _state
-                .map { it.selectedCategory }
-                .distinctUntilChanged()
-                .flatMapLatest { getMoviesByCategoryPager(it) }
-                .cachedIn(viewModelScope)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val moviesPager: Flow<PagingData<Movie>> =
+        _state
+            .map { it.selectedCategory }
+            .distinctUntilChanged()
+            .flatMapLatest { getMoviesByCategoryPager(it) }
+            .cachedIn(viewModelScope)
 
-        fun onAction(action: HomeAction) {
-            when (action) {
-                is HomeAction.OnCategorySelected ->
-                    _state.update { it.copy(selectedCategory = action.category) }
-            }
+    fun onAction(action: HomeAction) {
+        when (action) {
+            is HomeAction.OnCategorySelected ->
+                _state.update { it.copy(selectedCategory = action.category) }
         }
     }
+}

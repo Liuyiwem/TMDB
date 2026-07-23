@@ -29,24 +29,22 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `moviesPager emits movies from repository`() =
-        runTest {
-            movieRepository.sendMovies(moviesTestData)
+    fun `moviesPager emits movies from repository`() = runTest {
+        movieRepository.sendMovies(moviesTestData)
 
-            val movies = viewModel.moviesPager.asSnapshot()
+        val movies = viewModel.moviesPager.asSnapshot()
 
-            assertEquals(moviesTestData.size, movies.size)
-            assertEquals(533535, movies[0].id)
-            assertEquals("Deadpool & Wolverine", movies[0].title)
-        }
+        assertEquals(moviesTestData.size, movies.size)
+        assertEquals(533535, movies[0].id)
+        assertEquals("Deadpool & Wolverine", movies[0].title)
+    }
 
     @Test
-    fun `onAction OnCategorySelected updates state`() =
-        runTest {
-            assertEquals(MovieCategory.NOW_PLAYING, viewModel.state.value.selectedCategory)
+    fun `onAction OnCategorySelected updates state`() = runTest {
+        assertEquals(MovieCategory.NOW_PLAYING, viewModel.state.value.selectedCategory)
 
-            viewModel.onAction(HomeAction.OnCategorySelected(MovieCategory.TOP_RATED))
+        viewModel.onAction(HomeAction.OnCategorySelected(MovieCategory.TOP_RATED))
 
-            assertEquals(MovieCategory.TOP_RATED, viewModel.state.value.selectedCategory)
-        }
+        assertEquals(MovieCategory.TOP_RATED, viewModel.state.value.selectedCategory)
+    }
 }

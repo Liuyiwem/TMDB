@@ -28,19 +28,17 @@ internal fun Project.configureBuildConfigSecrets(keys: ListProperty<String>) {
     }
 }
 
-private fun Project.buildConfigStringValue(key: String): Provider<String> =
-    providers.of(LocalPropertyValueSource::class.java) {
-        parameters.localProperties.set(
-            rootProject.layout.projectDirectory.file("local.properties"),
-        )
-        parameters.key.set(key)
-    }
-        .orElse(providers.environmentVariable(key))
-        .orElse("")
-        .map { it.trim() }
+private fun Project.buildConfigStringValue(key: String): Provider<String> = providers.of(LocalPropertyValueSource::class.java) {
+    parameters.localProperties.set(
+        rootProject.layout.projectDirectory.file("local.properties"),
+    )
+    parameters.key.set(key)
+}
+    .orElse(providers.environmentVariable(key))
+    .orElse("")
+    .map { it.trim() }
 
-abstract class LocalPropertyValueSource :
-    ValueSource<String, LocalPropertyValueSource.Params> {
+abstract class LocalPropertyValueSource : ValueSource<String, LocalPropertyValueSource.Params> {
     interface Params : ValueSourceParameters {
         val localProperties: RegularFileProperty
         val key: Property<String>

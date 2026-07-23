@@ -1,4 +1,5 @@
 import com.yiwenliu.tmdb.configureKotlinJvm
+import com.yiwenliu.tmdb.configureSpotlessForJvm
 import com.yiwenliu.tmdb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -10,6 +11,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
         with(target) {
             apply(plugin = "org.jetbrains.kotlin.jvm")
             apply(plugin = "tmdb.lint")
+            configureSpotlessForJvm()
 
             configureKotlinJvm()
 

@@ -19,21 +19,19 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 internal class FakeMovieRepository
-    @Inject
-    constructor(
-        @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
-        private val datasource: MockTMDBApiService,
-    ) : MovieRepository {
-        override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> =
-            flow {
-                val response = datasource.getMoviesByCategory(category.path)
-                val movies = response.results.map { it.asExternalModel() }
-                emit(PagingData.from(movies))
-            }.flowOn(ioDispatcher)
+@Inject
+constructor(
+    @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
+    private val datasource: MockTMDBApiService,
+) : MovieRepository {
+    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = flow {
+        val response = datasource.getMoviesByCategory(category.path)
+        val movies = response.results.map { it.asExternalModel() }
+        emit(PagingData.from(movies))
+    }.flowOn(ioDispatcher)
 
-        override suspend fun searchMovies(
-            query: String,
-            page: Int,
-        ): Result<MoviePage, NetworkError> =
-            withContext(ioDispatcher) { Result.Success(datasource.searchMovies(query, page).asExternalModel()) }
-    }
+    override suspend fun searchMovies(
+        query: String,
+        page: Int,
+    ): Result<MoviePage, NetworkError> = withContext(ioDispatcher) { Result.Success(datasource.searchMovies(query, page).asExternalModel()) }
+}

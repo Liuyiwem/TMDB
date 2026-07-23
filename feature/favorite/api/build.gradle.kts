@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.tmdb.android.feature.api)
-    alias(libs.plugins.tmdb.ktlint)
 }
 
 android {

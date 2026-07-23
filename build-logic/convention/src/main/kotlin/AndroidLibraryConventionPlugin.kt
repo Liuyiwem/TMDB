@@ -2,6 +2,7 @@ import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.yiwenliu.tmdb.configureFlavors
 import com.yiwenliu.tmdb.configureKotlinAndroid
+import com.yiwenliu.tmdb.configureSpotlessForAndroid
 import com.yiwenliu.tmdb.disableUnnecessaryAndroidTests
 import com.yiwenliu.tmdb.libs
 import org.gradle.api.Plugin
@@ -16,6 +17,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             apply(plugin = "com.android.library")
             apply(plugin = "org.jetbrains.kotlin.android")
             apply(plugin = "tmdb.lint")
+            configureSpotlessForAndroid()
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
