@@ -2,7 +2,6 @@ package com.yiwenliu.tmdb
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -45,12 +44,6 @@ class HomeScreenE2ETest {
         composeTestRule.onNodeWithText(popularMovie).assertIsDisplayed()
     }
 
-    private fun awaitText(text: String) {
-        composeTestRule.waitUntil(timeoutMillis = 5_000) {
-            composeTestRule
-                .onAllNodesWithText(text)
-                .fetchSemanticsNodes()
-                .isNotEmpty()
-        }
-    }
+    /** 委派給共用的擴充（ComposeTestExtensions.kt），現在 SearchE2ETest 也需要它。 */
+    private fun awaitText(text: String) = composeTestRule.awaitText(text)
 }

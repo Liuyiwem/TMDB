@@ -7,7 +7,6 @@ import androidx.paging.cachedIn
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.domain.usecase.GetMoviesByCategoryPagerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +26,6 @@ constructor(
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val moviesPager: Flow<PagingData<Movie>> =
         _state
             .map { it.selectedCategory }

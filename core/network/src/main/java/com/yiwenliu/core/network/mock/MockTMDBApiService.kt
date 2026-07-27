@@ -32,9 +32,14 @@ constructor(
     }
 
     override suspend fun searchMovies(
-        query: String,
+        queryString: String,
         page: Int,
-    ): MovieResponse = getDataFromJsonFile(SEARCH_MOVIES_ASSET)
+    ): MovieResponse {
+        errorToThrow?.let { throw it }
+        return getDataFromJsonFile(
+            if (queryString == EMPTY_RESULT_QUERY) SEARCH_MOVIES_EMPTY_ASSET else SEARCH_MOVIES_ASSET,
+        )
+    }
 
     @OptIn(ExperimentalSerializationApi::class)
     private suspend inline fun <reified T> getDataFromJsonFile(fileName: String): T = withContext(ioDispatcher) {
@@ -51,6 +56,18 @@ constructor(
     }
 
     companion object {
-        private const val SEARCH_MOVIES_ASSET = "search_movies.json"
+        /**
+         * 這個查詢字串會讓假物件回傳空結果，供「找不到電影」的測試使用。
+         *
+         * 之所以用一個約定的查詢字串而不是額外的旗標，是因為 mock flavor 是真的裝在裝置上跑的
+         * app，E2E 測試唯一能操作它的介面就是輸入框。
+         */
+        // public 而非 internal：:app 的 E2E 測試需要它，而 internal 是模組層級的。
+        // 這是 mock 對測試公開的契約，不是實作細節。
+        const val EMPTY_RESULT_QUERY = "zzzznoresults"
+
+        internal const val SEARCH_MOVIES_ASSET = "search_movies.json"
+
+        internal const val SEARCH_MOVIES_EMPTY_ASSET = "search_movies_empty.json"
     }
 }

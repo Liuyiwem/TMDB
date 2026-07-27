@@ -12,9 +12,6 @@ android {
         applicationId = "com.yiwenliu.tmdb"
         versionCode = 1
         versionName = "1.0"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
         testInstrumentationRunner = "com.yiwenliu.core.data.test.HiltTestRunner"
     }
 

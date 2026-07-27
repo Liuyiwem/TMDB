@@ -1,19 +1,10 @@
 package com.yiwenliu.feature.home.impl
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -23,10 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -34,20 +23,18 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.itemKey
-import com.yiwenliu.core.common.domain.util.NetworkException
-import com.yiwenliu.core.common.presentation.util.toString
+import com.yiwenliu.core.common.presentation.util.toUserMessage
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.ui.ErrorItem
 import com.yiwenliu.core.ui.MovieCategoryTab
 import com.yiwenliu.core.ui.MovieCategoryTabRow
-import com.yiwenliu.core.ui.MovieItem
+import com.yiwenliu.core.ui.MoviePagingGrid
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
-fun HomeRoot(
+internal fun HomeRoot(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -69,7 +56,7 @@ internal fun HomeScreen(
     onAction: (HomeAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isRefreshing by remember(movies) {
+    val isRefreshing by remember {
         derivedStateOf { movies.loadState.refresh is LoadState.Loading }
     }
 
@@ -91,74 +78,23 @@ internal fun HomeScreen(
             onRefresh = { movies.refresh() },
             modifier = Modifier.fillMaxSize(),
         ) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 120.dp),
-                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).testTag("home:grid"),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
-            ) {
-                when (movies.loadState.refresh) {
-                    is LoadState.Error -> {
-                        val error = (movies.loadState.refresh as LoadState.Error).error
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            ErrorItem(
-                                errorMessage = errorMessageFor(error),
-                                retryText = stringResource(R.string.retry),
-                                onRetry = { movies.retry() },
-                            )
-                        }
-                    }
-
-                    else -> {}
+            // refresh 的錯誤取代整個網格，而不是變成網格裡的一個項目 ——
+            // 這也是 MoviePagingGrid 只負責 append 狀態的原因。
+            when (val refresh = movies.loadState.refresh) {
+                is LoadState.Error -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    ErrorItem(
+                        errorMessage = refresh.error.toUserMessage(LocalContext.current),
+                        retryText = stringResource(com.yiwenliu.core.ui.R.string.retry),
+                        onRetry = movies::retry,
+                    )
                 }
 
-                items(
-                    count = movies.itemCount,
-                    key = movies.itemKey { it.id },
-                ) { index ->
-                    movies[index]?.let { movie ->
-                        MovieItem(movie = movie, modifier = Modifier.fillMaxWidth())
-                    }
-                }
-
-                when (movies.loadState.append) {
-                    is LoadState.Loading -> {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("home:appendLoading"),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
-                    }
-
-                    is LoadState.Error -> {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            val error = (movies.loadState.append as LoadState.Error).error
-                            ErrorItem(
-                                errorMessage = errorMessageFor(error),
-                                retryText = stringResource(R.string.retry),
-                                onRetry = { movies.retry() },
-                            )
-                        }
-                    }
-
-                    else -> {}
-                }
+                else -> MoviePagingGrid(movies = movies, testTagPrefix = "home")
             }
         }
-    }
-}
-
-@Composable
-private fun errorMessageFor(error: Throwable): String {
-    val context = LocalContext.current
-    return if (error is NetworkException) {
-        error.networkError.toString(context)
-    } else {
-        stringResource(R.string.unknown_error)
     }
 }
 
@@ -188,14 +124,11 @@ private fun HomeScreenPreview() {
             ),
         ).collectAsLazyPagingItems()
     MaterialTheme {
-        Scaffold { innerPadding ->
-            HomeScreen(
-                state = HomeUiState(),
-                movies = pagingItems,
-                onAction = {},
-                modifier = Modifier.padding(innerPadding),
-            )
-        }
+        HomeScreen(
+            state = HomeUiState(),
+            movies = pagingItems,
+            onAction = {},
+        )
     }
 }
 

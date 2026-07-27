@@ -1,4 +1,3 @@
-import com.android.build.gradle.api.AndroidBasePlugin
 import com.yiwenliu.tmdb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project

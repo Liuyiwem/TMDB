@@ -31,8 +31,11 @@ internal fun Project.configureKotlinAndroid(
 private fun Project.configureKotlin() = configure<KotlinAndroidProjectExtension> {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_17
-        freeCompilerArgs.add(
-            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        freeCompilerArgs.addAll(
+            listOf(
+                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-opt-in=kotlinx.serialization.InternalSerializationApi"
+            )
         )
     }
 }

@@ -32,4 +32,15 @@ class MovieRepositoryTest {
         assertEquals(533535, movies[0].id)
         assertEquals("Deadpool & Wolverine", movies[0].title)
     }
+
+    @Test
+    fun `searchMoviesPager firstLoad returns CorrectMovies`() = runTest(testDispatcher) {
+        val movies = repository.searchMoviesPager("fight").asSnapshot()
+
+        // 回傳的是搜尋 asset 的 Fight Club 而不是 popular asset 的內容，
+        // 所以這一個斷言就同時證明了「合併後的兩個 pager 各自接到正確的 fetcher」。
+        assertEquals(1, movies.size)
+        assertEquals(550, movies[0].id)
+        assertEquals("Fight Club", movies[0].title)
+    }
 }
