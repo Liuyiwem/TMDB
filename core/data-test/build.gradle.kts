@@ -15,7 +15,4 @@ dependencies {
 
     implementation(libs.androidx.test.runner)
     implementation(libs.hilt.testing)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

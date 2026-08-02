@@ -52,8 +52,16 @@ class SearchViewModel
             )
         }.stateIn(
             scope = viewModelScope,
-            // 上游是 StateFlow、轉換只是建構子呼叫，沒有訂閱成本要管，
-            // Eagerly 讓 state.value 永遠精確。
+            // WhileSubscribed：畫面離開超過 5 秒就停掉 combine，回來再續。
+            //
+            // 停止共享後 StateFlow 會【保留】最後一次發射的值（replayExpirationMillis
+            // 預設是 Long.MAX_VALUE），所以 state.value 不會退回 initialValue ——
+            // 只有從未有過任何訂閱者時才會是 initialValue。
+            // 不要為了「修正」不存在的退回問題而加上 replayExpirationMillis：那才會製造
+            // 真的 bug——背景超過 5 秒回來時搜尋框會閃一下建構當時的舊字串。
+            //
+            // 單元測試若要斷言 state 的【變動】，必須先建立訂閱（見 SearchViewModelTest
+            // 用的 Turbine）。
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SearchUiState(typedQuery.value),
         )
@@ -70,6 +78,11 @@ class SearchViewModel
             // 打 b 又刪掉：debounce 只吐出穩定值 "a"，distinctUntilChanged 拿它跟上次【放行】
             // 的值比較後抑制掉，不會為一個結果已在畫面上的查詢重建 Pager。
             // 反過來排的話三個值都會放行，最後那個 "a" 會讓 grid 跳回頂端並重抓一次。
+            //
+            // 這個順序其實有編譯器把關：對調之後 distinctUntilChanged 會直接作用在
+            // typedQuery 這個 StateFlow 上，而 kotlinx.coroutines 把
+            // StateFlow.distinctUntilChanged() 標成 deprecated（"has no effect"，
+            // 見 Operator Fusion），本專案是 warnings-as-errors，所以會編譯失敗。
             .distinctUntilChanged()
             .onEach { servedQuery.value = it }
             .flatMapLatest { query ->

@@ -24,7 +24,4 @@ dependencies {
 
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(projects.core.testing)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

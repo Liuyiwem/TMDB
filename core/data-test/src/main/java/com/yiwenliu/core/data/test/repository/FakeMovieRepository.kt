@@ -54,6 +54,12 @@ constructor(
  * 刻意在這裡重新實作一份，而不是重用 `core:data` 的 PagingSource ——
  * 那個類別是 `internal`，把它放寬只為了測試假物件會把 `core:network` 的 DTO
  * 洩漏進 `core:data` 的公開 API。
+ *
+ * 也刻意【不】複製生產版的 seenIds 去重與 TMDB_MAX_PAGE 上限：所有 JSON fixture 的
+ * total_pages 都是 1，這個 source 永遠只載入一頁，那兩段邏輯在這裡碰不到。
+ *
+ * 但如果哪天加了多頁的 fixture，去重就必須一起補上 —— UI 用 itemKey { it.id }，
+ * 跨頁重複的 id 會讓 LazyVerticalGrid 直接拋例外，而那會是 E2E 裡的真實崩潰。
  */
 private class FakePagingSource(
     private val ioDispatcher: CoroutineDispatcher,

@@ -87,7 +87,7 @@ fun TMDBApp(
         Scaffold(modifier = Modifier.fillMaxSize().then(contentModifier)) { innerPadding ->
             NavDisplay(
                 entries = navigationState.toEntries(entryProvider),
-                onBack = { navigator.goBack() },
+                onBack = { if (navigator.canGoBack) navigator.goBack() },
                 modifier = Modifier.padding(innerPadding),
             )
         }

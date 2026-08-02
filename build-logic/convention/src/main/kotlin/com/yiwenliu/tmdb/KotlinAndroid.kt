@@ -34,8 +34,8 @@ private fun Project.configureKotlin() = configure<KotlinAndroidProjectExtension>
         freeCompilerArgs.addAll(
             listOf(
                 "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-opt-in=kotlinx.serialization.InternalSerializationApi"
-            )
+                "-opt-in=kotlinx.serialization.InternalSerializationApi",
+            ),
         )
     }
 }

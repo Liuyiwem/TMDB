@@ -16,6 +16,5 @@ dependencies {
     implementation(projects.core.data)
     implementation(libs.androidx.core.ktx)
 
-    testImplementation(libs.kotlinx.serialization.json)
     testImplementation(projects.core.testing)
 }
