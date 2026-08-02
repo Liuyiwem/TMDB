@@ -31,7 +31,7 @@ class TestTMDBApiService : TMDBApiService {
     }
 
     override suspend fun searchMovies(
-        query: String,
+        queryString: String,
         page: Int,
-    ) = source.searchMovies(query, page)
+    ) = source.searchMovies(queryString, page)
 }

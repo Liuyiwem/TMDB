@@ -23,7 +23,7 @@ class TopLevelNavigationE2ETest {
     private val searchTab get() = composeTestRule.activity.getString(R.string.feature_search)
     private val favoriteTab get() = composeTestRule.activity.getString(R.string.feature_favorite)
 
-    private val searchMarker = "Search Screen"
+    private val searchMarkerTag = "search:textField"
     private val favoriteMarker = "Favorite Screen"
     private val homeMarkerTag = "tabRow"
 
@@ -35,7 +35,7 @@ class TopLevelNavigationE2ETest {
     @Test
     fun selectSearchTab_showsSearchScreen() {
         composeTestRule.onNodeWithText(searchTab).performClick()
-        composeTestRule.onNodeWithText(searchMarker).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(searchMarkerTag).assertIsDisplayed()
     }
 
     @Test
@@ -47,7 +47,7 @@ class TopLevelNavigationE2ETest {
     @Test
     fun returnToHomeTab_showsHomeScreen() {
         composeTestRule.onNodeWithText(searchTab).performClick()
-        composeTestRule.onNodeWithText(searchMarker).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(searchMarkerTag).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(homeTab).performClick()
         composeTestRule.onNodeWithTag(homeMarkerTag).assertIsDisplayed()

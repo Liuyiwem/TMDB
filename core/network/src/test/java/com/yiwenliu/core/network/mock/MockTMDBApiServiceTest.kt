@@ -6,7 +6,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -56,6 +58,23 @@ class MockTMDBApiServiceTest {
 
     @Test
     fun `searchMovies loads search_movies asset`() = runTest(testDispatcher) {
-        assertTrue(apiService.searchMovies(query = "fight").results.isNotEmpty())
+        assertTrue(apiService.searchMovies(queryString = "fight").results.isNotEmpty())
+    }
+
+    @Test
+    fun `searchMovies loads the empty asset for the reserved query`() = runTest(testDispatcher) {
+        val response = apiService.searchMovies(MockTMDBApiService.EMPTY_RESULT_QUERY)
+
+        assertTrue(response.results.isEmpty())
+        assertEquals(0, response.totalResults)
+    }
+
+    @Test
+    fun `errorToThrow is honoured by both endpoints`() = runTest(testDispatcher) {
+        // 在此之前全 repo 沒有任何地方設定過 errorToThrow，所以那兩個守衛實際上是死碼。
+        apiService.errorToThrow = IOException("no internet")
+
+        assertFailsWith<IOException> { apiService.getMoviesByCategory("popular") }
+        assertFailsWith<IOException> { apiService.searchMovies("fight") }
     }
 }

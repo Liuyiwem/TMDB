@@ -90,8 +90,10 @@ class HomeScreenTest {
         }
 
         composeTestRule.onNodeWithTag("error").assertIsDisplayed()
+        // retry 已搬到 core:ui（MoviePagingGrid 與各 feature 共用），而 nonTransitiveRClass
+        // 讓 feature 的 R 不再包含它，所以必須指名 core.ui.R。
         composeTestRule
-            .onNodeWithText(composeTestRule.activity.getString(R.string.retry))
+            .onNodeWithText(composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.retry))
             .assertIsDisplayed()
     }
 
