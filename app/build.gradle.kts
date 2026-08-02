@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.compose.material3.adaptive)
     implementation(libs.androidx.ui)

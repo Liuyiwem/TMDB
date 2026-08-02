@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.TMDB" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.TMDB.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_start</item>
+        <item name="postSplashScreenTheme">@style/Theme.TMDB</item>
+    </style>
 </resources>
