@@ -25,12 +25,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.retrofit2)
     implementation(libs.coroutines)
 
-    testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.test.coroutines)
-    testImplementation(libs.hilt.testing)
     testImplementation(libs.junit)
-
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.hilt.testing)
 }

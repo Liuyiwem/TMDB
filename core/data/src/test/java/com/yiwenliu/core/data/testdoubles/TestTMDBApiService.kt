@@ -20,6 +20,7 @@ class TestTMDBApiService : TMDBApiService {
             },
         )
 
+    /** 設了之後【兩個】端點都會拋出。每個測試在 @Before 拿到新實例，所以不需要重設。 */
     var errorToThrow: Throwable? = null
 
     override suspend fun getMoviesByCategory(
@@ -33,5 +34,8 @@ class TestTMDBApiService : TMDBApiService {
     override suspend fun searchMovies(
         queryString: String,
         page: Int,
-    ) = source.searchMovies(queryString, page)
+    ): MovieResponse {
+        errorToThrow?.let { throw it }
+        return source.searchMovies(queryString, page)
+    }
 }

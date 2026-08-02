@@ -17,6 +17,7 @@ android {
 
     buildTypes {
         release {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -61,8 +62,11 @@ dependencies {
 
     kspAndroidTest(libs.hilt.compiler)
 
-    testImplementation(libs.junit)
-
+    // 不可刪。看起來多餘（androidTest 原始碼一行都沒 import 它們，ui-test-junit4 也相依
+    // espresso），但這兩行的作用是【版本對齊】：ui-test-junit4 帶進來的 espresso 較舊，
+    // 缺少 Android 15+ 的修正，會在 Espresso.onIdle() 拋
+    // NoSuchMethodException: android.hardware.input.InputManager.getInstance。
+    // 顯式宣告把 espresso 釘在版本目錄的 3.7.0。實測拿掉後 8 個 E2E 全滅。
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)

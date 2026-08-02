@@ -13,6 +13,7 @@ dependencies {
     api(projects.core.data)
 
     api(libs.test.coroutines)
+    api(libs.test.turbine)
     api(libs.test.paging.common)
     api(libs.test.paging.testing)
     api(libs.hilt.testing)

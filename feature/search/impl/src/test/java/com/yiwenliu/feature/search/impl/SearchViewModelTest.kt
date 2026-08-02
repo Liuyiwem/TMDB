@@ -1,22 +1,21 @@
 package com.yiwenliu.feature.search.impl
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
-import com.yiwenliu.core.model.Movie
+import app.cash.turbine.test
 import com.yiwenliu.core.testing.data.moviesTestData
 import com.yiwenliu.core.testing.repository.TestMovieRepository
 import com.yiwenliu.core.testing.util.MainDispatcherRule
 import com.yiwenliu.domain.usecase.SearchMoviesPagerUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -46,6 +45,8 @@ class SearchViewModelTest {
 
     @Test
     fun `query is empty when nothing was saved`() {
+        // 這兩個還原測試刻意【不】訂閱：要驗的就是 stateIn 的 initialValue 有正確地從
+        // SavedStateHandle 種進去。其餘要斷言 state【變動】的測試都必須用 Turbine 訂閱。
         assertEquals("", viewModel().state.value.queryString)
     }
 
@@ -64,16 +65,19 @@ class SearchViewModelTest {
         val handle = SavedStateHandle()
         val searchViewModel = SearchViewModel(handle, SearchMoviesPagerUseCase(movieRepository))
 
-        searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
+        // state 是 WhileSubscribed(5_000)：沒有訂閱者時 stateIn 不啟動上游，state.value
+        // 會永遠停在 initialValue。Turbine 的 test { } 建立訂閱，上游才會跑，
+        // awaitItem() 也直接表達「我在等下一個 emission」。
+        searchViewModel.state.test {
+            assertEquals("", awaitItem().queryString)
 
-        // 寫入 handle 是同步的。
-        assertEquals("batman", handle.get<String>(SearchViewModel.QUERY_STRING))
+            searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
 
-        // 但 state 是 combine(...).stateIn(...) 的產物，需要一次 dispatch 才會反映出來 ——
-        // 所以這裡必須 runCurrent()。這代表 state.value 是最終一致而非同步更新的；
-        // UI 走 collectAsStateWithLifecycle 本來就是非同步收集，所以看不出差別。
-        runCurrent()
-        assertEquals("batman", searchViewModel.state.value.queryString)
+            assertEquals("batman", awaitItem().queryString)
+            // 寫入 handle 本身是同步的。
+            assertEquals("batman", handle.get<String>(SearchViewModel.QUERY_STRING))
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     // ---------- pager 行為 ----------
@@ -100,39 +104,95 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `repeating the same query does not refetch`() = runTest(testDispatcher) {
-        // 釘住 distinctUntilChanged。拿掉它 requestedQueries 會變成兩筆。
+    fun `a value that debounces back to the current query does not rebuild the pager`() = runTest(testDispatcher) {
         movieRepository.sendMovies(moviesTestData)
         val searchViewModel = viewModel()
 
-        searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
-        searchViewModel.searchMoviePager.asSnapshot()
-        searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
-        searchViewModel.searchMoviePager.asSnapshot()
+        searchViewModel.searchMoviePager.test {
+            awaitItem() // 空查詢
 
+            searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
+            advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS + 1)
+            awaitItem() // batman 的 Pager
+
+            // 在同一個 debounce 視窗內多打一個字又刪掉，最後停回原本的 "batman"。
+            searchViewModel.onAction(SearchAction.OnQueryStringChanged("batmans"))
+            advanceTimeBy(50)
+            searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
+            advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS + 1)
+
+            // 不該有新的 Pager：debounce 只吐出穩定值 "batman"，
+            // distinctUntilChanged 認出它就是上次放行的值。重建 Pager 會讓 grid
+            // 跳回頂端並重抓一次。
+            //
+            // 實測過的變異：拿掉 distinctUntilChanged，或把 debounce 改成 0L，
+            // 這個測試都會紅。
+            //
+            // 但【運算子順序】不是這個測試守的——把 distinctUntilChanged 排到
+            // debounce 之前會直接【編譯失敗】，因為那樣它就作用在 StateFlow 上，
+            // 而 kotlinx.coroutines 把 StateFlow.distinctUntilChanged() 標成
+            // deprecated（"has no effect"，Operator Fusion），本專案又是
+            // warnings-as-errors。編譯器擋得比測試早，也比測試牢。
+            //
+            // 不要改回「對 SavedStateHandle 寫入兩次相同的值」：StateFlow 會等值合併，
+            // 第二次根本不發射，那樣連 distinctUntilChanged 都碰不到。
+            expectNoEvents()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `a failing query still records the request`() = runTest(testDispatcher) {
+        // asSnapshot() 遇到 LoadState.Error 會把 throwable 重新拋出，見
+        // SearchMoviesPagerUseCaseTest 同名測試的說明。這裡的重點是失敗【不會】讓查詢
+        // 消失無蹤 —— 請求確實送出去過，UI 才有東西可以重試。
+        movieRepository.sendMovies(moviesTestData)
+        movieRepository.sendError(IOException("boom"))
+        val searchViewModel = viewModel()
+
+        searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
+
+        assertFailsWith<IOException> { searchViewModel.searchMoviePager.asSnapshot() }
         assertEquals(listOf("batman"), movieRepository.requestedQueries)
     }
 
     // ---------- debounce ----------
 
     @Test
-    fun `a burst of keystrokes collapses into a single request`() = runTest(testDispatcher) {
+    fun `a burst of keystrokes collapses into a single pager`() = runTest(testDispatcher) {
         movieRepository.sendMovies(moviesTestData)
         val searchViewModel = viewModel()
 
-        // 逐字打完 "batman"，每個字之間只推進 50ms —— 刻意小於 SEARCH_DEBOUNCE_MILLIS，
-        // 所以 debounce 的計時器每次都被重置，中間不會有任何 emission。
-        val query = "batman"
-        query.indices.forEach { index ->
-            searchViewModel.onAction(SearchAction.OnQueryStringChanged(query.take(index + 1)))
-            advanceTimeBy(50)
+        // 必須【先】訂閱。searchMoviePager 以 cachedIn 結尾，而 cachedIn 內部是
+        // shareIn(started = SharingStarted.Lazily)——第一個訂閱者出現前，整條 debounce
+        // 鏈一個運算子都不會執行。
+        //
+        // 先打字、後訂閱（例如先 onAction 六次再 asSnapshot）的話，typedQuery 這個
+        // StateFlow 只會把【最後一個】值交出去，debounce 從頭到尾只看到一個值——
+        // 那樣連把 debounce 整段刪掉都測不出來。
+        searchViewModel.searchMoviePager.test {
+            awaitItem() // 空查詢的初始分支（空白走 0ms 快速路徑，立刻到）
+
+            // 逐字打完 "batman"，每個字之間只推進 50ms——刻意小於 SEARCH_DEBOUNCE_MILLIS，
+            // 所以 debounce 的計時器每次都被重置。
+            val query = "batman"
+            query.indices.forEach { index ->
+                searchViewModel.onAction(SearchAction.OnQueryStringChanged(query.take(index + 1)))
+                advanceTimeBy(50)
+            }
+
+            // 打字期間一個 Pager 都不該送出來。expectNoEvents() 不推進時鐘，
+            // 所以驗的是「到此刻（t=300）為止沒有任何 emission」——最後一次鍵擊在 t=250，
+            // 它的 debounce 計時器排在 t=550。
+            expectNoEvents()
+
+            advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS)
+            awaitItem() // 六次鍵擊收斂成這一個
+            expectNoEvents() // 而且只有這一個
+
+            cancelAndIgnoreRemainingEvents()
         }
-
-        // asSnapshot 會 suspend，runTest 因此自動推進虛擬時間跨過剩下的 debounce 視窗。
-        searchViewModel.searchMoviePager.asSnapshot()
-
-        // 六次鍵擊 → 一次請求，而且是最後那個完整字串。
-        assertEquals(listOf(query), movieRepository.requestedQueries)
     }
 
     @Test
@@ -144,27 +204,32 @@ class SearchViewModelTest {
 
         // 收集【外層】的 PagingData 流。注意這不會觸發 PagingSource.load()，所以這個測試
         // 不能斷言 requestedQueries —— 那需要 asSnapshot()，而 asSnapshot() 會推進虛擬時間，
-        // 正好破壞這裡要測的「不等 debounce」。這裡只數 PagingData 的 emission。
-        val emissions = mutableListOf<PagingData<Movie>>()
-        val pagerJob = launch { searchViewModel.searchMoviePager.collect { emissions += it } }
-        runCurrent()
+        // 正好破壞這裡要測的「不等 debounce」。
+        searchViewModel.searchMoviePager.test {
+            awaitItem() // 初始的空白分支
 
-        searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
-        advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS + 1)
-        runCurrent()
-        val emissionsBeforeClear = emissions.size
+            searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))
+            advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS + 1)
+            awaitItem() // batman 的 Pager
 
-        // 清空後【只】推進 1ms —— 遠小於 debounce 視窗。
-        searchViewModel.onAction(SearchAction.OnQueryStringChanged(""))
-        advanceTimeBy(1)
-        runCurrent()
+            // 清空後【只】推進 1ms —— 遠小於 debounce 視窗。
+            searchViewModel.onAction(SearchAction.OnQueryStringChanged(""))
+            advanceTimeBy(1)
 
-        assertTrue(
-            emissions.size > emissionsBeforeClear,
-            "清空查詢應該立即切到空結果，不該等待 debounce 視窗",
-        )
+            val clearedAt = testScheduler.currentTime
+            awaitItem()
 
-        pagerJob.cancel()
+            // 關鍵斷言：item 必須在【時鐘沒有前進】的情況下就已經到了。
+            //
+            // 不能只靠「awaitItem() 沒逾時」——runTest 會在測試協程 suspend 而當前虛擬
+            // 時間無事可做時，自動把時鐘推進到下一個已排定的任務。所以就算 debounce 是
+            // 300ms，awaitItem() 一樣拿得到 item，只是 currentTime 會多跳 299ms
+            // （Turbine 預設 3 秒逾時在同一個虛擬時鐘下更晚，永遠輪不到它）。
+            // 比較 currentTime 才是真正在驗 0ms 快速路徑。
+            assertEquals(clearedAt, testScheduler.currentTime)
+
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     // ---------- isPending ----------
@@ -174,30 +239,34 @@ class SearchViewModelTest {
         // 「打第一個字先閃一下 No results found」在 ViewModel 層的回歸測試。
         movieRepository.sendMovies(moviesTestData)
         val searchViewModel = viewModel()
+        // 使用 Turbine 同時測試 state 和 pager
+        searchViewModel.searchMoviePager.test {
+            searchViewModel.state.test {
+                assertFalse(awaitItem().isPending) // 還沒輸入
 
-        // servedQuery 只在 pager 被收集時前進（onEach 在 cachedIn 上游，而 cachedIn 是
-        // SharingStarted.Lazily），所以必須在背景收集，否則驗不到。
-        val pagerJob = launch { searchViewModel.searchMoviePager.collect {} }
-        runCurrent()
+                searchViewModel.onAction(SearchAction.OnQueryStringChanged("b"))
 
-        searchViewModel.onAction(SearchAction.OnQueryStringChanged("b"))
-        runCurrent()
+                // debounce 還沒到期：typed = "b"、served = "" → pending → 畫面顯示 loading
+                assertTrue(awaitItem().isPending)
 
-        // debounce 還沒到期：typed = "b"、served = "" → pending → 畫面顯示 loading
-        assertTrue(searchViewModel.state.value.isPending)
+                advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS + 1)
 
-        advanceTimeBy(SearchViewModel.SEARCH_DEBOUNCE_MILLIS + 1)
-        runCurrent()
-
-        // debounce 到期、servedQuery 已前進 → 不再 pending
-        assertFalse(searchViewModel.state.value.isPending)
-
-        pagerJob.cancel()
+                // debounce 到期、servedQuery 已前進 → 不再 pending
+                assertFalse(awaitItem().isPending)
+                cancelAndIgnoreRemainingEvents()
+            }
+            // 確保外層的 pager 測試在結束時忽略後續事件，避免殘留 job 導致測試掛起
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `isPending is false for a blank query`() {
+    fun `isPending is false for a blank query`() = runTest(testDispatcher) {
         // 空白不算 pending，否則初次進畫面會顯示 loading 而不是留白。
-        assertFalse(viewModel().state.value.isPending)
+        // 一定要訂閱：不訂閱的話讀到的只是 initialValue（本來就是 false），等於沒測。
+        viewModel().state.test {
+            assertFalse(awaitItem().isPending)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }

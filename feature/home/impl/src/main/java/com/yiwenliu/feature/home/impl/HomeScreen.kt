@@ -80,6 +80,10 @@ internal fun HomeScreen(
         ) {
             // refresh 的錯誤取代整個網格，而不是變成網格裡的一個項目 ——
             // 這也是 MoviePagingGrid 只負責 append 狀態的原因。
+            //
+            // 只有 NotLoading 渲染 grid。Loading 期間刻意什麼都不畫：Paging 在 refresh
+            // 失敗時【保留】上一份清單，所以只要 Loading 也渲染 grid，按下 retry 的瞬間
+            // （refresh 由 Error → Loading → Error）就會把那份舊資料閃出來。
             when (val refresh = movies.loadState.refresh) {
                 is LoadState.Error -> Box(
                     modifier = Modifier.fillMaxSize(),
@@ -92,7 +96,9 @@ internal fun HomeScreen(
                     )
                 }
 
-                else -> MoviePagingGrid(movies = movies, testTagPrefix = "home")
+                is LoadState.NotLoading -> MoviePagingGrid(movies = movies, testTagPrefix = "home")
+
+                else -> {}
             }
         }
     }

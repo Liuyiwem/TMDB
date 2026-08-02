@@ -14,5 +14,4 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.paging.runtime)
     implementation(libs.paging.compose)
-    debugImplementation(libs.androidx.ui.test.manifest)
 }

@@ -16,12 +16,13 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.yiwenliu.core.common.domain.util.NetworkError
+import com.yiwenliu.core.common.domain.util.NetworkException
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
-import java.io.IOException
 import kotlin.test.assertEquals
 
 class SearchScreenTest {
@@ -114,16 +115,27 @@ class SearchScreenTest {
     }
 
     @Test
-    fun refreshError_showsErrorAndRetry() {
+    fun refreshError_showsMappedMessageAndRetry() {
         composeTestRule.setContent {
             Screen(
                 state = SearchUiState(queryString = "batman"),
-                loadStates = settled.copy(refresh = LoadState.Error(IOException("boom"))),
+                // 餵 NetworkException 而不是裸的 IOException：MoviePagingSource 一律把錯誤
+                // 包成 NetworkException，裸的 IOException 在生產環境到不了 UI
+                // （它會走 toUserMessage 的 else 分支顯示「Unknown error」，
+                // 那不是任何真實情境）。
+                loadStates = settled.copy(
+                    refresh = LoadState.Error(NetworkException(NetworkError.NO_INTERNET)),
+                ),
             )
         }
 
-        // "error" / "retry" 是 core:ui 的 ErrorItem 自己寫死的 tag。
-        composeTestRule.onNodeWithTag("error").assertIsDisplayed()
+        // 斷言【映射後的訊息】而不只是 tag。ErrorItem 對任何錯誤都貼 error/retry 這兩個
+        // tag，那是常數——只驗 tag 的話，NetworkError -> 字串的接線壞掉是看不出來的。
+        // nonTransitiveRClass 讓 core:common 的 R 必須指名。
+        composeTestRule
+            .onNodeWithText(
+                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+            ).assertIsDisplayed()
         composeTestRule.onNodeWithTag("retry").assertIsDisplayed()
         // 錯誤要贏過「0 筆 → 找不到結果」。
         composeTestRule.onNodeWithTag("search:empty").assertDoesNotExist()

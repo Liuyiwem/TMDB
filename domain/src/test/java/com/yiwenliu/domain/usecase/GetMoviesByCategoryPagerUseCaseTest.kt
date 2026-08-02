@@ -10,7 +10,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetMoviesByCategoryPagerUseCaseTest {
@@ -29,5 +31,25 @@ class GetMoviesByCategoryPagerUseCaseTest {
         assertEquals(2, movies.size)
         assertEquals(533535, movies[0].id)
         assertEquals("Deadpool & Wolverine", movies[0].title)
+    }
+
+    @Test
+    fun `invoke forwards the category`() = runTest {
+        movieRepository.sendMovies(moviesTestData)
+
+        useCase(MovieCategory.TOP_RATED).asSnapshot()
+
+        // requestedCategories 是既有 fixture，但在這之前【沒有任何測試在用】。
+        assertEquals(listOf(MovieCategory.TOP_RATED), movieRepository.requestedCategories)
+    }
+
+    @Test
+    fun `a repository failure reaches the collector as a load error`() = runTest {
+        // asSnapshot() 遇到 LoadState.Error 會把 throwable 重新拋出，見
+        // SearchMoviesPagerUseCaseTest 同名測試的說明。
+        movieRepository.sendMovies(moviesTestData)
+        movieRepository.sendError(IOException("boom"))
+
+        assertFailsWith<IOException> { useCase(MovieCategory.POPULAR).asSnapshot() }
     }
 }

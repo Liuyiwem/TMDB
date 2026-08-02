@@ -13,7 +13,20 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import java.io.BufferedReader
 import javax.inject.Inject
+import javax.inject.Singleton
 
+/**
+ * 必須是 @Singleton。
+ *
+ * mock flavor 的 FlavoredNetworkModule 是 @Binds @Singleton，但它只 scope 了
+ * TMDBApiService 這個【綁定 key】。FakeMovieRepository 注入的是【具體型別】
+ * MockTMDBApiService，而 TestDataModule.bindMovieRepository 也沒有 scope——所以每個注入點
+ * 都會拿到一份全新的實例，測試設定的 [errorToThrow] 永遠影響不到 app 正在用的那一份。
+ *
+ * 代價：[errorToThrow] 是 var，變成真 singleton 之後就是跨整個 app graph 的共享可變狀態。
+ * 之後寫錯誤 E2E 時，每個測試都必須在 @After 把它設回 null，否則會污染同進程的後續測試。
+ */
+@Singleton
 class MockTMDBApiService
 @Inject
 constructor(
