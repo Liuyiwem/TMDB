@@ -33,9 +33,4 @@ constructor(
     ).flow
 }
 
-/**
- * 分類與搜尋共用同一份設定。
- *
- * 刻意不設 `maxSize`——原因見 [MoviePagingSource.seenIds] 的說明。
- */
 private val MOVIE_PAGING_CONFIG = PagingConfig(pageSize = 20, enablePlaceholders = false)

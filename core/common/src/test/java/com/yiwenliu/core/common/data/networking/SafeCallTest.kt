@@ -16,9 +16,7 @@ class SafeCallTest {
     @Test
     fun `safeCall returns Success when execution succeeds`() = runTest {
         val expectedData = "test data"
-
         val result = safeCall { expectedData }
-
         assertTrue(result is Result.Success)
         assertEquals(expectedData, result.data)
     }
@@ -29,7 +27,6 @@ class SafeCallTest {
             safeCall<String> {
                 throw UnresolvedAddressException()
             }
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.NO_INTERNET, result.error)
     }
@@ -40,7 +37,6 @@ class SafeCallTest {
             safeCall<String> {
                 throw IOException("Network connection failed")
             }
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.NO_INTERNET, result.error)
     }
@@ -51,7 +47,6 @@ class SafeCallTest {
             safeCall<String> {
                 throw SerializationException("Failed to parse JSON")
             }
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.SERIALIZATION, result.error)
     }
@@ -62,12 +57,10 @@ class SafeCallTest {
             HttpException(
                 Response.error<Any>(404, okhttp3.ResponseBody.create(null, "Not Found")),
             )
-
         val result =
             safeCall<String> {
                 throw httpException
             }
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.CLIENT_ERROR, result.error)
     }
@@ -78,7 +71,6 @@ class SafeCallTest {
             safeCall<String> {
                 throw RuntimeException("Something went wrong")
             }
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.UNKNOWN, result.error)
     }
@@ -89,9 +81,7 @@ class SafeCallTest {
             HttpException(
                 Response.error<Any>(408, okhttp3.ResponseBody.create(null, "")),
             )
-
         val result = handleHttpException(httpException)
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.REQUEST_TIMEOUT, result.error)
     }
@@ -102,9 +92,7 @@ class SafeCallTest {
             HttpException(
                 Response.error<Any>(429, okhttp3.ResponseBody.create(null, "")),
             )
-
         val result = handleHttpException(httpException)
-
         assertTrue(result is Result.Error)
         assertEquals(NetworkError.TOO_MANY_REQUESTS, result.error)
     }
@@ -116,9 +104,7 @@ class SafeCallTest {
                 HttpException(
                     Response.error<Any>(code, okhttp3.ResponseBody.create(null, "")),
                 )
-
             val result = handleHttpException(httpException)
-
             assertTrue(result is Result.Error, "Failed for code $code")
             assertEquals(NetworkError.CLIENT_ERROR, result.error, "Failed for code $code")
         }
@@ -131,9 +117,7 @@ class SafeCallTest {
                 HttpException(
                     Response.error<Any>(code, okhttp3.ResponseBody.create(null, "")),
                 )
-
             val result = handleHttpException(httpException)
-
             assertTrue(result is Result.Error, "Failed for code $code")
             assertEquals(NetworkError.SERVER_ERROR, result.error, "Failed for code $code")
         }
@@ -146,9 +130,7 @@ class SafeCallTest {
                 HttpException(
                     Response.error<Any>(code, okhttp3.ResponseBody.create(null, "")),
                 )
-
             val result = handleHttpException(httpException)
-
             assertTrue(result is Result.Error, "Failed for code $code")
             assertEquals(NetworkError.UNKNOWN, result.error, "Failed for code $code")
         }

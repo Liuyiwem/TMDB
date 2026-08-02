@@ -63,13 +63,6 @@ fun TmdbNavItem(
         }
     }
 
-    // 刻意【不】用 by 委派。用 by 的話 animateColor 會在下面的 Column 內容裡被讀取，
-    // 而 Column 是 inline、不產生自己的重啟範圍，於是那個讀取被記在 TmdbNavItem 自己身上
-    // ——動畫的每一帧都會重跑整個函式本體（tween 500ms、60fps ≈ 30 次／項目，
-    // 而一次點擊有兩個項目在動）。
-    //
-    // 保持它是 State、只在 ColorProducer 裡讀，顏色就變成【繪製階段】的讀取：
-    // 每帧只重畫，不重組、不重新量測。跟下面 bounce 用 graphicsLayer 的 lambda 版同一個道理。
     val contentColor =
         animateColorAsState(
             targetValue =
@@ -104,9 +97,6 @@ fun TmdbNavItem(
             modifier = Modifier.graphicsLayer { translationY = bounce.value },
         )
         Spacer(Modifier.height(4.dp))
-        // 用 BasicText 而不是 Text：只有 BasicText 收 ColorProducer。
-        // 這裡沒有損失——style 本來就顯式傳入（LocalTextStyle 本來也沒參與合併），
-        // 顏色本來就覆寫（LocalContentColor 本來也沒參與）。
         BasicText(
             text = label,
             style = MaterialTheme.typography.labelMedium,
