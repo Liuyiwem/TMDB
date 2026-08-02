@@ -20,7 +20,6 @@ class TestTMDBApiService : TMDBApiService {
             },
         )
 
-    /** 設了之後【兩個】端點都會拋出。每個測試在 @Before 拿到新實例，所以不需要重設。 */
     var errorToThrow: Throwable? = null
 
     override suspend fun getMoviesByCategory(

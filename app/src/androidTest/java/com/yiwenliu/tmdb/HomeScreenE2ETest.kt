@@ -37,13 +37,10 @@ class HomeScreenE2ETest {
     @Test
     fun selectPopularTab_loadsPopularMovies() {
         awaitText(nowPlayingMovie)
-
         composeTestRule.onNodeWithTag("tab:POPULAR").performClick()
-
         awaitText(popularMovie)
         composeTestRule.onNodeWithText(popularMovie).assertIsDisplayed()
     }
 
-    /** 委派給共用的擴充（ComposeTestExtensions.kt），現在 SearchE2ETest 也需要它。 */
     private fun awaitText(text: String) = composeTestRule.awaitText(text)
 }

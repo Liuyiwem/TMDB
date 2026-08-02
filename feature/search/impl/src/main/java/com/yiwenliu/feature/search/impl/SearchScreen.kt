@@ -71,8 +71,6 @@ internal fun SearchScreen(
                 .fillMaxWidth()
                 .padding(16.dp)
                 .testTag("search:textField"),
-            // 不是無條件 true：切換分頁會讓搜尋頁的組合被丟棄，回來時 LaunchedEffect 會重跑。
-            // 無條件搶焦點就會變成「回到搜尋頁時鍵盤蓋住你正在看的結果」。
             autoFocus = state.queryString.isEmpty(),
         )
         SearchResults(
@@ -91,13 +89,6 @@ private fun SearchResults(
     isPending: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    // derivedStateOf 是必要的而非裝飾：loadState 與 itemCount 都是 mutableStateOf 支撐，直接讀
-    // 會讓 SearchResults 在每一次 load state 轉換與每一次 itemCount 成長時都重組（捲動時每載入
-    // 一頁就好幾次）。包起來之後只有 5 值的 resultsState 真的改變才重組。
-    //
-    // key 只列 isIdle / isPending：它們是會變的參數，被 lambda 捕獲後會凍結在建立時的值。
-    // searchMovies 不需要當 key —— collectAsLazyPagingItems 內部是 remember(flow)，而
-    // viewModel.searchMoviePager 是 val，參考在整個組合生命週期內不會變。
     val resultsState by remember(isIdle, isPending) {
         derivedStateOf {
             searchResultsStateOf(
@@ -108,15 +99,8 @@ private fun SearchResults(
             )
         }
     }
-
-    // Box + contentAlignment 而不是 Column：原本 spinner 是 grid 的兄弟節點，而
-    // .align(Alignment.CenterHorizontally) 在 ColumnScope 只管水平對齊，所以 spinner 會卡在
-    // 頂端並把下方 fillMaxSize 的 grid 往下推、在每次載入開始／結束時重新量測。
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        // 綁定 when 的 subject：resultsState 是委派屬性，不綁定的話 Kotlin 無法 smart cast，
-        // 就得在分支裡二次讀取再硬轉型。
         when (val current = resultsState) {
-            // 還沒輸入：刻意留白，不顯示提示語也不顯示空的 grid。
             SearchResultsState.Idle -> Unit
 
             SearchResultsState.Loading -> CircularProgressIndicator(
@@ -184,7 +168,6 @@ private fun SearchScreenEmptyPreview() {
     SearchScreenPreview(state = SearchUiState(queryString = "qxzqxz"), movies = emptyList())
 }
 
-/** 五個 preview 共用的本體，原本每個 preview 各自重複一份 LoadStates 與 PagingData 建構。 */
 @Composable
 private fun SearchScreenPreview(
     state: SearchUiState,

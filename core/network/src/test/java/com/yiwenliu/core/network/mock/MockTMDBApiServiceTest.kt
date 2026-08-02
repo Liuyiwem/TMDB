@@ -31,7 +31,6 @@ class MockTMDBApiServiceTest {
     @Test
     fun `getMoviesByCategory popular loads popular_movies asset`() = runTest(testDispatcher) {
         val response = apiService.getMoviesByCategory("popular")
-
         assertEquals(2, response.results.size)
         assertEquals(533535, response.results[0].id)
         assertEquals("Deadpool & Wolverine", response.results[0].title)
@@ -40,7 +39,6 @@ class MockTMDBApiServiceTest {
     @Test
     fun `getMoviesByCategory now_playing loads now_playing_movies asset`() = runTest(testDispatcher) {
         val response = apiService.getMoviesByCategory("now_playing")
-
         assertEquals(2, response.results.size)
         assertEquals(1241982, response.results[0].id)
         assertEquals("Moana 2", response.results[0].title)
@@ -64,16 +62,13 @@ class MockTMDBApiServiceTest {
     @Test
     fun `searchMovies loads the empty asset for the reserved query`() = runTest(testDispatcher) {
         val response = apiService.searchMovies(MockTMDBApiService.EMPTY_RESULT_QUERY)
-
         assertTrue(response.results.isEmpty())
         assertEquals(0, response.totalResults)
     }
 
     @Test
     fun `errorToThrow is honoured by both endpoints`() = runTest(testDispatcher) {
-        // 在此之前全 repo 沒有任何地方設定過 errorToThrow，所以那兩個守衛實際上是死碼。
         apiService.errorToThrow = IOException("no internet")
-
         assertFailsWith<IOException> { apiService.getMoviesByCategory("popular") }
         assertFailsWith<IOException> { apiService.searchMovies("fight") }
     }

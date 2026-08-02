@@ -21,9 +21,7 @@ class MovieResultMapperTest {
                 popularity = 50.0,
                 genreIds = listOf(28, 35),
             )
-
         val movie = dto.asExternalModel()
-
         assertEquals(533535, movie.id)
         assertEquals("Deadpool & Wolverine", movie.title)
         assertEquals(7.7, movie.voteAverage, 0.0)

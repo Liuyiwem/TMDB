@@ -23,18 +23,6 @@ import androidx.paging.compose.itemKey
 import com.yiwenliu.core.common.presentation.util.toUserMessage
 import com.yiwenliu.core.model.Movie
 
-/**
- * 電影海報網格，附帶 append（往下捲）的載入與錯誤狀態。
- *
- * refresh 的載入／錯誤／空結果**不在這裡**處理：那些狀態應該取代整個網格，而不是變成網格裡的
- * 一個項目，而且各畫面的處理方式不同（首頁有下拉重新整理、搜尋頁有空查詢與無結果）。
- * 呼叫端自己決定何時顯示這個網格。
- *
- * @param testTagPrefix 內部節點的測試標籤前綴，會產生 `"$testTagPrefix:grid"` 與
- *   `"$testTagPrefix:appendLoading"`。之所以用參數而不是讓呼叫端從 `modifier` 傳入，是因為
- *   append 的載入指示器是 `LazyVerticalGrid` 內部 `item {}` 產生的節點，呼叫端的 `modifier`
- *   到不了那裡。
- */
 @Composable
 fun MoviePagingGrid(
     movies: LazyPagingItems<Movie>,
@@ -60,7 +48,6 @@ fun MoviePagingGrid(
             }
         }
 
-        // 綁定 when 的 subject，避免在分支裡二次讀取 loadState 再硬轉型。
         when (val append = movies.loadState.append) {
             is LoadState.Loading -> item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(
