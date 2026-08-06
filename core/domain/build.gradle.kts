@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.yiwenliu.domain"
+    namespace = "com.yiwenliu.core.domain"
 }
 
 dependencies {

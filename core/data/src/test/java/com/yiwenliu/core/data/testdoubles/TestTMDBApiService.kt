@@ -2,6 +2,8 @@ package com.yiwenliu.core.data.testdoubles
 
 import com.yiwenliu.core.network.api.TMDBApiService
 import com.yiwenliu.core.network.mock.MockTMDBApiService
+import com.yiwenliu.core.network.model.CreditsResponse
+import com.yiwenliu.core.network.model.MovieDetailResponse
 import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -36,5 +38,23 @@ class TestTMDBApiService : TMDBApiService {
     ): MovieResponse {
         errorToThrow?.let { throw it }
         return source.searchMovies(queryString, page)
+    }
+
+    override suspend fun getMovieDetail(movieId: Int): MovieDetailResponse {
+        errorToThrow?.let { throw it }
+        return source.getMovieDetail(movieId)
+    }
+
+    override suspend fun getMovieCredits(movieId: Int): CreditsResponse {
+        errorToThrow?.let { throw it }
+        return source.getMovieCredits(movieId)
+    }
+
+    override suspend fun getMovieRecommendations(
+        movieId: Int,
+        page: Int,
+    ): MovieResponse {
+        errorToThrow?.let { throw it }
+        return source.getMovieRecommendations(movieId, page)
     }
 }

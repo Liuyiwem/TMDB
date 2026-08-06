@@ -5,6 +5,8 @@ import android.os.Build.VERSION_CODES.M
 import com.yiwenliu.core.common.network.Dispatcher
 import com.yiwenliu.core.common.network.TMDBDispatchers.IO
 import com.yiwenliu.core.network.api.TMDBApiService
+import com.yiwenliu.core.network.model.CreditsResponse
+import com.yiwenliu.core.network.model.MovieDetailResponse
 import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -43,6 +45,24 @@ constructor(
         )
     }
 
+    override suspend fun getMovieDetail(movieId: Int): MovieDetailResponse {
+        errorToThrow?.let { throw it }
+        return getDataFromJsonFile(MOVIE_DETAIL_ASSET)
+    }
+
+    override suspend fun getMovieCredits(movieId: Int): CreditsResponse {
+        errorToThrow?.let { throw it }
+        return getDataFromJsonFile(MOVIE_CREDITS_ASSET)
+    }
+
+    override suspend fun getMovieRecommendations(
+        movieId: Int,
+        page: Int,
+    ): MovieResponse {
+        errorToThrow?.let { throw it }
+        return getDataFromJsonFile(MOVIE_RECOMMENDATIONS_ASSET)
+    }
+
     @OptIn(ExperimentalSerializationApi::class)
     private suspend inline fun <reified T> getDataFromJsonFile(fileName: String): T = withContext(ioDispatcher) {
         assets.open(fileName).use { inputStream ->
@@ -63,5 +83,11 @@ constructor(
         internal const val SEARCH_MOVIES_ASSET = "search_movies.json"
 
         internal const val SEARCH_MOVIES_EMPTY_ASSET = "search_movies_empty.json"
+
+        internal const val MOVIE_DETAIL_ASSET = "movie_detail.json"
+
+        internal const val MOVIE_CREDITS_ASSET = "movie_credits.json"
+
+        internal const val MOVIE_RECOMMENDATIONS_ASSET = "movie_recommendations.json"
     }
 }

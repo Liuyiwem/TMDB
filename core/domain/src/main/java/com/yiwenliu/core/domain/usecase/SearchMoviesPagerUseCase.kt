@@ -1,4 +1,4 @@
-package com.yiwenliu.domain.usecase
+package com.yiwenliu.core.domain.usecase
 
 import androidx.paging.PagingData
 import com.yiwenliu.core.data.repository.MovieRepository

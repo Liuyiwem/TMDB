@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.yiwenliu.core.domain.usecase.GetMoviesByCategoryPagerUseCase
 import com.yiwenliu.core.model.Movie
-import com.yiwenliu.domain.usecase.GetMoviesByCategoryPagerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
