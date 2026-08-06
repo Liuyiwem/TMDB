@@ -4,12 +4,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.yiwenliu.tmdb.splash.SplashConfig
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class SplashViewModel : ViewModel() {
-    var isFinished by mutableStateOf(false)
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    splashConfig: SplashConfig,
+) : ViewModel() {
+    var isVisible by mutableStateOf(splashConfig.isEnabled)
         private set
 
     fun onSplashFinished() {
-        isFinished = true
+        isVisible = false
     }
 }

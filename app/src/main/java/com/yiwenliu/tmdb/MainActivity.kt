@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +30,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TMDBTheme {
-                val showSplash = splashEnabled && !splashViewModel.isFinished
+                val showSplash = splashViewModel.isVisible
                 val navigationState =
                     rememberNavigationState(
                         startKey = HomeNavKey,
@@ -57,10 +56,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    companion object {
-        @VisibleForTesting
-        var splashEnabled = true
     }
 }

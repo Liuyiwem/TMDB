@@ -26,6 +26,7 @@ import com.yiwenliu.core.model.Movie
 @Composable
 fun MoviePagingGrid(
     movies: LazyPagingItems<Movie>,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
     testTagPrefix: String = "movieGrid",
 ) {
@@ -44,7 +45,11 @@ fun MoviePagingGrid(
             key = movies.itemKey { it.id },
         ) { index ->
             movies[index]?.let { movie ->
-                MovieItem(movie = movie, modifier = Modifier.fillMaxWidth())
+                MovieItem(
+                    movie = movie,
+                    onClick = { onMovieClick(movie.id, movie.title) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
 

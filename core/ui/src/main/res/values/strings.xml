@@ -2,4 +2,6 @@
 <resources>
     <!-- MoviePagingGrid 的錯誤項目使用，兩個 feature 原本各自維護一份相同的字串。 -->
     <string name="retry">Retry</string>
+    <string name="nav_back">Back</string>
+    <string name="nav_close">Close</string>
 </resources>

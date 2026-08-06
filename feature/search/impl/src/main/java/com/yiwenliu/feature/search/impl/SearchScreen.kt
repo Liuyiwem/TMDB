@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 internal fun SearchRoot(
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -47,6 +48,7 @@ internal fun SearchRoot(
         searchMovies = searchMovies,
         modifier = modifier,
         onAction = viewModel::onAction,
+        onMovieClick = onMovieClick,
     )
 }
 
@@ -55,6 +57,7 @@ internal fun SearchScreen(
     state: SearchUiState,
     searchMovies: LazyPagingItems<Movie>,
     onAction: (SearchAction) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,6 +80,7 @@ internal fun SearchScreen(
             searchMovies = searchMovies,
             isIdle = state.isIdle,
             isPending = state.isPending,
+            onMovieClick = onMovieClick,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -87,6 +91,7 @@ private fun SearchResults(
     searchMovies: LazyPagingItems<Movie>,
     isIdle: Boolean,
     isPending: Boolean,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val resultsState by remember(isIdle, isPending) {
@@ -122,6 +127,7 @@ private fun SearchResults(
 
             SearchResultsState.Results -> MoviePagingGrid(
                 movies = searchMovies,
+                onMovieClick = onMovieClick,
                 testTagPrefix = "search",
             )
         }
@@ -177,7 +183,12 @@ private fun SearchScreenPreview(
     val pagingItems = flowOf(PagingData.from(movies, sourceLoadStates = loadStates))
         .collectAsLazyPagingItems()
     MaterialTheme {
-        SearchScreen(state = state, searchMovies = pagingItems, onAction = {})
+        SearchScreen(
+            state = state,
+            searchMovies = pagingItems,
+            onAction = {},
+            onMovieClick = { _, _ -> },
+        )
     }
 }
 

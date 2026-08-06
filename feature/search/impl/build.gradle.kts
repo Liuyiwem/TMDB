@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(projects.feature.search.api)
+    implementation(projects.feature.detail.api)
 
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

@@ -47,7 +47,7 @@ class SearchScreenTest {
         val items = flowOf(PagingData.from(movies, sourceLoadStates = loadStates))
             .collectAsLazyPagingItems()
         MaterialTheme {
-            SearchScreen(state = state, searchMovies = items, onAction = onAction)
+            SearchScreen(state = state, searchMovies = items, onAction = onAction, onMovieClick = { _, _ -> })
         }
     }
 

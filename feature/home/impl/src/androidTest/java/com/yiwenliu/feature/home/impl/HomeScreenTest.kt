@@ -46,6 +46,7 @@ class HomeScreenTest {
                     state = HomeUiState(selectedCategory = MovieCategory.NOW_PLAYING),
                     movies = items,
                     onAction = {},
+                    onMovieClick = { _, _ -> },
                 )
             }
         }
@@ -67,6 +68,7 @@ class HomeScreenTest {
                     state = HomeUiState(selectedCategory = MovieCategory.NOW_PLAYING),
                     movies = items,
                     onAction = { lastAction = it },
+                    onMovieClick = { _, _ -> },
                 )
             }
         }
@@ -92,6 +94,7 @@ class HomeScreenTest {
                     state = HomeUiState(),
                     movies = items,
                     onAction = {},
+                    onMovieClick = { _, _ -> },
                 )
             }
         }
@@ -119,6 +122,7 @@ class HomeScreenTest {
                     state = HomeUiState(),
                     movies = items,
                     onAction = {},
+                    onMovieClick = { _, _ -> },
                 )
             }
         }
@@ -140,7 +144,7 @@ class HomeScreenTest {
                 PagingData.from(sampleMovies.take(2), sourceLoadStates = appendError),
             ).collectAsLazyPagingItems()
             MaterialTheme {
-                HomeScreen(state = HomeUiState(), movies = items, onAction = {})
+                HomeScreen(state = HomeUiState(), movies = items, onAction = {}, onMovieClick = { _, _ -> })
             }
         }
         composeTestRule
@@ -158,7 +162,7 @@ class HomeScreenTest {
         composeTestRule.setContent {
             val items = pagerFlow.collectAsLazyPagingItems()
             MaterialTheme {
-                HomeScreen(state = HomeUiState(), movies = items, onAction = {})
+                HomeScreen(state = HomeUiState(), movies = items, onAction = {}, onMovieClick = { _, _ -> })
             }
         }
         composeTestRule.waitUntil(TIMEOUT_MILLIS) {
@@ -182,7 +186,7 @@ class HomeScreenTest {
                 PagingData.from(sampleMovies, sourceLoadStates = refreshingWithStaleItems),
             ).collectAsLazyPagingItems()
             MaterialTheme {
-                HomeScreen(state = HomeUiState(), movies = items, onAction = {})
+                HomeScreen(state = HomeUiState(), movies = items, onAction = {}, onMovieClick = { _, _ -> })
             }
         }
         composeTestRule.onNodeWithTag("home:grid").assertDoesNotExist()

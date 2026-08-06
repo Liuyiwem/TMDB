@@ -3,17 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "com.yiwenliu.feature.home.impl"
+    namespace = "com.yiwenliu.feature.detail.impl"
 }
 
 dependencies {
-    implementation(projects.feature.home.api)
     implementation(projects.feature.detail.api)
 
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.material3)
-    implementation(libs.paging.runtime)
-    implementation(libs.paging.compose)
+    implementation(libs.androidx.compose.material.iconsExtended)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

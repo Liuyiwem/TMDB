@@ -15,9 +15,6 @@ import org.junit.Test
 
 @HiltAndroidTest
 class SearchE2ETest {
-    @get:Rule(order = -1)
-    val disableSplashRule = DisableSplashRule()
-
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 

@@ -18,7 +18,10 @@ import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOW
 import com.yiwenliu.core.navigation.NavigationState
 import com.yiwenliu.core.navigation.Navigator
 import com.yiwenliu.core.navigation.toEntries
+import com.yiwenliu.core.navigation.topAppBarSpec
 import com.yiwenliu.core.ui.TmdbNavItem
+import com.yiwenliu.core.ui.TmdbTopAppBar
+import com.yiwenliu.feature.detail.impl.navigation.movieDetailEntry
 import com.yiwenliu.feature.favorite.impl.navigation.favoriteEntry
 import com.yiwenliu.feature.home.impl.navigation.homeEntry
 import com.yiwenliu.feature.search.impl.navigation.searchEntry
@@ -47,9 +50,10 @@ fun TMDBApp(
 
     val entryProvider =
         entryProvider {
-            homeEntry()
-            searchEntry()
+            homeEntry(navigator)
+            searchEntry(navigator)
             favoriteEntry()
+            movieDetailEntry(navigator)
         }
 
     NavigationSuiteScaffold(
@@ -66,9 +70,23 @@ fun TMDBApp(
         modifier = navigationSuiteModifier,
         navigationSuiteType = layoutType,
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize().then(contentModifier)) { innerPadding ->
+        val entries = navigationState.toEntries(entryProvider)
+        val topAppBarSpec = entries.lastOrNull()?.topAppBarSpec
+
+        Scaffold(
+            modifier = Modifier.fillMaxSize().then(contentModifier),
+            topBar = {
+                topAppBarSpec?.let { spec ->
+                    TmdbTopAppBar(
+                        title = spec.title(navigationState.currentKey).orEmpty(),
+                        navIcon = spec.navIcon,
+                        onNavIconClick = { if (navigator.canGoBack) navigator.goBack() },
+                    )
+                }
+            },
+        ) { innerPadding ->
             NavDisplay(
-                entries = navigationState.toEntries(entryProvider),
+                entries = entries,
                 onBack = { if (navigator.canGoBack) navigator.goBack() },
                 modifier = Modifier.padding(innerPadding),
             )
