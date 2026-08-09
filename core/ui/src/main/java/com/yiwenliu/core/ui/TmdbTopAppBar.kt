@@ -31,13 +31,14 @@ fun TmdbTopAppBar(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.testTag(TmdbTestTags.APP_BAR_TITLE),
             )
         },
         navigationIcon = {
             navIcon.toUi()?.let { (image, descriptionRes) ->
                 IconButton(
                     onClick = onNavIconClick,
-                    modifier = Modifier.testTag("appBar:navIcon"),
+                    modifier = Modifier.testTag(TmdbTestTags.APP_BAR_NAV_ICON),
                 ) {
                     Icon(
                         imageVector = image,

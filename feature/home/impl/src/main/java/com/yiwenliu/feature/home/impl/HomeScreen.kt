@@ -96,7 +96,7 @@ internal fun HomeScreen(
                 is LoadState.NotLoading -> MoviePagingGrid(
                     movies = movies,
                     onMovieClick = onMovieClick,
-                    testTagPrefix = "home",
+                    testTagPrefix = HomeTestTags.PREFIX,
                 )
 
                 else -> {}

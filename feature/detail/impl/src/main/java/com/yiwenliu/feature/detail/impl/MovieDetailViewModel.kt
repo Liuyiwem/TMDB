@@ -8,6 +8,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +25,8 @@ constructor(
     private val _state = MutableStateFlow(MovieDetailUiState())
     val state: StateFlow<MovieDetailUiState> = _state.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
         load()
     }
@@ -32,22 +35,34 @@ constructor(
         when (action) {
             MovieDetailAction.OnRetry -> load()
             is MovieDetailAction.OnFavoriteToggle -> _state.update { it.copy(isFavorite = action.isFavorite) }
-            else -> Unit
+            is MovieDetailAction.OnRecommendationClick -> Unit
         }
     }
 
     private fun load() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            _state.value = when (val result = getMovieDetail(movieId)) {
-                is Result.Success -> MovieDetailUiState(
-                    isLoading = false,
-                    detail = result.data.detail,
-                    cast = result.data.cast,
-                    recommendations = result.data.recommendations,
-                )
+            when (val result = getMovieDetail(movieId)) {
+                is Result.Success -> _state.update {
+                    it.copy(
+                        isLoading = false,
+                        detail = result.data.detail,
+                        cast = result.data.cast,
+                        recommendations = result.data.recommendations,
+                        error = null,
+                    )
+                }
 
-                is Result.Error -> MovieDetailUiState(isLoading = false, error = result.error)
+                is Result.Error -> _state.update {
+                    it.copy(
+                        isLoading = false,
+                        detail = null,
+                        cast = emptyList(),
+                        recommendations = emptyList(),
+                        error = result.error,
+                    )
+                }
             }
         }
     }

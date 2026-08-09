@@ -12,7 +12,7 @@ import java.io.IOException
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class NetworkErrorToStringTest {
+class ToUserMessageTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
     @Test

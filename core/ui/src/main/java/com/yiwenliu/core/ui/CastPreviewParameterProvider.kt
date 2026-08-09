@@ -11,13 +11,13 @@ class CastPreviewParameterProvider : PreviewParameterProvider<List<CastMember>> 
                     id = 10859,
                     name = "Ryan Reynolds",
                     character = "Wade Wilson / Deadpool",
-                    profilePath = null,
+                    profilePath = "",
                 ),
                 CastMember(
                     id = 6968,
                     name = "Hugh Jackman",
                     character = "Logan / Wolverine",
-                    profilePath = null,
+                    profilePath = "",
                 ),
             ),
         )

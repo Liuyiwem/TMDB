@@ -2,6 +2,7 @@ package com.yiwenliu.core.network.mock
 
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
+import androidx.annotation.VisibleForTesting
 import com.yiwenliu.core.common.network.Dispatcher
 import com.yiwenliu.core.common.network.TMDBDispatchers.IO
 import com.yiwenliu.core.network.api.TMDBApiService
@@ -25,6 +26,7 @@ constructor(
     private val networkJson: Json,
     private val assets: MockAssetManager = JvmUnitTestDemoAssetManager,
 ) : TMDBApiService {
+    @VisibleForTesting
     var errorToThrow: Exception? = null
 
     override suspend fun getMoviesByCategory(

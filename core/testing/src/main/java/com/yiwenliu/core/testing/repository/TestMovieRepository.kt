@@ -12,6 +12,7 @@ import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.model.MovieDetail
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 class TestMovieRepository : MovieRepository {
@@ -41,6 +42,8 @@ class TestMovieRepository : MovieRepository {
 
     private var recommendationsError: NetworkError? = null
 
+    var responseDelayMillis: Long = 0
+
     override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = pager {
         requestedCategories += category
     }
@@ -50,18 +53,25 @@ class TestMovieRepository : MovieRepository {
     }
 
     override suspend fun getMovieDetail(movieId: Int): Result<MovieDetail, NetworkError> {
+        delayIfNeeded()
         requestedDetailIds += movieId
         return detailError?.let { Result.Error(it) } ?: Result.Success(checkNotNull(movieDetail))
     }
 
     override suspend fun getMovieCredits(movieId: Int): Result<List<CastMember>, NetworkError> {
+        delayIfNeeded()
         requestedCreditsIds += movieId
         return creditsError?.let { Result.Error(it) } ?: Result.Success(cast)
     }
 
     override suspend fun getMovieRecommendations(movieId: Int): Result<List<Movie>, NetworkError> {
+        delayIfNeeded()
         requestedRecommendationIds += movieId
         return recommendationsError?.let { Result.Error(it) } ?: Result.Success(recommendations)
+    }
+
+    private suspend fun delayIfNeeded() {
+        if (responseDelayMillis > 0) delay(responseDelayMillis)
     }
 
     private fun pager(onLoad: () -> Unit): Flow<PagingData<Movie>> = Pager(

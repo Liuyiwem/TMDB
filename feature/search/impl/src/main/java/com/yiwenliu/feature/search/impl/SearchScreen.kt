@@ -73,7 +73,7 @@ internal fun SearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .testTag("search:textField"),
+                .testTag(SearchTestTags.TEXT_FIELD),
             autoFocus = state.queryString.isEmpty(),
         )
         SearchResults(
@@ -109,7 +109,7 @@ private fun SearchResults(
             SearchResultsState.Idle -> Unit
 
             SearchResultsState.Loading -> CircularProgressIndicator(
-                modifier = Modifier.testTag("search:loading"),
+                modifier = Modifier.testTag(SearchTestTags.LOADING),
             )
 
             is SearchResultsState.Error -> ErrorItem(
@@ -122,13 +122,13 @@ private fun SearchResults(
                 text = stringResource(R.string.search_no_results),
                 modifier = Modifier
                     .padding(16.dp)
-                    .testTag("search:empty"),
+                    .testTag(SearchTestTags.EMPTY),
             )
 
             SearchResultsState.Results -> MoviePagingGrid(
                 movies = searchMovies,
                 onMovieClick = onMovieClick,
-                testTagPrefix = "search",
+                testTagPrefix = SearchTestTags.PREFIX,
             )
         }
     }

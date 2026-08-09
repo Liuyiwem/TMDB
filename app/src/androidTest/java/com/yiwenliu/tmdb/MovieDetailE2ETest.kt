@@ -1,0 +1,153 @@
+package com.yiwenliu.tmdb
+
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import com.yiwenliu.core.network.mock.MockTMDBApiService
+import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.feature.detail.impl.DetailTestTags
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import java.io.IOException
+import javax.inject.Inject
+
+@HiltAndroidTest
+class MovieDetailE2ETest {
+    @get:Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @get:Rule(order = 1)
+    val composeTestRule = createAndroidComposeRule<MainActivity>()
+
+    @Inject
+    lateinit var apiService: MockTMDBApiService
+
+    private val nowPlayingMovie = "Moana 2"
+    private val castMember = "Ryan Reynolds"
+    private val recommendedMovie = "Inside Out 2"
+
+    @Before
+    fun setup() {
+        hiltRule.inject()
+        composeTestRule.awaitText(nowPlayingMovie)
+    }
+
+    @After
+    fun tearDown() {
+        apiService.errorToThrow = null
+    }
+
+    private fun openDetail() {
+        composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
+        composeTestRule.awaitTag(DetailTestTags.CONTENT)
+    }
+
+    private fun scrollToRecommendations() {
+        composeTestRule
+            .onNodeWithTag(DetailTestTags.CONTENT)
+            .performScrollToNode(hasTestTag(DetailTestTags.RECOMMENDATIONS))
+    }
+
+    @Test
+    fun homeMovieClick_opensDetailWithTheListTitle() {
+        openDetail()
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
+        composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertIsDisplayed()
+    }
+
+    @Test
+    fun detail_showsCastAndRecommendationsFromMock() {
+        openDetail()
+        composeTestRule.awaitText(castMember)
+        composeTestRule.onNodeWithText(castMember).assertIsDisplayed()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).assertIsDisplayed()
+    }
+
+    @Test
+    fun backFromDetail_returnsToHome() {
+        openDetail()
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
+        composeTestRule.awaitTag(TmdbTestTags.TAB_ROW)
+        composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertDoesNotExist()
+    }
+
+    @Test
+    fun recommendationClick_opensAnotherDetail() {
+        openDetail()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(recommendedMovie)
+    }
+
+    @Test
+    fun backFromNestedDetail_returnsToTheFirstDetail() {
+        openDetail()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
+        composeTestRule.awaitAppBarTitle(nowPlayingMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
+    }
+
+    @Test
+    fun favoriteToggle_flipsTheToggleState() {
+        openDetail()
+        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOff()
+        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).performClick()
+        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOn()
+    }
+
+    @Test
+    fun detailLoadFailure_showsErrorInsteadOfContent() {
+        apiService.errorToThrow = IOException("boom")
+        composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
+        composeTestRule.awaitTag(TmdbTestTags.ERROR)
+
+        composeTestRule
+            .onNodeWithText(
+                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+            ).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
+    }
+
+    @Test
+    fun detailErrorRetry_recoversAndShowsContent() {
+        apiService.errorToThrow = IOException("boom")
+        composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
+        composeTestRule.awaitTag(TmdbTestTags.ERROR)
+
+        apiService.errorToThrow = null
+        composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
+
+        composeTestRule.awaitTag(DetailTestTags.CONTENT)
+        composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TmdbTestTags.ERROR).assertDoesNotExist()
+    }
+
+    @Test
+    fun backFromDetailError_returnsToHome() {
+        apiService.errorToThrow = IOException("boom")
+        composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
+        composeTestRule.awaitTag(TmdbTestTags.ERROR)
+
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
+        composeTestRule.awaitTag(TmdbTestTags.TAB_ROW)
+        composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
+    }
+}

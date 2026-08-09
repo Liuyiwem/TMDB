@@ -25,7 +25,6 @@ class AndroidFeatureImplConventionPlugin : Plugin<Project> {
                 "testImplementation"(project(":core:testing"))
 
                 "androidTestImplementation"(libs.findLibrary("androidx-junit").get())
-                "androidTestImplementation"(libs.findLibrary("androidx-espresso-core").get())
                 "androidTestImplementation"(libs.findLibrary("androidx-ui-test-junit4").get())
             }
         }

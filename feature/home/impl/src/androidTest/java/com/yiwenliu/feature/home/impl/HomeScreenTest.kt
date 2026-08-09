@@ -24,6 +24,7 @@ import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.ui.ErrorItem
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.TmdbTestTags
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -50,7 +51,7 @@ class HomeScreenTest {
                 )
             }
         }
-        composeTestRule.onNodeWithTag("tabRow").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(composeTestRule.activity.getString(R.string.tab_now_playing))
             .assertIsDisplayed()
@@ -72,7 +73,7 @@ class HomeScreenTest {
                 )
             }
         }
-        composeTestRule.onNodeWithTag("tab:TOP_RATED").performClick()
+        composeTestRule.onNodeWithTag(TmdbTestTags.tab(MovieCategory.TOP_RATED)).performClick()
         assertEquals(HomeAction.OnCategorySelected(MovieCategory.TOP_RATED), lastAction)
     }
 
@@ -98,7 +99,7 @@ class HomeScreenTest {
                 )
             }
         }
-        composeTestRule.onNodeWithTag("error").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TmdbTestTags.ERROR).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.retry))
             .assertIsDisplayed()
@@ -127,9 +128,9 @@ class HomeScreenTest {
             }
         }
         composeTestRule
-            .onNodeWithTag("home:grid")
-            .performScrollToNode(hasTestTag("home:appendLoading"))
-        composeTestRule.onNodeWithTag("home:appendLoading").assertIsDisplayed()
+            .onNodeWithTag(HomeTestTags.GRID)
+            .performScrollToNode(hasTestTag(HomeTestTags.APPEND_LOADING))
+        composeTestRule.onNodeWithTag(HomeTestTags.APPEND_LOADING).assertIsDisplayed()
     }
 
     @Test
@@ -166,11 +167,11 @@ class HomeScreenTest {
             }
         }
         composeTestRule.waitUntil(TIMEOUT_MILLIS) {
-            composeTestRule.onAllNodesWithTag("error").fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodesWithTag(TmdbTestTags.ERROR).fetchSemanticsNodes().isNotEmpty()
         }
-        composeTestRule.onNodeWithTag("retry").performClick()
+        composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
         composeTestRule.waitUntil(TIMEOUT_MILLIS) {
-            composeTestRule.onAllNodesWithTag("error").fetchSemanticsNodes().isEmpty()
+            composeTestRule.onAllNodesWithTag(TmdbTestTags.ERROR).fetchSemanticsNodes().isEmpty()
         }
     }
 
@@ -189,7 +190,7 @@ class HomeScreenTest {
                 HomeScreen(state = HomeUiState(), movies = items, onAction = {}, onMovieClick = { _, _ -> })
             }
         }
-        composeTestRule.onNodeWithTag("home:grid").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(HomeTestTags.GRID).assertDoesNotExist()
         composeTestRule.onNodeWithText(sampleMovies.first().title).assertDoesNotExist()
     }
 
@@ -205,7 +206,7 @@ class HomeScreenTest {
                 )
             }
         }
-        composeTestRule.onNodeWithTag("retry").performClick()
+        composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
         assertTrue(retried)
     }
 

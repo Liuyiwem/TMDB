@@ -7,6 +7,7 @@ import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Genre
 import com.yiwenliu.core.model.MovieDetail
 import com.yiwenliu.core.network.model.CastResult
+import com.yiwenliu.core.network.model.CreditsResponse
 import com.yiwenliu.core.network.model.GenreResult
 import com.yiwenliu.core.network.model.MovieDetailResponse
 
@@ -33,5 +34,9 @@ fun CastResult.asExternalModel() = CastMember(
     id = id,
     name = name,
     character = character,
-    profilePath = profilePath?.asImageUrl(size = PROFILE_SIZE),
+    profilePath = profilePath.asImageUrl(size = PROFILE_SIZE),
 )
+
+fun CreditsResponse.asExternalModel(): List<CastMember> = cast
+    .sortedBy(CastResult::order)
+    .map(CastResult::asExternalModel)

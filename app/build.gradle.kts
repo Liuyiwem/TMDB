@@ -25,10 +25,6 @@ android {
             )
         }
     }
-
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 dependencies {
@@ -50,6 +46,7 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.compose.material3.adaptive)
@@ -67,9 +64,7 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(projects.core.dataTest)
     androidTestImplementation(projects.core.testing)
-    androidTestImplementation(libs.hilt.testing)
 }

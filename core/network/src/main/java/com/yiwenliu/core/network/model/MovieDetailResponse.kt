@@ -36,6 +36,6 @@ data class CastResult(
     @SerialName("id") val id: Int,
     @SerialName("name") val name: String = "",
     @SerialName("character") val character: String = "",
-    @SerialName("profile_path") val profilePath: String? = null,
+    @SerialName("profile_path") val profilePath: String = "",
     @SerialName("order") val order: Int = 0,
 )

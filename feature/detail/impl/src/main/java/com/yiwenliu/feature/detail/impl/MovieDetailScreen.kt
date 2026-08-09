@@ -86,17 +86,17 @@ internal fun MovieDetailScreen(
         contentAlignment = Alignment.Center,
     ) {
         when {
-            state.isLoading -> CircularProgressIndicator(
-                modifier = Modifier.testTag("detail:loading"),
-            )
-
             state.error != null -> ErrorItem(
                 errorMessage = stringResource(state.error.toStringResId()),
                 retryText = stringResource(com.yiwenliu.core.ui.R.string.retry),
                 onRetry = { onAction(MovieDetailAction.OnRetry) },
             )
 
-            state.detail != null -> MovieDetailContent(
+            state.detail == null -> CircularProgressIndicator(
+                modifier = Modifier.testTag(DetailTestTags.LOADING),
+            )
+
+            else -> MovieDetailContent(
                 detail = state.detail,
                 cast = state.cast,
                 recommendations = state.recommendations,
@@ -125,7 +125,7 @@ private fun MovieDetailContent(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .testTag("detail:content"),
+            .testTag(DetailTestTags.CONTENT),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(bottom = 24.dp),
     ) {
@@ -163,6 +163,7 @@ private fun MovieDetailContent(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp),
+                    modifier = Modifier.testTag(DetailTestTags.CAST),
                 ) {
                     items(items = cast, key = CastMember::id) { member ->
                         CastItem(member = member)
@@ -182,7 +183,7 @@ private fun MovieDetailContent(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp),
-                    modifier = Modifier.testTag("detail:recommendations"),
+                    modifier = Modifier.testTag(DetailTestTags.RECOMMENDATIONS),
                 ) {
                     items(items = recommendations, key = Movie::id) { movie ->
                         MovieItem(
@@ -245,7 +246,7 @@ private fun MovieDetailHeader(
             TmdbIconToggleButton(
                 checked = isFavorite,
                 onCheckedChange = onFavoriteToggle,
-                modifier = Modifier.testTag("detail:favorite"),
+                modifier = Modifier.testTag(DetailTestTags.FAVORITE),
                 icon = {
                     Icon(
                         imageVector = Icons.Rounded.FavoriteBorder,
@@ -326,9 +327,8 @@ private fun CastItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        val profilePath = member.profilePath
         DynamicAsyncImage(
-            imageUrl = profilePath,
+            imageUrl = member.profilePath,
             contentDescription = member.name,
             modifier = Modifier
                 .size(72.dp)
