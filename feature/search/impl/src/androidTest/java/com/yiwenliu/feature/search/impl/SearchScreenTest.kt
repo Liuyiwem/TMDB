@@ -20,6 +20,7 @@ import com.yiwenliu.core.common.domain.util.NetworkError
 import com.yiwenliu.core.common.domain.util.NetworkException
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.ui.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.TmdbTestTags
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -47,16 +48,16 @@ class SearchScreenTest {
         val items = flowOf(PagingData.from(movies, sourceLoadStates = loadStates))
             .collectAsLazyPagingItems()
         MaterialTheme {
-            SearchScreen(state = state, searchMovies = items, onAction = onAction)
+            SearchScreen(state = state, searchMovies = items, onAction = onAction, onMovieClick = { _, _ -> })
         }
     }
 
     @Test
     fun blankQuery_showsNeitherEmptyNorLoading() {
         composeTestRule.setContent { Screen(state = SearchUiState(queryString = "")) }
-        composeTestRule.onNodeWithTag("search:empty").assertDoesNotExist()
-        composeTestRule.onNodeWithTag("search:loading").assertDoesNotExist()
-        composeTestRule.onNodeWithTag("search:grid").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SearchTestTags.LOADING).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertDoesNotExist()
     }
 
     @Test
@@ -64,8 +65,8 @@ class SearchScreenTest {
         composeTestRule.setContent {
             Screen(state = SearchUiState(queryString = "b", isPending = true))
         }
-        composeTestRule.onNodeWithTag("search:loading").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("search:empty").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SearchTestTags.LOADING).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()
     }
 
     @Test
@@ -76,17 +77,17 @@ class SearchScreenTest {
                 loadStates = settled.copy(refresh = LoadState.Loading),
             )
         }
-        composeTestRule.onNodeWithTag("search:loading").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SearchTestTags.LOADING).assertIsDisplayed()
     }
 
     @Test
     fun settledQueryWithNoResults_showsEmptyMessage() {
         composeTestRule.setContent { Screen(state = SearchUiState(queryString = "qxzqxz")) }
-        composeTestRule.onNodeWithTag("search:empty").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertIsDisplayed()
         composeTestRule
             .onNodeWithText(composeTestRule.activity.getString(R.string.search_no_results))
             .assertIsDisplayed()
-        composeTestRule.onNodeWithTag("search:grid").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertDoesNotExist()
     }
 
     @Test
@@ -94,7 +95,7 @@ class SearchScreenTest {
         composeTestRule.setContent {
             Screen(state = SearchUiState(queryString = "batman"), movies = sampleMovies)
         }
-        composeTestRule.onNodeWithTag("search:grid").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertIsDisplayed()
         composeTestRule.onNodeWithText(sampleMovies.first().title).assertIsDisplayed()
     }
 
@@ -112,8 +113,8 @@ class SearchScreenTest {
             .onNodeWithText(
                 composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
             ).assertIsDisplayed()
-        composeTestRule.onNodeWithTag("retry").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("search:empty").assertDoesNotExist()
+        composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()
     }
 
     @Test
@@ -125,9 +126,9 @@ class SearchScreenTest {
                 loadStates = settled.copy(append = LoadState.Loading),
             )
         }
-        composeTestRule.onNodeWithTag("search:grid")
-            .performScrollToNode(hasTestTag("search:appendLoading"))
-        composeTestRule.onNodeWithTag("search:appendLoading").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(SearchTestTags.GRID)
+            .performScrollToNode(hasTestTag(SearchTestTags.APPEND_LOADING))
+        composeTestRule.onNodeWithTag(SearchTestTags.APPEND_LOADING).assertIsDisplayed()
     }
 
     @Test
@@ -136,7 +137,7 @@ class SearchScreenTest {
         composeTestRule.setContent {
             Screen(state = SearchUiState(queryString = ""), onAction = { lastAction = it })
         }
-        composeTestRule.onNodeWithTag("search:textField").performTextInput("batman")
+        composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).performTextInput("batman")
         assertEquals(SearchAction.OnQueryStringChanged("batman"), lastAction)
     }
 
@@ -146,7 +147,7 @@ class SearchScreenTest {
         composeTestRule.setContent {
             Screen(state = SearchUiState(queryString = ""), onAction = { lastAction = it })
         }
-        composeTestRule.onNodeWithTag("search:textField").performTextInput("Fight\nClub")
+        composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).performTextInput("Fight\nClub")
         assertEquals(SearchAction.OnQueryStringChanged("Fight Club"), lastAction)
     }
 

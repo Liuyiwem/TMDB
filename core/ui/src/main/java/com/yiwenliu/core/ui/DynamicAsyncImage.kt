@@ -17,7 +17,7 @@ import coil.compose.SubcomposeAsyncImage
 
 @Composable
 fun DynamicAsyncImage(
-    imageUrl: String,
+    imageUrl: String?,
     contentDescription: String?,
     modifier: Modifier = Modifier,
 ) {

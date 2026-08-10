@@ -12,6 +12,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
 import retrofit2.Retrofit
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class TMDBApiServiceContractTest {
     private val sentRequests = mutableListOf<Request>()
@@ -27,7 +28,7 @@ class TMDBApiServiceContractTest {
                     .protocol(Protocol.HTTP_1_1)
                     .code(200)
                     .message("OK")
-                    .body(EMPTY_PAGE_JSON.toResponseBody(JSON_MEDIA_TYPE))
+                    .body(EMPTY_RESPONSE_JSON.toResponseBody(JSON_MEDIA_TYPE))
                     .build()
             }.build()
 
@@ -36,7 +37,7 @@ class TMDBApiServiceContractTest {
             .Builder()
             .baseUrl("https://api.themoviedb.org/3/")
             .client(client)
-            .addConverterFactory(Json.asConverterFactory(JSON_MEDIA_TYPE))
+            .addConverterFactory(NETWORK_JSON.asConverterFactory(JSON_MEDIA_TYPE))
             .build()
             .create(TMDBApiService::class.java)
 
@@ -56,9 +57,33 @@ class TMDBApiServiceContractTest {
         assertEquals("query=star%20wars&page=1", url.encodedQuery)
     }
 
+    @Test
+    fun `getMovieDetail builds movie by id without a page query`() = runTest {
+        api.getMovieDetail(533535)
+        val url = sentRequests.last().url
+        assertEquals("/3/movie/533535", url.encodedPath)
+        assertNull(url.queryParameter("page"))
+    }
+
+    @Test
+    fun `getMovieCredits builds the credits path`() = runTest {
+        api.getMovieCredits(533535)
+        assertEquals("/3/movie/533535/credits", sentRequests.last().url.encodedPath)
+    }
+
+    @Test
+    fun `getMovieRecommendations defaults to page 1`() = runTest {
+        api.getMovieRecommendations(533535)
+        val url = sentRequests.last().url
+        assertEquals("/3/movie/533535/recommendations", url.encodedPath)
+        assertEquals("1", url.queryParameter("page"))
+    }
+
     private companion object {
         val JSON_MEDIA_TYPE = "application/json".toMediaType()
 
-        const val EMPTY_PAGE_JSON = """{"page":1,"results":[],"total_pages":1,"total_results":0}"""
+        val NETWORK_JSON = Json { ignoreUnknownKeys = true }
+
+        const val EMPTY_RESPONSE_JSON = """{"id":0,"results":[],"total_pages":1}"""
     }
 }

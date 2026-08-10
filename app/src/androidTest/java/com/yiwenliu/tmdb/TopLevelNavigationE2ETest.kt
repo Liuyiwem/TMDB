@@ -5,6 +5,8 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.feature.search.impl.SearchTestTags
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -13,9 +15,6 @@ import org.junit.Test
 
 @HiltAndroidTest
 class TopLevelNavigationE2ETest {
-    @get:Rule(order = -1)
-    val disableSplashRule = DisableSplashRule()
-
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
@@ -26,9 +25,9 @@ class TopLevelNavigationE2ETest {
     private val searchTab get() = composeTestRule.activity.getString(R.string.feature_search)
     private val favoriteTab get() = composeTestRule.activity.getString(R.string.feature_favorite)
 
-    private val searchMarkerTag = "search:textField"
+    private val searchMarkerTag = SearchTestTags.TEXT_FIELD
     private val favoriteMarker = "Favorite Screen"
-    private val homeMarkerTag = "tabRow"
+    private val homeMarkerTag = TmdbTestTags.TAB_ROW
 
     @Before
     fun setup() {

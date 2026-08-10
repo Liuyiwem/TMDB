@@ -22,7 +22,7 @@ fun MovieCategoryTabRow(
 ) {
     PrimaryScrollableTabRow(
         selectedTabIndex = selectedTabIndex,
-        modifier = modifier.testTag("tabRow"),
+        modifier = modifier.testTag(TmdbTestTags.TAB_ROW),
         containerColor = Color.Transparent,
         edgePadding = 16.dp,
         indicator = {},
@@ -47,7 +47,7 @@ fun MovieCategoryTab(
         modifier =
         modifier
             .padding(horizontal = 4.dp, vertical = 8.dp)
-            .testTag("tab:${category.name}"),
+            .testTag(TmdbTestTags.tab(category)),
     )
 }
 

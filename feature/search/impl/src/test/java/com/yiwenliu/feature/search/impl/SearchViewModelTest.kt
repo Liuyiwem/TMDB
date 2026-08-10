@@ -3,10 +3,10 @@ package com.yiwenliu.feature.search.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
+import com.yiwenliu.core.domain.usecase.SearchMoviesPagerUseCase
 import com.yiwenliu.core.testing.data.moviesTestData
 import com.yiwenliu.core.testing.repository.TestMovieRepository
 import com.yiwenliu.core.testing.util.MainDispatcherRule
-import com.yiwenliu.domain.usecase.SearchMoviesPagerUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy

@@ -14,7 +14,7 @@ class AndroidFeatureImplConventionPlugin : Plugin<Project> {
             dependencies {
                 "implementation"(project(":core:common"))
                 "implementation"(project(":core:ui"))
-                "implementation"(project(":domain"))
+                "implementation"(project(":core:domain"))
 
                 "implementation"(libs.findLibrary("androidx-hilt-navigation-compose").get())
                 "implementation"(libs.findLibrary("androidx-lifecycle-viewmodel-compose").get())
@@ -25,7 +25,6 @@ class AndroidFeatureImplConventionPlugin : Plugin<Project> {
                 "testImplementation"(project(":core:testing"))
 
                 "androidTestImplementation"(libs.findLibrary("androidx-junit").get())
-                "androidTestImplementation"(libs.findLibrary("androidx-espresso-core").get())
                 "androidTestImplementation"(libs.findLibrary("androidx-ui-test-junit4").get())
             }
         }

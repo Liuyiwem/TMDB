@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="overview">Overview</string>
+    <string name="cast">Cast</string>
+    <string name="recommendations">Recommendations</string>
+    <string name="runtime_minutes">%1$d min</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+</resources>

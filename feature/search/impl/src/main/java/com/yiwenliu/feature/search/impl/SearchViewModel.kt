@@ -7,8 +7,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.yiwenliu.core.domain.usecase.SearchMoviesPagerUseCase
 import com.yiwenliu.core.model.Movie
-import com.yiwenliu.domain.usecase.SearchMoviesPagerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -42,7 +42,6 @@ class SearchViewModel
             )
         }.stateIn(
             scope = viewModelScope,
-
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = SearchUiState(typedQuery.value),
         )

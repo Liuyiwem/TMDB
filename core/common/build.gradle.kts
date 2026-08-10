@@ -8,13 +8,12 @@ android {
 }
 
 dependencies {
-    implementation(libs.retrofit2)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.coroutines)
+    api(libs.retrofit2)
+    api(libs.kotlinx.serialization.json)
+    api(libs.coroutines)
 
     testImplementation(libs.junit)
     testImplementation(libs.test.coroutines)
 
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

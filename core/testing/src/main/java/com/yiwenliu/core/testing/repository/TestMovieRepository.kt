@@ -5,9 +5,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.yiwenliu.core.common.domain.util.NetworkError
+import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.data.repository.MovieRepository
+import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
+import com.yiwenliu.core.model.MovieDetail
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 class TestMovieRepository : MovieRepository {
@@ -19,12 +24,54 @@ class TestMovieRepository : MovieRepository {
 
     val requestedQueries = mutableListOf<String>()
 
+    val requestedDetailIds = mutableListOf<Int>()
+
+    val requestedCreditsIds = mutableListOf<Int>()
+
+    val requestedRecommendationIds = mutableListOf<Int>()
+
+    private var movieDetail: MovieDetail? = null
+
+    private var cast: List<CastMember> = emptyList()
+
+    private var recommendations: List<Movie> = emptyList()
+
+    private var detailError: NetworkError? = null
+
+    private var creditsError: NetworkError? = null
+
+    private var recommendationsError: NetworkError? = null
+
+    var responseDelayMillis: Long = 0
+
     override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = pager {
         requestedCategories += category
     }
 
     override fun searchMoviesPager(queryString: String): Flow<PagingData<Movie>> = pager {
         requestedQueries += queryString
+    }
+
+    override suspend fun getMovieDetail(movieId: Int): Result<MovieDetail, NetworkError> {
+        delayIfNeeded()
+        requestedDetailIds += movieId
+        return detailError?.let { Result.Error(it) } ?: Result.Success(checkNotNull(movieDetail))
+    }
+
+    override suspend fun getMovieCredits(movieId: Int): Result<List<CastMember>, NetworkError> {
+        delayIfNeeded()
+        requestedCreditsIds += movieId
+        return creditsError?.let { Result.Error(it) } ?: Result.Success(cast)
+    }
+
+    override suspend fun getMovieRecommendations(movieId: Int): Result<List<Movie>, NetworkError> {
+        delayIfNeeded()
+        requestedRecommendationIds += movieId
+        return recommendationsError?.let { Result.Error(it) } ?: Result.Success(recommendations)
+    }
+
+    private suspend fun delayIfNeeded() {
+        if (responseDelayMillis > 0) delay(responseDelayMillis)
     }
 
     private fun pager(onLoad: () -> Unit): Flow<PagingData<Movie>> = Pager(
@@ -47,5 +94,29 @@ class TestMovieRepository : MovieRepository {
 
     fun sendError(error: Throwable?) {
         this.loadError = error
+    }
+
+    fun sendMovieDetail(movieDetail: MovieDetail?) {
+        this.movieDetail = movieDetail
+    }
+
+    fun sendCast(cast: List<CastMember>) {
+        this.cast = cast
+    }
+
+    fun sendRecommendations(recommendations: List<Movie>) {
+        this.recommendations = recommendations
+    }
+
+    fun sendDetailError(error: NetworkError?) {
+        this.detailError = error
+    }
+
+    fun sendCreditsError(error: NetworkError?) {
+        this.creditsError = error
+    }
+
+    fun sendRecommendationsError(error: NetworkError?) {
+        this.recommendationsError = error
     }
 }

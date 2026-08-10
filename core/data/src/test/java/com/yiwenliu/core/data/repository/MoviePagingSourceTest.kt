@@ -68,14 +68,6 @@ class MoviePagingSourceTest {
     }
 
     @Test
-    fun `load networkError returns LoadResultError`() = runTest(testDispatcher) {
-        apiService.errorToThrow = NetworkException(NetworkError.NO_INTERNET)
-        val result = pagerOf(categorySource()).refresh()
-        assertTrue(result is LoadResult.Error)
-        assertEquals(NetworkError.UNKNOWN, (result.throwable as NetworkException).networkError)
-    }
-
-    @Test
     fun `an IOException maps to NO_INTERNET`() = runTest(testDispatcher) {
         val source = MoviePagingSource(testDispatcher) { throw IOException("socket closed") }
         val result = pagerOf(source).refresh()

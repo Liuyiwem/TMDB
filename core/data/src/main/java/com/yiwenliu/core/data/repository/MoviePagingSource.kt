@@ -1,5 +1,8 @@
 package com.yiwenliu.core.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.yiwenliu.core.common.data.networking.safeCall
@@ -9,6 +12,7 @@ import com.yiwenliu.core.data.model.asExternalModel
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 internal class MoviePagingSource(
@@ -41,3 +45,13 @@ internal class MoviePagingSource(
         }
     }
 }
+
+fun moviePagingFlow(
+    ioDispatcher: CoroutineDispatcher,
+    fetchPage: suspend (page: Int) -> MovieResponse,
+): Flow<PagingData<Movie>> = Pager(
+    config = MOVIE_PAGING_CONFIG,
+    pagingSourceFactory = { MoviePagingSource(ioDispatcher, fetchPage) },
+).flow
+
+private val MOVIE_PAGING_CONFIG = PagingConfig(pageSize = 20, enablePlaceholders = false)

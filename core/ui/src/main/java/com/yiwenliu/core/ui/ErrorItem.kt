@@ -28,7 +28,7 @@ fun ErrorItem(
         modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .testTag("error"),
+            .testTag(TmdbTestTags.ERROR),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -37,7 +37,7 @@ fun ErrorItem(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRetry, modifier = Modifier.testTag("retry")) {
+        Button(onClick = onRetry, modifier = Modifier.testTag(TmdbTestTags.RETRY)) {
             Text(retryText)
         }
     }

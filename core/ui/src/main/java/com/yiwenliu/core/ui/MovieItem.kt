@@ -1,5 +1,6 @@
 package com.yiwenliu.core.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,9 +22,10 @@ import com.yiwenliu.core.model.Movie
 @Composable
 fun MovieItem(
     movie: Movie,
+    onClick: () -> Unit,
     modifier: Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.clickable(onClick = onClick)) {
         DynamicAsyncImage(
             imageUrl = movie.posterPath,
             contentDescription = movie.title,
@@ -62,6 +64,7 @@ private fun MovieItemPreview(
     MaterialTheme {
         MovieItem(
             movie = movies[0],
+            onClick = {},
             modifier = Modifier.width(150.dp),
         )
     }

@@ -1,0 +1,26 @@
+{
+  "id": 533535,
+  "cast": [
+    {
+      "id": 10859,
+      "name": "Ryan Reynolds",
+      "character": "Wade Wilson / Deadpool",
+      "profile_path": "/4BOMOwZmJGRs2NIeeqLZbSonYOL.jpg",
+      "order": 0
+    },
+    {
+      "id": 6968,
+      "name": "Hugh Jackman",
+      "character": "Logan / Wolverine",
+      "profile_path": "/oX6CpXmnXCHLyqsa4NEed1DZAKx.jpg",
+      "order": 1
+    },
+    {
+      "id": 1667888,
+      "name": "Emma Corrin",
+      "character": "Cassandra Nova",
+      "profile_path": null,
+      "order": 2
+    }
+  ]
+}

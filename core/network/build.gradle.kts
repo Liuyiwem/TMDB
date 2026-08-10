@@ -18,12 +18,13 @@ android {
 dependencies {
     implementation(projects.core.common)
 
+    api(libs.kotlinx.serialization.json)
+    api(libs.coroutines)
+
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.retrofit2)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.retrofit2)
-    implementation(libs.coroutines)
 
     testImplementation(libs.test.coroutines)
     testImplementation(libs.junit)

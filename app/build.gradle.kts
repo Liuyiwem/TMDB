@@ -18,15 +18,12 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
         }
-    }
-
-    buildFeatures {
-        buildConfig = true
     }
 }
 
@@ -43,10 +40,13 @@ dependencies {
     implementation(projects.feature.search.api)
     implementation(projects.feature.favorite.impl)
     implementation(projects.feature.favorite.api)
+    implementation(projects.feature.detail.impl)
+    implementation(projects.feature.detail.api)
 
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.compose.material3.adaptive)
@@ -64,9 +64,7 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
 
     androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(projects.core.dataTest)
     androidTestImplementation(projects.core.testing)
-    androidTestImplementation(libs.hilt.testing)
 }

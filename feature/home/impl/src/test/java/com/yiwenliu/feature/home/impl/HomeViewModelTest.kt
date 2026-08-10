@@ -2,11 +2,11 @@ package com.yiwenliu.feature.home.impl
 
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
+import com.yiwenliu.core.domain.usecase.GetMoviesByCategoryPagerUseCase
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.testing.data.moviesTestData
 import com.yiwenliu.core.testing.repository.TestMovieRepository
 import com.yiwenliu.core.testing.util.MainDispatcherRule
-import com.yiwenliu.domain.usecase.GetMoviesByCategoryPagerUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent

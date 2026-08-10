@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 internal fun HomeRoot(
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -45,6 +46,7 @@ internal fun HomeRoot(
         state = state,
         movies = movies,
         onAction = viewModel::onAction,
+        onMovieClick = onMovieClick,
         modifier = modifier,
     )
 }
@@ -54,6 +56,7 @@ internal fun HomeScreen(
     state: HomeUiState,
     movies: LazyPagingItems<Movie>,
     onAction: (HomeAction) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isRefreshing by remember {
@@ -90,7 +93,11 @@ internal fun HomeScreen(
                     )
                 }
 
-                is LoadState.NotLoading -> MoviePagingGrid(movies = movies, testTagPrefix = "home")
+                is LoadState.NotLoading -> MoviePagingGrid(
+                    movies = movies,
+                    onMovieClick = onMovieClick,
+                    testTagPrefix = HomeTestTags.PREFIX,
+                )
 
                 else -> {}
             }
@@ -128,6 +135,7 @@ private fun HomeScreenPreview() {
             state = HomeUiState(),
             movies = pagingItems,
             onAction = {},
+            onMovieClick = { _, _ -> },
         )
     }
 }
@@ -150,6 +158,7 @@ private fun HomeScreenRefreshingPreview() {
             state = HomeUiState(),
             movies = pagingItems,
             onAction = {},
+            onMovieClick = { _, _ -> },
         )
     }
 }

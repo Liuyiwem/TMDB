@@ -26,15 +26,16 @@ import com.yiwenliu.core.model.Movie
 @Composable
 fun MoviePagingGrid(
     movies: LazyPagingItems<Movie>,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
-    testTagPrefix: String = "movieGrid",
+    testTagPrefix: String = TmdbTestTags.DEFAULT_GRID_PREFIX,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 120.dp),
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .testTag("$testTagPrefix:grid"),
+            .testTag(TmdbTestTags.grid(testTagPrefix)),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -44,7 +45,11 @@ fun MoviePagingGrid(
             key = movies.itemKey { it.id },
         ) { index ->
             movies[index]?.let { movie ->
-                MovieItem(movie = movie, modifier = Modifier.fillMaxWidth())
+                MovieItem(
+                    movie = movie,
+                    onClick = { onMovieClick(movie.id, movie.title) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
 
@@ -54,7 +59,7 @@ fun MoviePagingGrid(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .testTag("$testTagPrefix:appendLoading"),
+                        .testTag(TmdbTestTags.appendLoading(testTagPrefix)),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
