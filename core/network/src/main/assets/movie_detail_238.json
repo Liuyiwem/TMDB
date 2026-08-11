@@ -1,0 +1,23 @@
+{
+  "id": 238,
+  "title": "The Godfather",
+  "tagline": "An offer you can't refuse.",
+  "overview": "Spanning the years 1945 to 1955, a chronicle of the fictional Italian-American Corleone crime family. When organized crime family patriarch, Don Vito Corleone barely survives an attempt on his life, his youngest son, Michael steps in to take care of the assassins.",
+  "release_date": "1972-03-14",
+  "poster_path": "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg",
+  "backdrop_path": "/tmU7GeKVybMWFButWEGl2M4GeiP.jpg",
+  "runtime": 175,
+  "status": "Released",
+  "vote_average": 8.7,
+  "vote_count": 19846,
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    },
+    {
+      "id": 80,
+      "name": "Crime"
+    }
+  ]
+}

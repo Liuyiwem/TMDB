@@ -1,0 +1,27 @@
+{
+  "id": 1184918,
+  "title": "The Wild Robot",
+  "tagline": "Discover your true nature.",
+  "overview": "After a shipwreck, an intelligent robot called Roz is stranded on an uninhabited island. To survive the harsh environment, Roz bonds with the island's animals and cares for an orphaned baby goose.",
+  "release_date": "2024-09-12",
+  "poster_path": "/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg",
+  "backdrop_path": "/417tYZ4XUyJrtyZXj7HpvWf1E8f.jpg",
+  "runtime": 102,
+  "status": "Released",
+  "vote_average": 8.5,
+  "vote_count": 2234,
+  "genres": [
+    {
+      "id": 16,
+      "name": "Animation"
+    },
+    {
+      "id": 878,
+      "name": "Science Fiction"
+    },
+    {
+      "id": 10751,
+      "name": "Family"
+    }
+  ]
+}

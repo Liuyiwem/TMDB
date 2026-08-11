@@ -12,10 +12,13 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MockTMDBApiServiceTest {
+class MockTmdbApiServiceTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var apiService: MockTMDBApiService
+    private lateinit var apiService: MockTmdbApiService
+
+    private val moviesWithDetailAssets =
+        setOf(238, 278, 550, 912649, 933260, 1022789, 1184918, 1241982, 533535)
 
     @Before
     fun setup() {
@@ -25,7 +28,7 @@ class MockTMDBApiServiceTest {
                 coerceInputValues = true
                 isLenient = true
             }
-        apiService = MockTMDBApiService(testDispatcher, networkJson)
+        apiService = MockTmdbApiService(testDispatcher, networkJson)
     }
 
     @Test
@@ -61,13 +64,13 @@ class MockTMDBApiServiceTest {
 
     @Test
     fun `searchMovies loads the empty asset for the reserved query`() = runTest(testDispatcher) {
-        val response = apiService.searchMovies(MockTMDBApiService.EMPTY_RESULT_QUERY)
+        val response = apiService.searchMovies(MockTmdbApiService.EMPTY_RESULT_QUERY)
         assertTrue(response.results.isEmpty())
         assertEquals(0, response.totalResults)
     }
 
     @Test
-    fun `getMovieDetail loads movie_detail asset`() = runTest(testDispatcher) {
+    fun `getMovieDetail loads the asset of the requested movie`() = runTest(testDispatcher) {
         val response = apiService.getMovieDetail(533535)
         assertEquals(533535, response.id)
         assertEquals("Deadpool & Wolverine", response.title)
@@ -78,11 +81,36 @@ class MockTMDBApiServiceTest {
     }
 
     @Test
-    fun `getMovieCredits loads movie_credits asset`() = runTest(testDispatcher) {
+    fun `every movie with an asset gets its own detail back`() = runTest(testDispatcher) {
+        moviesWithDetailAssets.forEach { movieId ->
+            assertEquals(movieId, apiService.getMovieDetail(movieId).id, "detail id for $movieId")
+            assertEquals(movieId, apiService.getMovieCredits(movieId).id, "credits id for $movieId")
+        }
+    }
+
+    @Test
+    fun `a movie without an asset falls back to the default one`() = runTest(testDispatcher) {
+        val unknownMovieId = 999999
+
+        assertEquals(
+            MockTmdbApiService.FALLBACK_MOVIE_ID,
+            apiService.getMovieDetail(unknownMovieId).id,
+        )
+        assertEquals(
+            MockTmdbApiService.FALLBACK_MOVIE_ID,
+            apiService.getMovieCredits(unknownMovieId).id,
+        )
+    }
+
+    @Test
+    fun `getMovieCredits loads the cast of the requested movie`() = runTest(testDispatcher) {
         val response = apiService.getMovieCredits(533535)
         assertEquals(3, response.cast.size)
         assertEquals("Ryan Reynolds", response.cast[0].name)
         assertEquals("Wade Wilson / Deadpool", response.cast[0].character)
+
+        val moana = apiService.getMovieCredits(1241982)
+        assertEquals("Auli'i Cravalho", moana.cast[0].name)
     }
 
     @Test
