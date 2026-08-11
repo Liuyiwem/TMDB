@@ -43,15 +43,15 @@ class MovieDetailMapperTest {
     @Test
     fun `asExternalModel builds poster and backdrop urls with different sizes`() {
         val detail = detailResponse.asExternalModel()
-        assertTrue(detail.posterPath.endsWith("w500/poster.jpg"))
-        assertTrue(detail.backdropPath.endsWith("w780/backdrop.jpg"))
+        assertTrue(detail.posterUrl.endsWith("w500/poster.jpg"))
+        assertTrue(detail.backdropUrl.endsWith("w780/backdrop.jpg"))
     }
 
     @Test
     fun `asExternalModel maps a blank image path to an empty string`() {
         val detail = detailResponse.copy(posterPath = "", backdropPath = "").asExternalModel()
-        assertEquals("", detail.posterPath)
-        assertEquals("", detail.backdropPath)
+        assertEquals("", detail.posterUrl)
+        assertEquals("", detail.backdropUrl)
     }
 
     @Test
@@ -66,14 +66,14 @@ class MovieDetailMapperTest {
         assertEquals(10859, member.id)
         assertEquals("Ryan Reynolds", member.name)
         assertEquals("Deadpool", member.character)
-        assertTrue(member.profilePath.endsWith("w185/ryan.jpg"))
+        assertTrue(member.profileUrl.endsWith("w185/ryan.jpg"))
     }
 
     @Test
     fun `CastResult asExternalModel maps a blank profile path to an empty string`() {
         val member =
             CastResult(id = 1667888, name = "Emma Corrin", character = "Cassandra Nova").asExternalModel()
-        assertEquals("", member.profilePath)
+        assertEquals("", member.profileUrl)
     }
 
     @Test
