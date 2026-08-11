@@ -1,7 +1,7 @@
 package com.yiwenliu.core.data.repository
 
 import androidx.paging.PagingData
-import com.yiwenliu.core.common.domain.util.NetworkError
+import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
@@ -14,9 +14,9 @@ interface MovieRepository {
 
     fun searchMoviesPager(queryString: String): Flow<PagingData<Movie>>
 
-    suspend fun getMovieDetail(movieId: Int): Result<MovieDetail, NetworkError>
+    suspend fun getMovieDetail(movieId: Int): Result<MovieDetail, DataError.Remote>
 
-    suspend fun getMovieCredits(movieId: Int): Result<List<CastMember>, NetworkError>
+    suspend fun getMovieCredits(movieId: Int): Result<List<CastMember>, DataError.Remote>
 
-    suspend fun getMovieRecommendations(movieId: Int): Result<List<Movie>, NetworkError>
+    suspend fun getMovieRecommendations(movieId: Int): Result<List<Movie>, DataError.Remote>
 }

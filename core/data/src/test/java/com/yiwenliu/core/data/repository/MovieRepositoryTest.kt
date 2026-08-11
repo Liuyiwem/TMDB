@@ -1,10 +1,10 @@
 package com.yiwenliu.core.data.repository
 
 import androidx.paging.testing.asSnapshot
-import com.yiwenliu.core.common.domain.util.NetworkError
-import com.yiwenliu.core.common.domain.util.NetworkException
+import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.domain.util.DataErrorException
 import com.yiwenliu.core.common.domain.util.Result
-import com.yiwenliu.core.data.testdoubles.TestTMDBApiService
+import com.yiwenliu.core.data.testdoubles.TestTmdbApiService
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
@@ -23,13 +23,13 @@ import kotlin.test.assertIs
 class MovieRepositoryTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var apiService: TestTMDBApiService
+    private lateinit var apiService: TestTmdbApiService
 
     private lateinit var repository: MovieRepositoryImpl
 
     @Before
     fun setup() {
-        apiService = TestTMDBApiService()
+        apiService = TestTmdbApiService()
         repository = MovieRepositoryImpl(apiService, testDispatcher)
     }
 
@@ -52,19 +52,19 @@ class MovieRepositoryTest {
     @Test
     fun `getMoviesByCategoryPager surfaces a failure as a load error`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
-        val thrown = assertFailsWith<NetworkException> {
+        val thrown = assertFailsWith<DataErrorException> {
             repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
         }
-        assertEquals(NetworkError.NO_INTERNET, thrown.networkError)
+        assertEquals(DataError.Remote.NO_INTERNET, thrown.error)
     }
 
     @Test
     fun `searchMoviesPager surfaces a failure as a load error`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
-        val thrown = assertFailsWith<NetworkException> {
+        val thrown = assertFailsWith<DataErrorException> {
             repository.searchMoviesPager("batman").asSnapshot()
         }
-        assertEquals(NetworkError.NO_INTERNET, thrown.networkError)
+        assertEquals(DataError.Remote.NO_INTERNET, thrown.error)
     }
 
     @Test
@@ -97,23 +97,23 @@ class MovieRepositoryTest {
     fun `getMovieDetail surfaces a failure as a Result Error`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
         val result = repository.getMovieDetail(533535)
-        assertIs<Result.Error<NetworkError>>(result)
-        assertEquals(NetworkError.NO_INTERNET, result.error)
+        assertIs<Result.Failure<DataError.Remote>>(result)
+        assertEquals(DataError.Remote.NO_INTERNET, result.error)
     }
 
     @Test
     fun `getMovieCredits surfaces a failure as a Result Error`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
         val result = repository.getMovieCredits(533535)
-        assertIs<Result.Error<NetworkError>>(result)
-        assertEquals(NetworkError.NO_INTERNET, result.error)
+        assertIs<Result.Failure<DataError.Remote>>(result)
+        assertEquals(DataError.Remote.NO_INTERNET, result.error)
     }
 
     @Test
     fun `getMovieRecommendations surfaces a failure as a Result Error`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
         val result = repository.getMovieRecommendations(533535)
-        assertIs<Result.Error<NetworkError>>(result)
-        assertEquals(NetworkError.NO_INTERNET, result.error)
+        assertIs<Result.Failure<DataError.Remote>>(result)
+        assertEquals(DataError.Remote.NO_INTERNET, result.error)
     }
 }

@@ -18,13 +18,13 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.domain.util.NetworkError
-import com.yiwenliu.core.common.domain.util.NetworkException
+import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.domain.util.DataErrorException
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
-import com.yiwenliu.core.ui.ErrorItem
-import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.core.ui.component.ErrorItem
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -138,7 +138,7 @@ class HomeScreenTest {
         val appendError = LoadStates(
             refresh = LoadState.NotLoading(endOfPaginationReached = false),
             prepend = LoadState.NotLoading(endOfPaginationReached = true),
-            append = LoadState.Error(NetworkException(NetworkError.NO_INTERNET)),
+            append = LoadState.Error(DataErrorException(DataError.Remote.NO_INTERNET)),
         )
         composeTestRule.setContent {
             val items = flowOf(
@@ -150,7 +150,7 @@ class HomeScreenTest {
         }
         composeTestRule
             .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithText(sampleMovies.first().title).assertIsDisplayed()
     }
@@ -221,9 +221,7 @@ class HomeScreenTest {
     }
 }
 
-private class AppendFailsOncePagingSource(
-    private val firstPage: List<Movie>,
-) : PagingSource<Int, Movie>() {
+private class AppendFailsOncePagingSource(private val firstPage: List<Movie>) : PagingSource<Int, Movie>() {
     private var appendAttempts = 0
 
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = null
@@ -232,7 +230,7 @@ private class AppendFailsOncePagingSource(
         val page = params.key ?: 1
         if (page == 1) return LoadResult.Page(firstPage, prevKey = null, nextKey = 2)
         return if (appendAttempts++ == 0) {
-            LoadResult.Error(NetworkException(NetworkError.NO_INTERNET))
+            LoadResult.Error(DataErrorException(DataError.Remote.NO_INTERNET))
         } else {
             LoadResult.Page(emptyList(), prevKey = 1, nextKey = null)
         }

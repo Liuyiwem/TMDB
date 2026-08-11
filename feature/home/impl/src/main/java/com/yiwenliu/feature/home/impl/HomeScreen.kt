@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -23,14 +22,14 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.presentation.util.toUserMessage
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
-import com.yiwenliu.core.ui.ErrorItem
-import com.yiwenliu.core.ui.MovieCategoryTab
-import com.yiwenliu.core.ui.MovieCategoryTabRow
-import com.yiwenliu.core.ui.MoviePagingGrid
-import com.yiwenliu.core.ui.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.component.ErrorItem
+import com.yiwenliu.core.ui.component.MovieCategoryTab
+import com.yiwenliu.core.ui.component.MovieCategoryTabRow
+import com.yiwenliu.core.ui.component.MoviePagingGrid
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.util.toUiText
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -87,7 +86,7 @@ internal fun HomeScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     ErrorItem(
-                        errorMessage = refresh.error.toUserMessage(LocalContext.current),
+                        errorMessage = refresh.error.toUiText().asString(),
                         retryText = stringResource(com.yiwenliu.core.ui.R.string.retry),
                         onRetry = movies::retry,
                     )
