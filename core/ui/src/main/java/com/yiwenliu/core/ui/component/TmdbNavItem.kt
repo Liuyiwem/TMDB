@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable

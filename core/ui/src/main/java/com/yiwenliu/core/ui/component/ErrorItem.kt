@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,14 +15,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.yiwenliu.core.ui.TmdbTestTags
 
 @Composable
-fun ErrorItem(
-    errorMessage: String,
-    retryText: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun ErrorItem(errorMessage: String, retryText: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(
         modifier =
         modifier

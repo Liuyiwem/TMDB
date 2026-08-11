@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,16 +18,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.yiwenliu.core.model.Movie
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
 
 @Composable
-fun MovieItem(
-    movie: Movie,
-    onClick: () -> Unit,
-    modifier: Modifier,
-) {
+fun MovieItem(movie: Movie, onClick: () -> Unit, modifier: Modifier) {
     Column(modifier = modifier.clickable(onClick = onClick)) {
         DynamicAsyncImage(
-            imageUrl = movie.posterPath,
+            imageUrl = movie.posterUrl,
             contentDescription = movie.title,
             modifier =
             Modifier
@@ -58,9 +55,7 @@ fun MovieItem(
 
 @Preview()
 @Composable
-private fun MovieItemPreview(
-    @PreviewParameter(MoviePreviewParameterProvider::class) movies: List<Movie>,
-) {
+private fun MovieItemPreview(@PreviewParameter(MoviePreviewParameterProvider::class) movies: List<Movie>) {
     MaterialTheme {
         MovieItem(
             movie = movies[0],

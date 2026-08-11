@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

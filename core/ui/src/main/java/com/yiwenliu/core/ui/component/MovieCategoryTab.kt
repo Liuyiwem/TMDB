@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,13 +13,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yiwenliu.core.model.MovieCategory
+import com.yiwenliu.core.ui.TmdbTestTags
 
 @Composable
-fun MovieCategoryTabRow(
-    selectedTabIndex: Int,
-    modifier: Modifier = Modifier,
-    tabs: @Composable () -> Unit,
-) {
+fun MovieCategoryTabRow(selectedTabIndex: Int, modifier: Modifier = Modifier, tabs: @Composable () -> Unit) {
     PrimaryScrollableTabRow(
         selectedTabIndex = selectedTabIndex,
         modifier = modifier.testTag(TmdbTestTags.TAB_ROW),

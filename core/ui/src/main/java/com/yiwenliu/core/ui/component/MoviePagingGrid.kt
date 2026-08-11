@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,18 +10,25 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.yiwenliu.core.common.presentation.util.toUserMessage
 import com.yiwenliu.core.model.Movie
+import com.yiwenliu.core.ui.R
+import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.util.toUiText
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun MoviePagingGrid(
@@ -68,7 +75,7 @@ fun MoviePagingGrid(
 
             is LoadState.Error -> item(span = { GridItemSpan(maxLineSpan) }) {
                 ErrorItem(
-                    errorMessage = append.error.toUserMessage(LocalContext.current),
+                    errorMessage = append.error.toUiText().asString(),
                     retryText = stringResource(R.string.retry),
                     onRetry = movies::retry,
                 )
@@ -76,5 +83,15 @@ fun MoviePagingGrid(
 
             else -> Unit
         }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 400)
+@Composable
+private fun MoviePagingGridPreview() {
+    val movies = flowOf(PagingData.from(MoviePreviewParameterProvider().values.first()))
+        .collectAsLazyPagingItems()
+    MaterialTheme {
+        MoviePagingGrid(movies = movies, onMovieClick = { _, _ -> })
     }
 }

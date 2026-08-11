@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.yiwenliu.core.model.Genre
@@ -15,8 +15,8 @@ class MovieDetailPreviewParameterProvider : PreviewParameterProvider<MovieDetail
                 "A listless Wade Wilson toils away in civilian life with his days as the morally flexible " +
                     "mercenary, Deadpool, behind him.",
                 releaseDate = "2024-07-24",
-                posterPath = "",
-                backdropPath = "",
+                posterUrl = "",
+                backdropUrl = "",
                 runtimeMinutes = 128,
                 voteAverage = 7.6,
                 voteCount = 5842,

@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,15 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 
 @Composable
-fun DynamicAsyncImage(
-    imageUrl: String?,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-) {
+fun DynamicAsyncImage(imageUrl: String?, contentDescription: String?, modifier: Modifier = Modifier) {
     if (LocalInspectionMode.current) {
         Box(modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant))
         return
@@ -42,4 +39,16 @@ fun DynamicAsyncImage(
             Spacer(modifier = Modifier.fillMaxSize())
         },
     )
+}
+
+@Preview(showBackground = true, widthDp = 160, heightDp = 240)
+@Composable
+private fun DynamicAsyncImagePreview() {
+    MaterialTheme {
+        DynamicAsyncImage(
+            imageUrl = "https://image.tmdb.org/t/p/w500/poster.jpg",
+            contentDescription = "Deadpool & Wolverine",
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }

@@ -1,4 +1,4 @@
-package com.yiwenliu.core.ui
+package com.yiwenliu.core.ui.component
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
