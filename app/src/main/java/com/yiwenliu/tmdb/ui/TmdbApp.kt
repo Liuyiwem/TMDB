@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,8 +22,9 @@ import com.yiwenliu.core.navigation.NavigationState
 import com.yiwenliu.core.navigation.Navigator
 import com.yiwenliu.core.navigation.toEntries
 import com.yiwenliu.core.navigation.topAppBarSpec
-import com.yiwenliu.core.ui.TmdbNavItem
-import com.yiwenliu.core.ui.TmdbTopAppBar
+import com.yiwenliu.core.ui.LocalSnackbarHostState
+import com.yiwenliu.core.ui.component.TmdbNavItem
+import com.yiwenliu.core.ui.component.TmdbTopAppBar
 import com.yiwenliu.feature.detail.impl.navigation.movieDetailEntry
 import com.yiwenliu.feature.favorite.impl.navigation.favoriteEntry
 import com.yiwenliu.feature.home.impl.navigation.homeEntry
@@ -28,7 +32,7 @@ import com.yiwenliu.feature.search.impl.navigation.searchEntry
 import com.yiwenliu.tmdb.navigation.TOP_LEVEL_NAV_ITEMS
 
 @Composable
-fun TMDBApp(
+fun TmdbApp(
     navigationState: NavigationState,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
@@ -52,7 +56,7 @@ fun TMDBApp(
         entryProvider {
             homeEntry(navigator)
             searchEntry(navigator)
-            favoriteEntry()
+            favoriteEntry(navigator)
             movieDetailEntry(navigator)
         }
 
@@ -72,6 +76,7 @@ fun TMDBApp(
     ) {
         val entries = navigationState.toEntries(entryProvider)
         val topAppBarSpec = entries.lastOrNull()?.topAppBarSpec
+        val snackbarHostState = remember { SnackbarHostState() }
 
         Scaffold(
             modifier = Modifier.fillMaxSize().then(contentModifier),
@@ -84,12 +89,15 @@ fun TMDBApp(
                     )
                 }
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { innerPadding ->
-            NavDisplay(
-                entries = entries,
-                onBack = { if (navigator.canGoBack) navigator.goBack() },
-                modifier = Modifier.padding(innerPadding),
-            )
+            CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+                NavDisplay(
+                    entries = entries,
+                    onBack = { if (navigator.canGoBack) navigator.goBack() },
+                    modifier = Modifier.padding(innerPadding),
+                )
+            }
         }
     }
 }

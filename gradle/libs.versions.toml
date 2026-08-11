@@ -94,11 +94,13 @@ retrofit2 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofi
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-android" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt-android" }
+kotlin-metadata-jvm = { module = "org.jetbrains.kotlin:kotlin-metadata-jvm", version.ref = "kotlin" }
 
 # Room
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room-runtime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
+androidx-room-gradlePlugin = { module = "androidx.room:room-gradle-plugin", version.ref = "room-runtime" }
 
 # Gradle Plugins (used by build-logic)
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -114,6 +116,7 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room-runtime" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
@@ -127,6 +130,7 @@ tmdb-android-library-compose = { id = "tmdb.android.library.compose" }
 tmdb-jvm-library = { id = "tmdb.jvm.library" }
 tmdb-lint = { id = "tmdb.lint" }
 tmdb-android-hilt = { id = "tmdb.android.hilt" }
+tmdb-android-room = { id = "tmdb.android.room" }
 tmdb-android-feature-impl = { id = "tmdb.android.feature.impl" }
 tmdb-android-feature-api = { id = "tmdb.android.feature.api" }
 tmdb-root = { id = "tmdb.root" }

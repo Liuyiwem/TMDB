@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -39,17 +40,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yiwenliu.core.common.presentation.util.toStringResId
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieDetail
-import com.yiwenliu.core.ui.CastPreviewParameterProvider
-import com.yiwenliu.core.ui.DynamicAsyncImage
-import com.yiwenliu.core.ui.ErrorItem
-import com.yiwenliu.core.ui.MovieDetailPreviewParameterProvider
-import com.yiwenliu.core.ui.MovieItem
-import com.yiwenliu.core.ui.MoviePreviewParameterProvider
-import com.yiwenliu.core.ui.TmdbIconToggleButton
+import com.yiwenliu.core.ui.LocalSnackbarHostState
+import com.yiwenliu.core.ui.component.DynamicAsyncImage
+import com.yiwenliu.core.ui.component.ErrorItem
+import com.yiwenliu.core.ui.component.MovieItem
+import com.yiwenliu.core.ui.component.TmdbIconToggleButton
+import com.yiwenliu.core.ui.preview.CastPreviewParameterProvider
+import com.yiwenliu.core.ui.preview.MovieDetailPreviewParameterProvider
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.util.ObserveAsEvents
 
 @Composable
 internal fun MovieDetailRoot(
@@ -62,6 +64,14 @@ internal fun MovieDetailRoot(
     ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = LocalSnackbarHostState.current
+    val context = LocalContext.current
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is MovieDetailEvent.ShowError -> snackbarHostState.showSnackbar(event.message.asString(context))
+        }
+    }
 
     MovieDetailScreen(
         state = state,
@@ -87,7 +97,7 @@ internal fun MovieDetailScreen(
     ) {
         when {
             state.error != null -> ErrorItem(
-                errorMessage = stringResource(state.error.toStringResId()),
+                errorMessage = state.error.asString(),
                 retryText = stringResource(com.yiwenliu.core.ui.R.string.retry),
                 onRetry = { onAction(MovieDetailAction.OnRetry) },
             )
@@ -207,7 +217,7 @@ private fun MovieDetailHeader(
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         DynamicAsyncImage(
-            imageUrl = detail.backdropPath,
+            imageUrl = detail.backdropUrl,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
@@ -232,7 +242,7 @@ private fun MovieDetailHeader(
             verticalAlignment = Alignment.Bottom,
         ) {
             DynamicAsyncImage(
-                imageUrl = detail.posterPath,
+                imageUrl = detail.posterUrl,
                 contentDescription = detail.title,
                 modifier = Modifier
                     .width(110.dp)
@@ -265,10 +275,7 @@ private fun MovieDetailHeader(
 }
 
 @Composable
-private fun MovieDetailTitles(
-    detail: MovieDetail,
-    modifier: Modifier = Modifier,
-) {
+private fun MovieDetailTitles(detail: MovieDetail, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -306,10 +313,7 @@ private fun MovieDetail.metaLine(): String {
 }
 
 @Composable
-private fun SectionTitle(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
@@ -318,17 +322,14 @@ private fun SectionTitle(
 }
 
 @Composable
-private fun CastItem(
-    member: CastMember,
-    modifier: Modifier = Modifier,
-) {
+private fun CastItem(member: CastMember, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.width(96.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         DynamicAsyncImage(
-            imageUrl = member.profilePath,
+            imageUrl = member.profileUrl,
             contentDescription = member.name,
             modifier = Modifier
                 .size(72.dp)

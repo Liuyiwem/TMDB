@@ -11,7 +11,10 @@ android {
         keys = listOf("IMAGE_URL")
     }
 
-    testOptions.unitTests.isIncludeAndroidResources = true
+    testOptions.unitTests {
+        isIncludeAndroidResources = true
+        isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -20,6 +23,8 @@ dependencies {
     api(projects.core.common)
     api(projects.core.model)
     api(projects.core.network)
+
+    implementation(projects.core.database)
 
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(projects.core.testing)
