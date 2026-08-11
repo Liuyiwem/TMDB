@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.feature.favorite.impl.FavoriteTestTags
 import com.yiwenliu.feature.search.impl.SearchTestTags
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -26,7 +27,7 @@ class TopLevelNavigationE2ETest {
     private val favoriteTab get() = composeTestRule.activity.getString(R.string.feature_favorite)
 
     private val searchMarkerTag = SearchTestTags.TEXT_FIELD
-    private val favoriteMarker = "Favorite Screen"
+    private val favoriteMarkerTag = FavoriteTestTags.EMPTY
     private val homeMarkerTag = TmdbTestTags.TAB_ROW
 
     @Before
@@ -43,7 +44,8 @@ class TopLevelNavigationE2ETest {
     @Test
     fun selectFavoriteTab_showsFavoriteScreen() {
         composeTestRule.onNodeWithText(favoriteTab).performClick()
-        composeTestRule.onNodeWithText(favoriteMarker).assertIsDisplayed()
+        composeTestRule.awaitTag(favoriteMarkerTag)
+        composeTestRule.onNodeWithTag(favoriteMarkerTag).assertIsDisplayed()
     }
 
     @Test

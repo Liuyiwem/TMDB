@@ -1,13 +1,17 @@
 package com.yiwenliu.feature.detail.impl
 
 import app.cash.turbine.test
-import com.yiwenliu.core.common.domain.util.NetworkError
+import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.domain.usecase.GetMovieDetailUseCase
+import com.yiwenliu.core.domain.usecase.SetMovieFavoriteUseCase
 import com.yiwenliu.core.testing.data.castTestData
+import com.yiwenliu.core.testing.data.favoriteMoviesTestData
 import com.yiwenliu.core.testing.data.movieDetailTestData
 import com.yiwenliu.core.testing.data.moviesTestData
+import com.yiwenliu.core.testing.repository.TestFavoriteMovieRepository
 import com.yiwenliu.core.testing.repository.TestMovieRepository
 import com.yiwenliu.core.testing.util.MainDispatcherRule
+import com.yiwenliu.core.ui.util.UiText
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -24,7 +28,15 @@ class MovieDetailViewModelTest {
 
     private val movieRepository = TestMovieRepository()
 
-    private fun viewModel(movieId: Int = 533535) = MovieDetailViewModel(movieId, GetMovieDetailUseCase(movieRepository))
+    private val favoriteMovieRepository = TestFavoriteMovieRepository()
+
+    private val noInternetMessage = UiText.StringResource(com.yiwenliu.core.ui.R.string.error_no_internet)
+
+    private fun viewModel(movieId: Int = 533535) = MovieDetailViewModel(
+        movieId = movieId,
+        getMovieDetail = GetMovieDetailUseCase(movieRepository, favoriteMovieRepository),
+        setMovieFavorite = SetMovieFavoriteUseCase(favoriteMovieRepository),
+    )
 
     private fun seedSuccess() {
         movieRepository.sendMovieDetail(movieDetailTestData)
@@ -70,14 +82,14 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun `a failed load surfaces the NetworkError and clears loading`() = runTest(mainDispatcherRule.dispatcher) {
+    fun `a failed load surfaces the error and clears loading`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
-        movieRepository.sendDetailError(NetworkError.NO_INTERNET)
+        movieRepository.sendDetailError(DataError.Remote.NO_INTERNET)
         viewModel().state.test {
             awaitItem()
             val failed = awaitItem()
             assertFalse(failed.isLoading)
-            assertEquals(NetworkError.NO_INTERNET, failed.error)
+            assertEquals(noInternetMessage, failed.error)
             assertNull(failed.detail)
             expectNoEvents()
         }
@@ -86,11 +98,11 @@ class MovieDetailViewModelTest {
     @Test
     fun `OnRetry reloads and clears the previous error`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
-        movieRepository.sendDetailError(NetworkError.NO_INTERNET)
+        movieRepository.sendDetailError(DataError.Remote.NO_INTERNET)
         val viewModel = viewModel()
         viewModel.state.test {
             awaitItem()
-            assertEquals(NetworkError.NO_INTERNET, awaitItem().error)
+            assertEquals(noInternetMessage, awaitItem().error)
 
             movieRepository.sendDetailError(null)
             viewModel.onAction(MovieDetailAction.OnRetry)
@@ -103,7 +115,7 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun `OnFavoriteToggle flips isFavorite without refetching`() = runTest(mainDispatcherRule.dispatcher) {
+    fun `OnFavoriteToggle persists the movie without refetching`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         val viewModel = viewModel()
         viewModel.state.test {
@@ -114,7 +126,52 @@ class MovieDetailViewModelTest {
             assertTrue(awaitItem().isFavorite)
             expectNoEvents()
         }
+        assertEquals(listOf(533535), favoriteMovieRepository.attemptedAdds.map { it.id })
         assertEquals(listOf(533535), movieRepository.requestedDetailIds)
+    }
+
+    @Test
+    fun `an already favorited movie starts with isFavorite true`() = runTest(mainDispatcherRule.dispatcher) {
+        seedSuccess()
+        favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
+
+        val viewModel = viewModel()
+        runCurrent()
+
+        assertTrue(viewModel.state.value.isFavorite)
+    }
+
+    @Test
+    fun `OnFavoriteToggle false removes the movie`() = runTest(mainDispatcherRule.dispatcher) {
+        seedSuccess()
+        favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
+        val viewModel = viewModel()
+        runCurrent()
+
+        viewModel.onAction(MovieDetailAction.OnFavoriteToggle(false))
+        runCurrent()
+
+        assertEquals(listOf(533535), favoriteMovieRepository.attemptedRemovals)
+        assertFalse(viewModel.state.value.isFavorite)
+    }
+
+    @Test
+    fun `a failed favorite write emits an error event`() = runTest(mainDispatcherRule.dispatcher) {
+        seedSuccess()
+        favoriteMovieRepository.sendWriteError(DataError.Local.DISK_FULL)
+        val viewModel = viewModel()
+        runCurrent()
+
+        viewModel.events.test {
+            viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
+            runCurrent()
+
+            assertEquals(
+                MovieDetailEvent.ShowError(UiText.StringResource(com.yiwenliu.core.ui.R.string.error_disk_full)),
+                awaitItem(),
+            )
+        }
+        assertFalse(viewModel.state.value.isFavorite)
     }
 
     @Test

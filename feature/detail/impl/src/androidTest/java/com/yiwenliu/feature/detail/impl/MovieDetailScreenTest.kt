@@ -12,13 +12,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
-import com.yiwenliu.core.common.domain.util.NetworkError
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
-import com.yiwenliu.core.ui.CastPreviewParameterProvider
-import com.yiwenliu.core.ui.MovieDetailPreviewParameterProvider
-import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.core.ui.preview.CastPreviewParameterProvider
+import com.yiwenliu.core.ui.preview.MovieDetailPreviewParameterProvider
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.util.UiText
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -26,6 +26,8 @@ import kotlin.test.assertEquals
 class MovieDetailScreenTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
+    private val noInternetMessage = UiText.StringResource(com.yiwenliu.core.ui.R.string.error_no_internet)
 
     private val sampleDetail = MovieDetailPreviewParameterProvider().values.first()
     private val sampleCast = CastPreviewParameterProvider().values.first()
@@ -43,10 +45,7 @@ class MovieDetailScreenTest {
         isFavorite = isFavorite,
     )
 
-    private fun renderScreen(
-        state: MovieDetailUiState,
-        onAction: (MovieDetailAction) -> Unit = {},
-    ) {
+    private fun renderScreen(state: MovieDetailUiState, onAction: (MovieDetailAction) -> Unit = {}) {
         composeTestRule.setContent {
             MaterialTheme {
                 MovieDetailScreen(state = state, onAction = onAction)
@@ -69,10 +68,10 @@ class MovieDetailScreenTest {
 
     @Test
     fun errorState_showsMappedMessage() {
-        renderScreen(MovieDetailUiState(isLoading = false, error = NetworkError.NO_INTERNET))
+        renderScreen(MovieDetailUiState(isLoading = false, error = noInternetMessage))
         composeTestRule
             .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertDoesNotExist()
     }
@@ -81,7 +80,7 @@ class MovieDetailScreenTest {
     fun errorState_retryClick_emitsOnRetry() {
         var lastAction: MovieDetailAction? = null
         renderScreen(
-            MovieDetailUiState(isLoading = false, error = NetworkError.NO_INTERNET),
+            MovieDetailUiState(isLoading = false, error = noInternetMessage),
             onAction = { lastAction = it },
         )
         composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()

@@ -10,7 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
-import com.yiwenliu.core.network.mock.MockTMDBApiService
+import com.yiwenliu.core.network.mock.MockTmdbApiService
 import com.yiwenliu.core.ui.TmdbTestTags
 import com.yiwenliu.feature.detail.impl.DetailTestTags
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -31,10 +31,10 @@ class MovieDetailE2ETest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Inject
-    lateinit var apiService: MockTMDBApiService
+    lateinit var apiService: MockTmdbApiService
 
     private val nowPlayingMovie = "Moana 2"
-    private val castMember = "Ryan Reynolds"
+    private val castMember = "Auli'i Cravalho"
     private val recommendedMovie = "Inside Out 2"
 
     @Before
@@ -120,7 +120,7 @@ class MovieDetailE2ETest {
 
         composeTestRule
             .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertDoesNotExist()
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
