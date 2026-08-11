@@ -9,8 +9,7 @@ import javax.inject.Inject
 
 class GetMoviesByCategoryPagerUseCase
 @Inject
-constructor(
-    private val movieRepository: MovieRepository,
-) {
-    operator fun invoke(category: MovieCategory): Flow<PagingData<Movie>> = movieRepository.getMoviesByCategoryPager(category)
+constructor(private val movieRepository: MovieRepository) {
+    operator fun invoke(category: MovieCategory): Flow<PagingData<Movie>> =
+        movieRepository.getMoviesByCategoryPager(category)
 }

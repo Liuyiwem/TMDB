@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.configure
 private val ktlintEditorConfig = mapOf(
     "android" to "true",
     "ktlint_standard_no-unused-imports" to "enabled",
+    "max_line_length" to "120",
 )
 
 internal fun Project.configureSpotlessForAndroid() {
