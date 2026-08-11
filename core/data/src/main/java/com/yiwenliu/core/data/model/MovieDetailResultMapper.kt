@@ -17,8 +17,8 @@ fun MovieDetailResponse.asExternalModel() = MovieDetail(
     tagline = tagline,
     overview = overview,
     releaseDate = releaseDate,
-    posterPath = posterPath.asImageUrl(),
-    backdropPath = backdropPath.asImageUrl(size = BACKDROP_SIZE),
+    posterUrl = posterPath.asImageUrl(),
+    backdropUrl = backdropPath.asImageUrl(size = BACKDROP_SIZE),
     runtimeMinutes = runtime,
     voteAverage = voteAverage,
     voteCount = voteCount,
@@ -34,7 +34,7 @@ fun CastResult.asExternalModel() = CastMember(
     id = id,
     name = name,
     character = character,
-    profilePath = profilePath.asImageUrl(size = PROFILE_SIZE),
+    profileUrl = profilePath.asImageUrl(size = PROFILE_SIZE),
 )
 
 fun CreditsResponse.asExternalModel(): List<CastMember> = cast

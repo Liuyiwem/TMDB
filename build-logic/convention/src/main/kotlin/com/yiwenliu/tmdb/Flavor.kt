@@ -11,23 +11,20 @@ enum class FlavorDimension {
 }
 
 @Suppress("EnumEntryName")
-enum class TMDBFlavor(
-    val dimension: FlavorDimension,
-    val applicationIdSuffix: String? = null,
-) {
+enum class TmdbFlavor(val dimension: FlavorDimension, val applicationIdSuffix: String? = null) {
     mock(FlavorDimension.contentType, applicationIdSuffix = ".mock"),
     prod(FlavorDimension.contentType),
 }
 
 fun configureFlavors(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
-    flavorConfigurationBlock: ProductFlavor.(flavor: TMDBFlavor) -> Unit = {},
+    flavorConfigurationBlock: ProductFlavor.(flavor: TmdbFlavor) -> Unit = {},
 ) {
     commonExtension.apply {
         FlavorDimension.values().forEach { flavorDimensions += it.name }
 
         productFlavors {
-            TMDBFlavor.values().forEach { tmdbFlavor ->
+            TmdbFlavor.values().forEach { tmdbFlavor ->
                 register(tmdbFlavor.name) {
                     dimension = tmdbFlavor.dimension.name
                     flavorConfigurationBlock(this, tmdbFlavor)

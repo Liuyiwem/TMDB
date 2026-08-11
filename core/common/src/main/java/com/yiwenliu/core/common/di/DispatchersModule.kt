@@ -1,8 +1,7 @@
-package com.yiwenliu.core.common.network.di
+package com.yiwenliu.core.common.di
 
-import com.yiwenliu.core.common.network.Dispatcher
-import com.yiwenliu.core.common.network.TMDBDispatchers.Default
-import com.yiwenliu.core.common.network.TMDBDispatchers.IO
+import com.yiwenliu.core.common.di.TmdbDispatchers.Default
+import com.yiwenliu.core.common.di.TmdbDispatchers.IO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

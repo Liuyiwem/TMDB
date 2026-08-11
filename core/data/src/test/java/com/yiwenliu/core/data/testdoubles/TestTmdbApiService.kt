@@ -1,7 +1,7 @@
 package com.yiwenliu.core.data.testdoubles
 
-import com.yiwenliu.core.network.api.TMDBApiService
-import com.yiwenliu.core.network.mock.MockTMDBApiService
+import com.yiwenliu.core.network.api.TmdbApiService
+import com.yiwenliu.core.network.mock.MockTmdbApiService
 import com.yiwenliu.core.network.model.CreditsResponse
 import com.yiwenliu.core.network.model.MovieDetailResponse
 import com.yiwenliu.core.network.model.MovieResponse
@@ -10,9 +10,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TestTMDBApiService : TMDBApiService {
+class TestTmdbApiService : TmdbApiService {
     private val source =
-        MockTMDBApiService(
+        MockTmdbApiService(
             ioDispatcher = UnconfinedTestDispatcher(),
             networkJson =
             Json {
@@ -24,18 +24,12 @@ class TestTMDBApiService : TMDBApiService {
 
     var errorToThrow: Throwable? = null
 
-    override suspend fun getMoviesByCategory(
-        category: String,
-        page: Int,
-    ): MovieResponse {
+    override suspend fun getMoviesByCategory(category: String, page: Int): MovieResponse {
         errorToThrow?.let { throw it }
         return source.getMoviesByCategory(category, page)
     }
 
-    override suspend fun searchMovies(
-        queryString: String,
-        page: Int,
-    ): MovieResponse {
+    override suspend fun searchMovies(queryString: String, page: Int): MovieResponse {
         errorToThrow?.let { throw it }
         return source.searchMovies(queryString, page)
     }
@@ -50,10 +44,7 @@ class TestTMDBApiService : TMDBApiService {
         return source.getMovieCredits(movieId)
     }
 
-    override suspend fun getMovieRecommendations(
-        movieId: Int,
-        page: Int,
-    ): MovieResponse {
+    override suspend fun getMovieRecommendations(movieId: Int, page: Int): MovieResponse {
         errorToThrow?.let { throw it }
         return source.getMovieRecommendations(movieId, page)
     }

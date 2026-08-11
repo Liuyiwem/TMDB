@@ -14,7 +14,7 @@ import retrofit2.Retrofit
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class TMDBApiServiceContractTest {
+class TmdbApiServiceContractTest {
     private val sentRequests = mutableListOf<Request>()
 
     private val client =
@@ -39,7 +39,7 @@ class TMDBApiServiceContractTest {
             .client(client)
             .addConverterFactory(NETWORK_JSON.asConverterFactory(JSON_MEDIA_TYPE))
             .build()
-            .create(TMDBApiService::class.java)
+            .create(TmdbApiService::class.java)
 
     @Test
     fun `getMoviesByCategory builds movie-category with a page query`() = runTest {

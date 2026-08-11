@@ -25,7 +25,7 @@ private val LightColorScheme =
     )
 
 @Composable
-fun TMDBTheme(
+fun TmdbTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
