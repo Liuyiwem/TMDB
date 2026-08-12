@@ -46,7 +46,6 @@ class MoviePagingSourceTest {
     @Test
     fun `load firstPage returns Movies With Correct PagingKeys`() = runTest(testDispatcher) {
         val result = pagerOf(categorySource()).refresh() as LoadResult.Page
-
         assertEquals(2, result.data.size)
         assertEquals(533535, result.data.first().id)
         assertNull(result.prevKey)

@@ -59,7 +59,6 @@ class FavoriteScreenTest {
         val movie = favorites.first()
 
         composeTestRule.onNodeWithTag(FavoriteTestTags.item(movie.id)).performClick()
-
         assertEquals(FavoriteAction.OnMovieClick(movie.id, movie.title), lastAction)
     }
 
@@ -69,7 +68,6 @@ class FavoriteScreenTest {
         val movie = favorites.first()
 
         composeTestRule.onNodeWithTag(FavoriteTestTags.remove(movie.id)).performClick()
-
         assertEquals(FavoriteAction.OnRemoveClick(movie), lastAction)
     }
 
@@ -85,7 +83,6 @@ class FavoriteScreenTest {
 
         composeTestRule.onNodeWithTag(TmdbTestTags.CONFIRM_DIALOG).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TmdbTestTags.CONFIRM_DIALOG_CONFIRM).performClick()
-
         assertEquals(FavoriteAction.OnRemoveConfirm, lastAction)
     }
 
@@ -100,7 +97,6 @@ class FavoriteScreenTest {
         )
 
         composeTestRule.onNodeWithTag(TmdbTestTags.CONFIRM_DIALOG_DISMISS).performClick()
-
         assertEquals(FavoriteAction.OnRemoveDismiss, lastAction)
     }
 }

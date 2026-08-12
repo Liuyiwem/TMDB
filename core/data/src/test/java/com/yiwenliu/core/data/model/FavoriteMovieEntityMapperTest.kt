@@ -18,7 +18,6 @@ class FavoriteMovieEntityMapperTest {
         )
 
         val movie = entity.asExternalModel()
-
         assertEquals(533535, movie.id)
         assertEquals("Deadpool & Wolverine", movie.title)
         assertEquals("/poster.jpg".asImageUrl(), movie.posterUrl)
@@ -33,7 +32,6 @@ class FavoriteMovieEntityMapperTest {
         )
 
         val entity = movie.asEntity(createdAt = 1_700_000_000_000L)
-
         assertEquals(533535, entity.id)
         assertEquals("Deadpool & Wolverine", entity.title)
         assertEquals("/poster.jpg", entity.posterPath)
@@ -46,7 +44,6 @@ class FavoriteMovieEntityMapperTest {
         val movie = FavoriteMovie(id = 533535, title = "Deadpool & Wolverine", posterUrl = url)
 
         val entity = movie.asEntity(createdAt = 1_700_000_000_000L)
-
         assertEquals("/poster.jpg", entity.posterPath)
         assertEquals(url, entity.asExternalModel().posterUrl)
     }

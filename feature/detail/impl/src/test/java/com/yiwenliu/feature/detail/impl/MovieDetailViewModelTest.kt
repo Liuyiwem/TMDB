@@ -106,7 +106,6 @@ class MovieDetailViewModelTest {
 
             movieRepository.sendDetailError(null)
             viewModel.onAction(MovieDetailAction.OnRetry)
-
             assertTrue(awaitItem().isLoading)
             val reloaded = awaitItem()
             assertNull(reloaded.error)
@@ -137,7 +136,6 @@ class MovieDetailViewModelTest {
 
         val viewModel = viewModel()
         runCurrent()
-
         assertTrue(viewModel.state.value.isFavorite)
     }
 
@@ -150,7 +148,6 @@ class MovieDetailViewModelTest {
 
         viewModel.onAction(MovieDetailAction.OnFavoriteToggle(false))
         runCurrent()
-
         assertEquals(listOf(533535), favoriteMovieRepository.attemptedRemovals)
         assertFalse(viewModel.state.value.isFavorite)
     }
@@ -165,7 +162,6 @@ class MovieDetailViewModelTest {
         viewModel.events.test {
             viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
             runCurrent()
-
             assertEquals(
                 MovieDetailEvent.ShowError(UiText.StringResource(com.yiwenliu.core.ui.R.string.error_disk_full)),
                 awaitItem(),
@@ -194,7 +190,6 @@ class MovieDetailViewModelTest {
 
         viewModel.onAction(MovieDetailAction.OnRecommendationClick(1022789, "Inside Out 2"))
         runCurrent()
-
         assertEquals(before, viewModel.state.value)
         assertEquals(listOf(533535), movieRepository.requestedDetailIds)
     }

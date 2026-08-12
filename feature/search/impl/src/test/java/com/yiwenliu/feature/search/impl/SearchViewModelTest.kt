@@ -41,7 +41,6 @@ class SearchViewModelTest {
     @Test
     fun `query is restored from SavedStateHandle`() {
         val restored = viewModel(mapOf(SearchViewModel.QUERY_STRING to "batman"))
-
         assertEquals("batman", restored.state.value.queryString)
     }
 

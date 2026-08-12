@@ -37,7 +37,6 @@ class FavoriteMovieDaoTest {
     @Test
     fun upsertedMovieIsReturnedAsFavorite() = runTest {
         favoriteMovieDao.upsert(entity(id = 1, createdAt = 100L))
-
         assertTrue(favoriteMovieDao.isFavorite(1).first())
         assertFalse(favoriteMovieDao.isFavorite(2).first())
     }
@@ -49,7 +48,6 @@ class FavoriteMovieDaoTest {
         favoriteMovieDao.upsert(entity(id = 3, title = "Middle", createdAt = 200L))
 
         val titles = favoriteMovieDao.getFavoriteMovies().first().map { it.title }
-
         assertEquals(listOf("Newest", "Middle", "Oldest"), titles)
     }
 
@@ -59,7 +57,6 @@ class FavoriteMovieDaoTest {
         favoriteMovieDao.upsert(entity(id = 1, title = "After", createdAt = 200L))
 
         val favorites = favoriteMovieDao.getFavoriteMovies().first()
-
         assertEquals(1, favorites.size)
         assertEquals("After", favorites.first().title)
     }
@@ -68,7 +65,6 @@ class FavoriteMovieDaoTest {
     fun deleteRemovesTheMovie() = runTest {
         favoriteMovieDao.upsert(entity(id = 1, createdAt = 100L))
         favoriteMovieDao.delete(1)
-
         assertTrue(favoriteMovieDao.getFavoriteMovies().first().isEmpty())
         assertFalse(favoriteMovieDao.isFavorite(1).first())
     }

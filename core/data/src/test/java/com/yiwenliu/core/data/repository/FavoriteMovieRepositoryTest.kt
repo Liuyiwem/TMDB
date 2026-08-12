@@ -38,7 +38,6 @@ class FavoriteMovieRepositoryTest {
     @Test
     fun `an added movie comes back unchanged`() = runTest {
         repository.addFavorite(movie)
-
         assertEquals(listOf(movie), repository.getFavoriteMovies().first())
     }
 
@@ -53,7 +52,6 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(otherMovie)
 
         val favorites = repository.getFavoriteMovies().first()
-
         assertEquals(2, favorites.size)
         assertTrue(favorites.containsAll(listOf(movie, otherMovie)))
     }
@@ -62,7 +60,6 @@ class FavoriteMovieRepositoryTest {
     fun `adding the same movie twice does not duplicate it`() = runTest {
         repository.addFavorite(movie)
         repository.addFavorite(movie)
-
         assertEquals(listOf(movie), repository.getFavoriteMovies().first())
     }
 
@@ -71,7 +68,6 @@ class FavoriteMovieRepositoryTest {
         assertFalse(repository.isFavorite(movie.id).first())
 
         repository.addFavorite(movie)
-
         assertTrue(repository.isFavorite(movie.id).first())
         assertFalse(repository.isFavorite(otherMovie.id).first())
     }
@@ -80,9 +76,7 @@ class FavoriteMovieRepositoryTest {
     fun `removeFavorite removes only that movie`() = runTest {
         repository.addFavorite(movie)
         repository.addFavorite(otherMovie)
-
         assertIs<Result.Success<Unit>>(repository.removeFavorite(movie.id))
-
         assertEquals(listOf(otherMovie), repository.getFavoriteMovies().first())
     }
 
@@ -91,7 +85,6 @@ class FavoriteMovieRepositoryTest {
         favoriteMovieDao.errorToThrow = SQLiteFullException("disk full")
 
         val result = repository.addFavorite(movie)
-
         assertIs<Result.Failure<DataError.Local>>(result)
         assertEquals(DataError.Local.DISK_FULL, result.error)
     }
@@ -101,7 +94,6 @@ class FavoriteMovieRepositoryTest {
         favoriteMovieDao.errorToThrow = SQLiteException("boom")
 
         val result = repository.removeFavorite(movie.id)
-
         assertIs<Result.Failure<DataError.Local>>(result)
         assertEquals(DataError.Local.UNKNOWN, result.error)
     }
@@ -112,7 +104,6 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(movie)
         currentTime = 200L
         repository.addFavorite(otherMovie)
-
         assertEquals(listOf(otherMovie, movie), repository.getFavoriteMovies().first())
     }
 
@@ -120,7 +111,6 @@ class FavoriteMovieRepositoryTest {
     fun `getFavoriteMovies degrades to an empty list when the read fails`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteException("boom")
-
         assertEquals(emptyList(), repository.getFavoriteMovies().first())
     }
 
@@ -128,7 +118,6 @@ class FavoriteMovieRepositoryTest {
     fun `isFavorite degrades to false when the read fails`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteException("boom")
-
         assertFalse(repository.isFavorite(movie.id).first())
     }
 }

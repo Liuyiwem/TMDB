@@ -48,14 +48,12 @@ class DataErrorToUiTextTest {
     @Test
     fun `a DataErrorException unwraps to its underlying error`() {
         val throwable = DataErrorException(DataError.Remote.NO_INTERNET)
-
         assertEquals(UiText.StringResource(R.string.error_no_internet), throwable.toUiText())
     }
 
     @Test
     fun `an unrecognised throwable falls back to the unknown message`() {
         val throwable = IOException("boom")
-
         assertEquals(UiText.StringResource(R.string.error_unknown), throwable.toUiText())
     }
 }

@@ -63,7 +63,6 @@ class FavoriteViewModelTest {
     fun `an empty repository ends in an empty non-loading state`() = runTest(mainDispatcherRule.dispatcher) {
         val viewModel = collectingViewModel()
         runCurrent()
-
         assertFalse(viewModel.state.value.isLoading)
         assertTrue(viewModel.state.value.favorites.isEmpty())
     }
@@ -76,7 +75,6 @@ class FavoriteViewModelTest {
 
         viewModel.onAction(FavoriteAction.OnRemoveClick(favoriteMoviesTestData.first()))
         runCurrent()
-
         assertEquals(favoriteMoviesTestData.first(), viewModel.state.value.pendingRemoval)
         assertEquals(favoriteMoviesTestData, viewModel.state.value.favorites)
         assertTrue(favoriteMovieRepository.attemptedRemovals.isEmpty())
@@ -91,7 +89,6 @@ class FavoriteViewModelTest {
         viewModel.onAction(FavoriteAction.OnRemoveClick(favoriteMoviesTestData.first()))
         viewModel.onAction(FavoriteAction.OnRemoveConfirm)
         runCurrent()
-
         assertNull(viewModel.state.value.pendingRemoval)
         assertEquals(listOf(533535), favoriteMovieRepository.attemptedRemovals)
         assertEquals(favoriteMoviesTestData.drop(1), viewModel.state.value.favorites)
@@ -106,7 +103,6 @@ class FavoriteViewModelTest {
         viewModel.onAction(FavoriteAction.OnRemoveClick(favoriteMoviesTestData.first()))
         viewModel.onAction(FavoriteAction.OnRemoveDismiss)
         runCurrent()
-
         assertNull(viewModel.state.value.pendingRemoval)
         assertTrue(favoriteMovieRepository.attemptedRemovals.isEmpty())
         assertEquals(favoriteMoviesTestData, viewModel.state.value.favorites)
@@ -123,7 +119,6 @@ class FavoriteViewModelTest {
             viewModel.onAction(FavoriteAction.OnRemoveClick(favoriteMoviesTestData.first()))
             viewModel.onAction(FavoriteAction.OnRemoveConfirm)
             runCurrent()
-
             assertEquals(
                 FavoriteEvent.ShowError(UiText.StringResource(com.yiwenliu.core.ui.R.string.error_disk_full)),
                 awaitItem(),
@@ -141,7 +136,6 @@ class FavoriteViewModelTest {
 
         viewModel.onAction(FavoriteAction.OnMovieClick(533535, "Deadpool & Wolverine"))
         runCurrent()
-
         assertEquals(before, viewModel.state.value)
     }
 }

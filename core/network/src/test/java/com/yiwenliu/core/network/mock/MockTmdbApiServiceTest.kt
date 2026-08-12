@@ -91,7 +91,6 @@ class MockTmdbApiServiceTest {
     @Test
     fun `a movie without an asset falls back to the default one`() = runTest(testDispatcher) {
         val unknownMovieId = 999999
-
         assertEquals(
             MockTmdbApiService.FALLBACK_MOVIE_ID,
             apiService.getMovieDetail(unknownMovieId).id,

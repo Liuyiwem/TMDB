@@ -15,7 +15,6 @@ class SafeDatabaseCallTest {
     @Test
     fun `safeDatabaseCall returns Success when execution succeeds`() = runTest {
         val result = safeDatabaseCall { "written" }
-
         assertTrue(result is Result.Success)
         assertEquals("written", result.data)
     }
@@ -23,7 +22,6 @@ class SafeDatabaseCallTest {
     @Test
     fun `safeDatabaseCall returns DISK_FULL for SQLiteFullException`() = runTest {
         val result = safeDatabaseCall<Unit> { throw SQLiteFullException("disk full") }
-
         assertTrue(result is Result.Failure)
         assertEquals(DataError.Local.DISK_FULL, result.error)
     }
@@ -31,7 +29,6 @@ class SafeDatabaseCallTest {
     @Test
     fun `safeDatabaseCall returns UNKNOWN for other SQLiteExceptions`() = runTest {
         val result = safeDatabaseCall<Unit> { throw SQLiteException("boom") }
-
         assertTrue(result is Result.Failure)
         assertEquals(DataError.Local.UNKNOWN, result.error)
     }
