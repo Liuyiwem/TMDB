@@ -1,0 +1,26 @@
+{
+  "id": 1241982,
+  "cast": [
+    {
+      "id": 1382349,
+      "name": "Auli'i Cravalho",
+      "character": "Moana (voice)",
+      "profile_path": "/1ZQVHkVMhbrBBEUFnHKGGRSFYnX.jpg",
+      "order": 0
+    },
+    {
+      "id": 18918,
+      "name": "Dwayne Johnson",
+      "character": "Maui (voice)",
+      "profile_path": "/akweMz59qsMFRJZC2m8Foune8Ln.jpg",
+      "order": 1
+    },
+    {
+      "id": 65717,
+      "name": "Temuera Morrison",
+      "character": "Chief Tui (voice)",
+      "profile_path": null,
+      "order": 2
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": 933260,
+  "title": "The Substance",
+  "tagline": "Have you ever dreamt of a better version of yourself?",
+  "overview": "A fading celebrity decides to use a black market drug, a cell-replicating substance that temporarily creates a younger, better version of herself.",
+  "release_date": "2024-09-07",
+  "poster_path": "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
+  "backdrop_path": "/7h6TqPB3ESmjuVbxCxAeB1c9OB1.jpg",
+  "runtime": 141,
+  "status": "Released",
+  "vote_average": 7.3,
+  "vote_count": 1857,
+  "genres": [
+    {
+      "id": 27,
+      "name": "Horror"
+    },
+    {
+      "id": 878,
+      "name": "Science Fiction"
+    },
+    {
+      "id": 53,
+      "name": "Thriller"
+    }
+  ]
+}

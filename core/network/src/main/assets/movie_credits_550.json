@@ -1,0 +1,26 @@
+{
+  "id": 550,
+  "cast": [
+    {
+      "id": 819,
+      "name": "Edward Norton",
+      "character": "The Narrator",
+      "profile_path": "/5XBzD5WuTyVQZeS4VI25z2moMeY.jpg",
+      "order": 0
+    },
+    {
+      "id": 287,
+      "name": "Brad Pitt",
+      "character": "Tyler Durden",
+      "profile_path": "/cckcYc2v0yh1tc9QjRelptcOBko.jpg",
+      "order": 1
+    },
+    {
+      "id": 1283,
+      "name": "Helena Bonham Carter",
+      "character": "Marla Singer",
+      "profile_path": null,
+      "order": 2
+    }
+  ]
+}

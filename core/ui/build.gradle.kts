@@ -8,13 +8,16 @@ android {
 }
 
 dependencies {
+    api(projects.core.common)
     api(projects.core.model)
     api(libs.paging.compose)
 
-    implementation(projects.core.common)
     implementation(projects.core.navigation)
     implementation(libs.androidx.compose.material.iconsExtended)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.material3)
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)
+
+    testImplementation(libs.junit)
 }

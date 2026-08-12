@@ -1,6 +1,6 @@
 package com.yiwenliu.core.network.di
 
-import com.yiwenliu.core.network.api.TMDBApiService
+import com.yiwenliu.core.network.api.TmdbApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 object FlavoredNetworkModule {
     @Provides
     @Singleton
-    fun providesTMDBApiService(retrofit: Retrofit): TMDBApiService = retrofit.create(TMDBApiService::class.java)
+    fun providesTmdbApiService(retrofit: Retrofit): TmdbApiService = retrofit.create(TmdbApiService::class.java)
 }

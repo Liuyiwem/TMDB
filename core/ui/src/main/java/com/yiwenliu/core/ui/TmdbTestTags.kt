@@ -15,6 +15,12 @@ object TmdbTestTags {
 
     const val DEFAULT_GRID_PREFIX = "movieGrid"
 
+    const val CONFIRM_DIALOG = "confirmDialog"
+
+    const val CONFIRM_DIALOG_CONFIRM = "confirmDialog:confirm"
+
+    const val CONFIRM_DIALOG_DISMISS = "confirmDialog:dismiss"
+
     fun tab(category: MovieCategory) = "tab:${category.name}"
 
     fun grid(prefix: String) = "$prefix:grid"

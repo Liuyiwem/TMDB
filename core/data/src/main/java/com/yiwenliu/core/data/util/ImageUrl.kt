@@ -13,3 +13,5 @@ internal fun String?.asImageUrl(size: String = POSTER_SIZE): String = if (this.i
 } else {
     "${BuildConfig.IMAGE_URL}$size$this"
 }
+
+internal fun String.asImagePath(size: String = POSTER_SIZE): String = removePrefix("${BuildConfig.IMAGE_URL}$size")

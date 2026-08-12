@@ -11,6 +11,7 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
 
             dependencies {
                 "ksp"(libs.findLibrary("hilt-compiler").get())
+                "ksp"(libs.findLibrary("kotlin-metadata-jvm").get())
             }
 
             pluginManager.withPlugin("com.android.base") {

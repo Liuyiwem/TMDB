@@ -13,10 +13,7 @@ enum class NavIcon {
 }
 
 @Immutable
-data class TopAppBarSpec(
-    val navIcon: NavIcon = NavIcon.None,
-    val title: (NavKey) -> String? = { null },
-)
+data class TopAppBarSpec(val navIcon: NavIcon = NavIcon.None, val title: (NavKey) -> String? = { null })
 
 fun topAppBarMetadata(spec: TopAppBarSpec): Map<String, Any> = mapOf(TOP_APP_BAR_METADATA to spec)
 

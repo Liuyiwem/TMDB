@@ -4,9 +4,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingState
 import androidx.paging.testing.TestPager
-import com.yiwenliu.core.common.domain.util.NetworkError
-import com.yiwenliu.core.common.domain.util.NetworkException
-import com.yiwenliu.core.data.testdoubles.TestTMDBApiService
+import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.data.testdoubles.TestTmdbApiService
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.network.model.MovieResponse
 import com.yiwenliu.core.network.model.MovieResult
@@ -26,11 +26,11 @@ import kotlin.test.assertTrue
 class MoviePagingSourceTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
-    private lateinit var apiService: TestTMDBApiService
+    private lateinit var apiService: TestTmdbApiService
 
     @Before
     fun setup() {
-        apiService = TestTMDBApiService()
+        apiService = TestTmdbApiService()
     }
 
     private fun categorySource() = MoviePagingSource(testDispatcher) { page ->
@@ -46,7 +46,6 @@ class MoviePagingSourceTest {
     @Test
     fun `load firstPage returns Movies With Correct PagingKeys`() = runTest(testDispatcher) {
         val result = pagerOf(categorySource()).refresh() as LoadResult.Page
-
         assertEquals(2, result.data.size)
         assertEquals(533535, result.data.first().id)
         assertNull(result.prevKey)
@@ -72,7 +71,7 @@ class MoviePagingSourceTest {
         val source = MoviePagingSource(testDispatcher) { throw IOException("socket closed") }
         val result = pagerOf(source).refresh()
         assertTrue(result is LoadResult.Error)
-        assertEquals(NetworkError.NO_INTERNET, (result.throwable as NetworkException).networkError)
+        assertEquals(DataError.Remote.NO_INTERNET, (result.throwable as DataErrorException).error)
     }
 
     @Test
@@ -82,13 +81,13 @@ class MoviePagingSourceTest {
         }
         val result = pagerOf(source).refresh()
         assertEquals(
-            NetworkError.SERIALIZATION,
-            ((result as LoadResult.Error).throwable as NetworkException).networkError,
+            DataError.Remote.SERIALIZATION,
+            ((result as LoadResult.Error).throwable as DataErrorException).error,
         )
     }
 
     @Test
-    fun `an append failure carries the mapped NetworkError`() = runTest(testDispatcher) {
+    fun `an append failure carries the mapped remote error`() = runTest(testDispatcher) {
         val source = MoviePagingSource(testDispatcher) { page ->
             if (page == 1) responseOf(page = 1, totalPages = 3, ids = listOf(1, 2)) else throw IOException("boom")
         }
@@ -96,8 +95,8 @@ class MoviePagingSourceTest {
         pager.refresh()
         val appended = pager.append()
         assertEquals(
-            NetworkError.NO_INTERNET,
-            ((appended as LoadResult.Error).throwable as NetworkException).networkError,
+            DataError.Remote.NO_INTERNET,
+            ((appended as LoadResult.Error).throwable as DataErrorException).error,
         )
     }
 
@@ -168,11 +167,7 @@ class MoviePagingSourceTest {
         assertNull(second.nextKey)
     }
 
-    private fun responseOf(
-        page: Int,
-        totalPages: Int,
-        ids: List<Int>,
-    ) = MovieResponse(
+    private fun responseOf(page: Int, totalPages: Int, ids: List<Int>) = MovieResponse(
         page = page,
         results = ids.map { MovieResult(id = it, title = "Movie $it") },
         totalPages = totalPages,

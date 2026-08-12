@@ -1,19 +1,31 @@
 package com.yiwenliu.core.domain.usecase
 
-import com.yiwenliu.core.common.domain.util.NetworkError
+import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.domain.util.map
+import com.yiwenliu.core.data.repository.FavoriteMovieRepository
 import com.yiwenliu.core.data.repository.MovieRepository
 import com.yiwenliu.core.model.MovieDetailBundle
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetMovieDetailUseCase
 @Inject
 constructor(
     private val movieRepository: MovieRepository,
+    private val favoriteMovieRepository: FavoriteMovieRepository,
 ) {
-    suspend operator fun invoke(movieId: Int): Result<MovieDetailBundle, NetworkError> = coroutineScope {
+    operator fun invoke(movieId: Int): Flow<Result<MovieDetailBundle, DataError.Remote>> =
+        flow { emit(fetchBundle(movieId)) }
+            .combine(favoriteMovieRepository.isFavorite(movieId)) { bundle, isFavorite ->
+                bundle.map { it.copy(isFavorite = isFavorite) }
+            }
+
+    private suspend fun fetchBundle(movieId: Int): Result<MovieDetailBundle, DataError.Remote> = coroutineScope {
         val detailDeferred = async { movieRepository.getMovieDetail(movieId) }
         val castDeferred = async { movieRepository.getMovieCredits(movieId) }
         val recommendationsDeferred = async { movieRepository.getMovieRecommendations(movieId) }
@@ -23,11 +35,11 @@ constructor(
         val recommendations = recommendationsDeferred.await()
 
         when {
-            detail is Result.Error -> Result.Error(detail.error)
+            detail is Result.Failure -> Result.Failure(detail.error)
 
-            cast is Result.Error -> Result.Error(cast.error)
+            cast is Result.Failure -> Result.Failure(cast.error)
 
-            recommendations is Result.Error -> Result.Error(recommendations.error)
+            recommendations is Result.Failure -> Result.Failure(recommendations.error)
 
             else -> Result.Success(
                 MovieDetailBundle(

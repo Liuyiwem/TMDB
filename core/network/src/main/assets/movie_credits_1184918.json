@@ -1,0 +1,26 @@
+{
+  "id": 1184918,
+  "cast": [
+    {
+      "id": 1707212,
+      "name": "Lupita Nyong'o",
+      "character": "Roz (voice)",
+      "profile_path": "/6HH5XyDzGxpaEhVCzicjOOkoTrz.jpg",
+      "order": 0
+    },
+    {
+      "id": 17178,
+      "name": "Pedro Pascal",
+      "character": "Fink (voice)",
+      "profile_path": "/9VYK7oxcqhjd5LAH6ZFJ3XzOlID.jpg",
+      "order": 1
+    },
+    {
+      "id": 52847,
+      "name": "Kit Connor",
+      "character": "Brightbill (voice)",
+      "profile_path": null,
+      "order": 2
+    }
+  ]
+}

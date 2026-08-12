@@ -11,10 +11,7 @@ import com.yiwenliu.feature.home.api.navigation.HomeNavKey
 import com.yiwenliu.feature.search.api.navigation.SearchNavKey
 import com.yiwenliu.tmdb.R
 
-data class TopLevelNavItem(
-    val icon: ImageVector,
-    @param:StringRes val iconTextId: Int,
-)
+data class TopLevelNavItem(val icon: ImageVector, @param:StringRes val iconTextId: Int)
 
 val HOME =
     TopLevelNavItem(

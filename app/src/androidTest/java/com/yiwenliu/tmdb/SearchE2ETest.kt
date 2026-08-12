@@ -6,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import com.yiwenliu.core.network.mock.MockTMDBApiService
+import com.yiwenliu.core.network.mock.MockTmdbApiService
 import com.yiwenliu.core.ui.TmdbTestTags
 import com.yiwenliu.feature.search.impl.SearchTestTags
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -27,7 +27,7 @@ class SearchE2ETest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Inject
-    lateinit var apiService: MockTMDBApiService
+    lateinit var apiService: MockTmdbApiService
 
     private val searchTab get() = composeTestRule.activity.getString(R.string.feature_search)
 
@@ -56,7 +56,7 @@ class SearchE2ETest {
         composeTestRule.onNodeWithText(searchTab).performClick()
         composeTestRule
             .onNodeWithTag(SearchTestTags.TEXT_FIELD)
-            .performTextInput(MockTMDBApiService.EMPTY_RESULT_QUERY)
+            .performTextInput(MockTmdbApiService.EMPTY_RESULT_QUERY)
         composeTestRule.awaitTag(SearchTestTags.EMPTY)
         composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertDoesNotExist()
@@ -80,7 +80,7 @@ class SearchE2ETest {
         composeTestRule.awaitTag(TmdbTestTags.ERROR)
         composeTestRule
             .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertDoesNotExist()
         composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()

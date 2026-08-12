@@ -6,7 +6,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.yiwenliu.core.model.MovieCategory
-import com.yiwenliu.core.network.mock.MockTMDBApiService
+import com.yiwenliu.core.network.mock.MockTmdbApiService
 import com.yiwenliu.core.ui.TmdbTestTags
 import com.yiwenliu.feature.home.impl.HomeTestTags
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -27,7 +27,7 @@ class HomeScreenE2ETest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Inject
-    lateinit var apiService: MockTMDBApiService
+    lateinit var apiService: MockTmdbApiService
 
     private val nowPlayingMovie = "Moana 2"
     private val popularMovie = "Deadpool & Wolverine"
@@ -67,7 +67,7 @@ class HomeScreenE2ETest {
 
         composeTestRule
             .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(HomeTestTags.GRID).assertDoesNotExist()
         composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()

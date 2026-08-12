@@ -1,0 +1,26 @@
+{
+  "id": 1022789,
+  "cast": [
+    {
+      "id": 56322,
+      "name": "Amy Poehler",
+      "character": "Joy (voice)",
+      "profile_path": "/rUCJVdvi7Uc0X6PkeNKnRlbnDbf.jpg",
+      "order": 0
+    },
+    {
+      "id": 1730594,
+      "name": "Maya Hawke",
+      "character": "Anxiety (voice)",
+      "profile_path": "/tdKmGGjHVi7CHNTaMhaMLGKZBAB.jpg",
+      "order": 1
+    },
+    {
+      "id": 3893937,
+      "name": "Kensington Tallman",
+      "character": "Riley (voice)",
+      "profile_path": null,
+      "order": 2
+    }
+  ]
+}

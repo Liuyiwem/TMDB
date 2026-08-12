@@ -31,6 +31,7 @@ dependencies {
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.hilt.gradlePlugin)
     compileOnly(libs.spotless.gradlePlugin)
+    compileOnly(libs.androidx.room.gradlePlugin)
 }
 
 gradlePlugin {
@@ -66,6 +67,10 @@ gradlePlugin {
         register("androidHilt") {
             id = libs.plugins.tmdb.android.hilt.get().pluginId
             implementationClass = "AndroidHiltConventionPlugin"
+        }
+        register("androidRoom") {
+            id = libs.plugins.tmdb.android.room.get().pluginId
+            implementationClass = "AndroidRoomConventionPlugin"
         }
         register("androidFeatureImpl") {
             id = libs.plugins.tmdb.android.feature.impl.get().pluginId

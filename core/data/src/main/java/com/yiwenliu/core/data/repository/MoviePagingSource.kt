@@ -5,8 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.yiwenliu.core.common.data.networking.safeCall
-import com.yiwenliu.core.common.domain.util.NetworkException
+import com.yiwenliu.core.common.data.networking.safeApiCall
+import com.yiwenliu.core.common.domain.util.DataErrorException
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.data.model.asExternalModel
 import com.yiwenliu.core.model.Movie
@@ -28,7 +28,7 @@ internal class MoviePagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
         val page = params.key ?: 1
-        return when (val result = withContext(ioDispatcher) { safeCall { fetchPage(page) } }) {
+        return when (val result = withContext(ioDispatcher) { safeApiCall { fetchPage(page) } }) {
             is Result.Success -> {
                 val movies =
                     result.data.results
@@ -41,7 +41,7 @@ internal class MoviePagingSource(
                 )
             }
 
-            is Result.Error -> LoadResult.Error(NetworkException(result.error))
+            is Result.Failure -> LoadResult.Error(DataErrorException(result.error))
         }
     }
 }

@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,12 +25,12 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.presentation.util.toUserMessage
 import com.yiwenliu.core.model.Movie
-import com.yiwenliu.core.ui.ErrorItem
-import com.yiwenliu.core.ui.MoviePagingGrid
-import com.yiwenliu.core.ui.MoviePreviewParameterProvider
-import com.yiwenliu.core.ui.SearchTextField
+import com.yiwenliu.core.ui.component.ErrorItem
+import com.yiwenliu.core.ui.component.MoviePagingGrid
+import com.yiwenliu.core.ui.component.SearchTextField
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
+import com.yiwenliu.core.ui.util.toUiText
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -113,7 +112,7 @@ private fun SearchResults(
             )
 
             is SearchResultsState.Error -> ErrorItem(
-                errorMessage = current.throwable.toUserMessage(LocalContext.current),
+                errorMessage = current.throwable.toUiText().asString(),
                 retryText = stringResource(com.yiwenliu.core.ui.R.string.retry),
                 onRetry = searchMovies::retry,
             )

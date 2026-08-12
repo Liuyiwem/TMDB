@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.yiwenliu.core.common.domain.util.NetworkError
+import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.data.repository.MovieRepository
 import com.yiwenliu.core.model.CastMember
@@ -36,11 +36,11 @@ class TestMovieRepository : MovieRepository {
 
     private var recommendations: List<Movie> = emptyList()
 
-    private var detailError: NetworkError? = null
+    private var detailError: DataError.Remote? = null
 
-    private var creditsError: NetworkError? = null
+    private var creditsError: DataError.Remote? = null
 
-    private var recommendationsError: NetworkError? = null
+    private var recommendationsError: DataError.Remote? = null
 
     var responseDelayMillis: Long = 0
 
@@ -52,22 +52,22 @@ class TestMovieRepository : MovieRepository {
         requestedQueries += queryString
     }
 
-    override suspend fun getMovieDetail(movieId: Int): Result<MovieDetail, NetworkError> {
+    override suspend fun getMovieDetail(movieId: Int): Result<MovieDetail, DataError.Remote> {
         delayIfNeeded()
         requestedDetailIds += movieId
-        return detailError?.let { Result.Error(it) } ?: Result.Success(checkNotNull(movieDetail))
+        return detailError?.let { Result.Failure(it) } ?: Result.Success(checkNotNull(movieDetail))
     }
 
-    override suspend fun getMovieCredits(movieId: Int): Result<List<CastMember>, NetworkError> {
+    override suspend fun getMovieCredits(movieId: Int): Result<List<CastMember>, DataError.Remote> {
         delayIfNeeded()
         requestedCreditsIds += movieId
-        return creditsError?.let { Result.Error(it) } ?: Result.Success(cast)
+        return creditsError?.let { Result.Failure(it) } ?: Result.Success(cast)
     }
 
-    override suspend fun getMovieRecommendations(movieId: Int): Result<List<Movie>, NetworkError> {
+    override suspend fun getMovieRecommendations(movieId: Int): Result<List<Movie>, DataError.Remote> {
         delayIfNeeded()
         requestedRecommendationIds += movieId
-        return recommendationsError?.let { Result.Error(it) } ?: Result.Success(recommendations)
+        return recommendationsError?.let { Result.Failure(it) } ?: Result.Success(recommendations)
     }
 
     private suspend fun delayIfNeeded() {
@@ -108,15 +108,15 @@ class TestMovieRepository : MovieRepository {
         this.recommendations = recommendations
     }
 
-    fun sendDetailError(error: NetworkError?) {
+    fun sendDetailError(error: DataError.Remote?) {
         this.detailError = error
     }
 
-    fun sendCreditsError(error: NetworkError?) {
+    fun sendCreditsError(error: DataError.Remote?) {
         this.creditsError = error
     }
 
-    fun sendRecommendationsError(error: NetworkError?) {
+    fun sendRecommendationsError(error: DataError.Remote?) {
         this.recommendationsError = error
     }
 }

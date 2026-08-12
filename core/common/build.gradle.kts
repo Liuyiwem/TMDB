@@ -5,6 +5,8 @@ plugins {
 
 android {
     namespace = "com.yiwenliu.core.common"
+
+    testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {

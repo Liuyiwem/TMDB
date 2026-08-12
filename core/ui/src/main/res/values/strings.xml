@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- MoviePagingGrid 的錯誤項目使用，兩個 feature 原本各自維護一份相同的字串。 -->
     <string name="retry">Retry</string>
     <string name="nav_back">Back</string>
     <string name="nav_close">Close</string>
+
+    <string name="error_bad_request">Invalid request</string>
+    <string name="error_unauthorized">Unauthorized</string>
+    <string name="error_forbidden">Access denied</string>
+    <string name="error_not_found">Not found</string>
+    <string name="error_request_timeout">Request timeout</string>
+    <string name="error_conflict">Conflict</string>
+    <string name="error_payload_too_large">Request too large</string>
+    <string name="error_too_many_requests">Too many requests</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_server">Server error</string>
+    <string name="error_service_unavailable">Service unavailable</string>
+    <string name="error_serialization">Data parsing error</string>
+    <string name="error_disk_full">Storage is full</string>
+    <string name="error_unknown">Unknown error</string>
 </resources>

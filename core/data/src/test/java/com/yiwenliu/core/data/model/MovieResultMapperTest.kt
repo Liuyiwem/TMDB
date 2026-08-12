@@ -28,7 +28,7 @@ class MovieResultMapperTest {
         assertEquals(7.7, movie.voteAverage, 0.0)
         assertEquals(100, movie.voteCount)
         assertEquals(listOf(28, 35), movie.genreIds)
-        assertTrue(movie.posterPath.endsWith("w500/poster.jpg"))
+        assertTrue(movie.posterUrl.endsWith("w500/poster.jpg"))
     }
 
     @Test
@@ -40,15 +40,15 @@ class MovieResultMapperTest {
                 posterPath = "/poster.jpg",
                 backdropPath = "/backdrop.jpg",
             ).asExternalModel()
-        assertTrue(movie.posterPath.endsWith("w500/poster.jpg"))
-        assertTrue(movie.backdropPath.endsWith("w780/backdrop.jpg"))
+        assertTrue(movie.posterUrl.endsWith("w500/poster.jpg"))
+        assertTrue(movie.backdropUrl.endsWith("w780/backdrop.jpg"))
     }
 
     @Test
     fun `asExternalModel maps a blank image path to an empty string`() {
         val movie = MovieResult(id = 533535, posterPath = "", backdropPath = "").asExternalModel()
-        assertEquals("", movie.posterPath)
-        assertEquals("", movie.backdropPath)
+        assertEquals("", movie.posterUrl)
+        assertEquals("", movie.backdropUrl)
     }
 
     @Test

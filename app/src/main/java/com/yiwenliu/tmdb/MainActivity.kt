@@ -13,11 +13,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.yiwenliu.core.navigation.rememberNavigationState
-import com.yiwenliu.core.ui.LottieSplashScreen
+import com.yiwenliu.core.ui.component.LottieSplashScreen
 import com.yiwenliu.feature.home.api.navigation.HomeNavKey
 import com.yiwenliu.tmdb.navigation.TOP_LEVEL_NAV_ITEMS
-import com.yiwenliu.tmdb.ui.TMDBApp
-import com.yiwenliu.tmdb.ui.theme.TMDBTheme
+import com.yiwenliu.tmdb.ui.TmdbApp
+import com.yiwenliu.tmdb.ui.theme.TmdbTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TMDBTheme {
+            TmdbTheme {
                 val showSplash = splashViewModel.isVisible
                 val navigationState =
                     rememberNavigationState(
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Box {
-                    TMDBApp(navigationState = navigationState)
+                    TmdbApp(navigationState = navigationState)
                     if (showSplash) {
                         LottieSplashScreen(
                             animationRes = R.raw.splash,

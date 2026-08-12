@@ -16,11 +16,11 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.domain.util.NetworkError
-import com.yiwenliu.core.common.domain.util.NetworkException
+import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.domain.util.DataErrorException
 import com.yiwenliu.core.model.Movie
-import com.yiwenliu.core.ui.MoviePreviewParameterProvider
 import com.yiwenliu.core.ui.TmdbTestTags
+import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -105,13 +105,13 @@ class SearchScreenTest {
             Screen(
                 state = SearchUiState(queryString = "batman"),
                 loadStates = settled.copy(
-                    refresh = LoadState.Error(NetworkException(NetworkError.NO_INTERNET)),
+                    refresh = LoadState.Error(DataErrorException(DataError.Remote.NO_INTERNET)),
                 ),
             )
         }
         composeTestRule
             .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.common.R.string.error_no_internet),
+                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()

@@ -14,10 +14,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 
 @Composable
-fun rememberNavigationState(
-    startKey: NavKey,
-    topLevelKeys: Set<NavKey>,
-): NavigationState {
+fun rememberNavigationState(startKey: NavKey, topLevelKeys: Set<NavKey>): NavigationState {
     val topLevelStack = rememberNavBackStack(startKey)
     val subStacks = topLevelKeys.associateWith { key -> rememberNavBackStack(key) }
 

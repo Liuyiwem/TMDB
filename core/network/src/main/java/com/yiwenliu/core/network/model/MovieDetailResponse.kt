@@ -20,10 +20,7 @@ data class MovieDetailResponse(
 )
 
 @Serializable
-data class GenreResult(
-    @SerialName("id") val id: Int,
-    @SerialName("name") val name: String = "",
-)
+data class GenreResult(@SerialName("id") val id: Int, @SerialName("name") val name: String = "")
 
 @Serializable
 data class CreditsResponse(

@@ -31,9 +31,8 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesMockAssetManager(
-        @ApplicationContext context: Context,
-    ): MockAssetManager = MockAssetManager(context.assets::open)
+    fun providesMockAssetManager(@ApplicationContext context: Context): MockAssetManager =
+        MockAssetManager(context.assets::open)
 
     @Provides
     @Singleton
@@ -66,10 +65,7 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient,
-        json: Json,
-    ): Retrofit = Retrofit
+    fun provideRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit = Retrofit
         .Builder()
         .baseUrl(BuildConfig.BASE_URL)
         .client(okHttpClient)
