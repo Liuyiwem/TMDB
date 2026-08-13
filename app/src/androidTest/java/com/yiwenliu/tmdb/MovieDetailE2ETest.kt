@@ -109,6 +109,7 @@ class MovieDetailE2ETest {
         openDetail()
         composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOff()
         composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).performClick()
+        composeTestRule.awaitToggleOn(DetailTestTags.FAVORITE)
         composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOn()
     }
 

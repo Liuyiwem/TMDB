@@ -10,6 +10,6 @@ import com.yiwenliu.core.database.model.FavoriteMovieEntity
     version = 1,
     exportSchema = true,
 )
-internal abstract class TmdbDatabase : RoomDatabase() {
+abstract class TmdbDatabase : RoomDatabase() {
     abstract fun favoriteMovieDao(): FavoriteMovieDao
 }

@@ -37,6 +37,7 @@ class FavoriteE2ETest {
 
         composeTestRule.awaitTag(DetailTestTags.FAVORITE)
         composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).performClick()
+        composeTestRule.awaitToggleOn(DetailTestTags.FAVORITE)
 
         composeTestRule.onNodeWithText(favoriteTab).performClick()
         composeTestRule.awaitTag(FavoriteTestTags.GRID)
