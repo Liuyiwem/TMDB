@@ -9,6 +9,7 @@ import com.yiwenliu.core.data.model.asEntity
 import com.yiwenliu.core.data.model.asExternalModel
 import com.yiwenliu.core.database.dao.FavoriteMovieDao
 import com.yiwenliu.core.database.model.FavoriteMovieEntity
+import com.yiwenliu.core.domain.repository.FavoriteMovieRepository
 import com.yiwenliu.core.model.FavoriteMovie
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

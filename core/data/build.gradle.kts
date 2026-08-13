@@ -22,9 +22,12 @@ dependencies {
     api(libs.paging.runtime)
     api(projects.core.common)
     api(projects.core.model)
-    api(projects.core.network)
 
+    implementation(projects.core.domain)
+    implementation(projects.core.network)
     implementation(projects.core.database)
+    implementation(libs.retrofit2)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(projects.core.testing)

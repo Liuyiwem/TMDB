@@ -9,7 +9,7 @@ import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
-import java.nio.channels.UnresolvedAddressException
+import java.net.UnknownHostException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -23,10 +23,10 @@ class SafeApiCallTest {
     }
 
     @Test
-    fun `safeApiCall returns NO_INTERNET for UnresolvedAddressException`() = runTest {
+    fun `safeApiCall returns NO_INTERNET for UnknownHostException`() = runTest {
         val result =
             safeApiCall<String> {
-                throw UnresolvedAddressException()
+                throw UnknownHostException("api.themoviedb.org")
             }
         assertTrue(result is Result.Failure)
         assertEquals(DataError.Remote.NO_INTERNET, result.error)

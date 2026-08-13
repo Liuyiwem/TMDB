@@ -3,7 +3,7 @@ package com.yiwenliu.core.testing.repository
 import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.EmptyResult
 import com.yiwenliu.core.common.domain.util.Result
-import com.yiwenliu.core.data.repository.FavoriteMovieRepository
+import com.yiwenliu.core.domain.repository.FavoriteMovieRepository
 import com.yiwenliu.core.model.FavoriteMovie
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

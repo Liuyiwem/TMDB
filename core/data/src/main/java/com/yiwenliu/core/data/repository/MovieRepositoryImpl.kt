@@ -8,6 +8,7 @@ import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.common.domain.util.map
 import com.yiwenliu.core.data.model.asExternalModel
+import com.yiwenliu.core.domain.repository.MovieRepository
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory

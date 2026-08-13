@@ -2,6 +2,8 @@ package com.yiwenliu.tmdb
 
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isOn
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -18,6 +20,12 @@ internal fun ComposeTestRule.awaitText(text: String) {
 internal fun ComposeTestRule.awaitTag(tag: String) {
     waitUntil(timeoutMillis = AWAIT_TIMEOUT_MILLIS) {
         onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
+    }
+}
+
+internal fun ComposeTestRule.awaitToggleOn(tag: String) {
+    waitUntil(timeoutMillis = AWAIT_TIMEOUT_MILLIS) {
+        onAllNodes(hasTestTag(tag) and isOn()).fetchSemanticsNodes().isNotEmpty()
     }
 }
 

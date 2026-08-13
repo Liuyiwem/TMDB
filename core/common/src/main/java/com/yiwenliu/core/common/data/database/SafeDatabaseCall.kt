@@ -1,6 +1,5 @@
 package com.yiwenliu.core.common.data.database
 
-import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteFullException
 import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
@@ -12,6 +11,6 @@ suspend inline fun <T> safeDatabaseCall(execute: suspend () -> T): Result<T, Dat
     throw e
 } catch (e: SQLiteFullException) {
     Result.Failure(DataError.Local.DISK_FULL)
-} catch (e: SQLiteException) {
+} catch (_: Exception) {
     Result.Failure(DataError.Local.UNKNOWN)
 }

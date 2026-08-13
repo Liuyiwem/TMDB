@@ -8,8 +8,10 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.data)
+    implementation(projects.core.database)
+    implementation(projects.core.network)
 
+    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.test.runner)
     implementation(libs.hilt.testing)
 }
