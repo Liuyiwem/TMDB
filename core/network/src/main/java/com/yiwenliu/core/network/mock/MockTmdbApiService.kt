@@ -1,7 +1,5 @@
 package com.yiwenliu.core.network.mock
 
-import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.M
 import androidx.annotation.VisibleForTesting
 import com.yiwenliu.core.common.di.Dispatcher
 import com.yiwenliu.core.common.di.TmdbDispatchers.IO
@@ -14,7 +12,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import java.io.BufferedReader
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -66,14 +63,7 @@ constructor(
     @OptIn(ExperimentalSerializationApi::class)
     private suspend inline fun <reified T> getDataFromJsonFile(fileName: String): T = withContext(ioDispatcher) {
         assets.open(fileName).use { inputStream ->
-            if (SDK_INT <= M) {
-                inputStream
-                    .bufferedReader()
-                    .use(BufferedReader::readText)
-                    .let(networkJson::decodeFromString)
-            } else {
-                networkJson.decodeFromStream(inputStream)
-            }
+            networkJson.decodeFromStream(inputStream)
         }
     }
 

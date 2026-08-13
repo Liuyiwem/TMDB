@@ -6,14 +6,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import java.io.IOException
-import java.nio.channels.UnresolvedAddressException
 
 suspend inline fun <reified T> safeApiCall(execute: suspend () -> T): Result<T, DataError.Remote> = try {
     Result.Success(execute())
 } catch (e: CancellationException) {
     throw e
-} catch (e: UnresolvedAddressException) {
-    Result.Failure(DataError.Remote.NO_INTERNET)
 } catch (e: IOException) {
     Result.Failure(DataError.Remote.NO_INTERNET)
 } catch (e: HttpException) {

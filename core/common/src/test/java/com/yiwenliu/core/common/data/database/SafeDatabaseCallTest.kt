@@ -41,9 +41,9 @@ class SafeDatabaseCallTest {
     }
 
     @Test
-    fun `safeDatabaseCall lets unexpected exceptions propagate`() = runTest {
-        assertFailsWith<IllegalStateException> {
-            safeDatabaseCall<Unit> { throw IllegalStateException("not a database problem") }
-        }
+    fun `safeDatabaseCall returns UNKNOWN for non-database exceptions`() = runTest {
+        val result = safeDatabaseCall<Unit> { throw IllegalStateException("not a database problem") }
+        assertTrue(result is Result.Failure)
+        assertEquals(DataError.Local.UNKNOWN, result.error)
     }
 }
