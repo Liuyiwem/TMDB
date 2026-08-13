@@ -1,4 +1,4 @@
-package com.yiwenliu.core.data.repository
+package com.yiwenliu.core.domain.repository
 
 import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.EmptyResult

@@ -7,7 +7,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
-import com.yiwenliu.core.data.repository.MovieRepository
+import com.yiwenliu.core.domain.repository.MovieRepository
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory

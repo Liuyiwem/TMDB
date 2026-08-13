@@ -10,7 +10,7 @@ android {
 dependencies {
     api(projects.core.common)
     api(projects.core.model)
-    api(projects.core.data)
+    api(projects.core.domain)
 
     api(libs.test.coroutines)
     api(libs.test.turbine)

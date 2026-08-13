@@ -11,7 +11,7 @@ import com.yiwenliu.core.network.model.CreditsResponse
 import com.yiwenliu.core.network.model.GenreResult
 import com.yiwenliu.core.network.model.MovieDetailResponse
 
-fun MovieDetailResponse.asExternalModel() = MovieDetail(
+internal fun MovieDetailResponse.asExternalModel() = MovieDetail(
     id = id,
     title = title,
     tagline = tagline,
@@ -25,18 +25,18 @@ fun MovieDetailResponse.asExternalModel() = MovieDetail(
     genres = genres.map(GenreResult::asExternalModel),
 )
 
-fun GenreResult.asExternalModel() = Genre(
+internal fun GenreResult.asExternalModel() = Genre(
     id = id,
     name = name,
 )
 
-fun CastResult.asExternalModel() = CastMember(
+internal fun CastResult.asExternalModel() = CastMember(
     id = id,
     name = name,
     character = character,
     profileUrl = profilePath.asImageUrl(size = PROFILE_SIZE),
 )
 
-fun CreditsResponse.asExternalModel(): List<CastMember> = cast
+internal fun CreditsResponse.asExternalModel(): List<CastMember> = cast
     .sortedBy(CastResult::order)
     .map(CastResult::asExternalModel)

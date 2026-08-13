@@ -1,9 +1,9 @@
 package com.yiwenliu.core.data.di
 
-import com.yiwenliu.core.data.repository.FavoriteMovieRepository
 import com.yiwenliu.core.data.repository.FavoriteMovieRepositoryImpl
-import com.yiwenliu.core.data.repository.MovieRepository
 import com.yiwenliu.core.data.repository.MovieRepositoryImpl
+import com.yiwenliu.core.domain.repository.FavoriteMovieRepository
+import com.yiwenliu.core.domain.repository.MovieRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

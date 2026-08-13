@@ -46,7 +46,7 @@ internal class MoviePagingSource(
     }
 }
 
-fun moviePagingFlow(
+internal fun moviePagingFlow(
     ioDispatcher: CoroutineDispatcher,
     fetchPage: suspend (page: Int) -> MovieResponse,
 ): Flow<PagingData<Movie>> = Pager(

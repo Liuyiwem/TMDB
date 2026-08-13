@@ -1,4 +1,4 @@
-package com.yiwenliu.core.data.repository
+package com.yiwenliu.core.domain.repository
 
 import androidx.paging.PagingData
 import com.yiwenliu.core.common.domain.util.DataError

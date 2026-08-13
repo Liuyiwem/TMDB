@@ -13,7 +13,5 @@ dependencies {
     api(libs.coroutines)
     api(libs.paging.runtime)
 
-    implementation(projects.core.data)
-
     testImplementation(projects.core.testing)
 }
