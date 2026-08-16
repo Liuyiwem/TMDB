@@ -1,5 +1,6 @@
 package com.yiwenliu.tmdb
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,6 +29,9 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (savedInstanceState == null) {
+            viewModel.onDeepLink(intent?.data?.toString())
+        }
         setContent {
             TmdbTheme {
                 val showSplash = viewModel.isSplashVisible
@@ -45,7 +49,11 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Box {
-                    TmdbApp(navigationState = navigationState)
+                    TmdbApp(
+                        navigationState = navigationState,
+                        deepLinkStack = viewModel.deepLinkStack,
+                        onDeepLinkHandled = viewModel::onDeepLinkHandled,
+                    )
                     if (showSplash) {
                         LottieSplashScreen(
                             animationRes = R.raw.splash,
@@ -56,5 +64,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        viewModel.onDeepLink(intent.data?.toString())
     }
 }

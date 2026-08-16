@@ -12,9 +12,11 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
@@ -37,6 +39,8 @@ import com.yiwenliu.tmdb.navigation.TOP_LEVEL_NAV_ITEMS
 @Composable
 fun TmdbApp(
     navigationState: NavigationState,
+    deepLinkStack: List<NavKey>,
+    onDeepLinkHandled: () -> Unit,
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
@@ -45,6 +49,13 @@ fun TmdbApp(
     val navigator = remember(navigationState) { Navigator(navigationState) }
     val navigationSuiteType = windowAdaptiveInfo.navigationSuiteType
     val usesBottomBar = navigationSuiteType == NavigationSuiteType.NavigationBar
+
+    LaunchedEffect(deepLinkStack) {
+        if (deepLinkStack.isNotEmpty()) {
+            navigator.replaceStack(deepLinkStack)
+            onDeepLinkHandled()
+        }
+    }
 
     CompositionLocalProvider(
         LocalSnackbarHostState provides snackbarHostState,
