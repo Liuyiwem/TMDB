@@ -37,21 +37,38 @@ fun TmdbApp(
     modifier: Modifier = Modifier,
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
-    val layoutType =
-        if (
-            windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)
-        ) {
-            NavigationSuiteType.NavigationRail
-        } else {
-            NavigationSuiteType.NavigationBar
-        }
-
+    val snackbarHostState = remember { SnackbarHostState() }
     val navigator = remember(navigationState) { Navigator(navigationState) }
+    val navigationSuiteType = windowAdaptiveInfo.navigationSuiteType
+    val usesBottomBar = navigationSuiteType == NavigationSuiteType.NavigationBar
 
-    val usesBottomBar = layoutType == NavigationSuiteType.NavigationBar
-    val navigationSuiteModifier = if (usesBottomBar) modifier.imePadding() else modifier
-    val contentModifier = if (usesBottomBar) Modifier else Modifier.imePadding()
+    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+        NavigationSuiteScaffold(
+            navigationItems = {
+                TOP_LEVEL_NAV_ITEMS.forEach { (navKey, navItem) ->
+                    TmdbNavItem(
+                        selected = navKey == navigationState.currentTopLevelKey,
+                        onClick = { navigator.navigate(navKey) },
+                        icon = navItem.icon,
+                        label = stringResource(navItem.iconTextId),
+                    )
+                }
+            },
+            modifier = if (usesBottomBar) modifier.imePadding() else modifier,
+            navigationSuiteType = navigationSuiteType,
+        ) {
+            TmdbAppContent(
+                navigationState = navigationState,
+                navigator = navigator,
+                modifier = if (usesBottomBar) Modifier else Modifier.imePadding(),
+            )
+        }
+    }
+}
 
+@Composable
+private fun TmdbAppContent(navigationState: NavigationState, navigator: Navigator, modifier: Modifier = Modifier) {
+    val snackbarHostState = LocalSnackbarHostState.current
     val entryProvider =
         entryProvider {
             homeEntry(navigator)
@@ -59,45 +76,33 @@ fun TmdbApp(
             favoriteEntry(navigator)
             movieDetailEntry(navigator)
         }
+    val entries = navigationState.toEntries(entryProvider)
+    val topAppBarSpec = entries.lastOrNull()?.topAppBarSpec
 
-    NavigationSuiteScaffold(
-        navigationItems = {
-            TOP_LEVEL_NAV_ITEMS.forEach { (navKey, navItem) ->
-                TmdbNavItem(
-                    selected = navKey == navigationState.currentTopLevelKey,
-                    onClick = { navigator.navigate(navKey) },
-                    icon = navItem.icon,
-                    label = stringResource(navItem.iconTextId),
+    Scaffold(
+        modifier = Modifier.fillMaxSize().then(modifier),
+        topBar = {
+            topAppBarSpec?.let { spec ->
+                TmdbTopAppBar(
+                    title = spec.title(navigationState.currentKey).orEmpty(),
+                    navIcon = spec.navIcon,
+                    onNavIconClick = { if (navigator.canGoBack) navigator.goBack() },
                 )
             }
         },
-        modifier = navigationSuiteModifier,
-        navigationSuiteType = layoutType,
-    ) {
-        val entries = navigationState.toEntries(entryProvider)
-        val topAppBarSpec = entries.lastOrNull()?.topAppBarSpec
-        val snackbarHostState = remember { SnackbarHostState() }
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize().then(contentModifier),
-            topBar = {
-                topAppBarSpec?.let { spec ->
-                    TmdbTopAppBar(
-                        title = spec.title(navigationState.currentKey).orEmpty(),
-                        navIcon = spec.navIcon,
-                        onNavIconClick = { if (navigator.canGoBack) navigator.goBack() },
-                    )
-                }
-            },
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-        ) { innerPadding ->
-            CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
-                NavDisplay(
-                    entries = entries,
-                    onBack = { if (navigator.canGoBack) navigator.goBack() },
-                    modifier = Modifier.padding(innerPadding),
-                )
-            }
-        }
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { innerPadding ->
+        NavDisplay(
+            entries = entries,
+            onBack = { if (navigator.canGoBack) navigator.goBack() },
+            modifier = Modifier.padding(innerPadding),
+        )
     }
 }
+
+private val WindowAdaptiveInfo.navigationSuiteType: NavigationSuiteType
+    get() = if (windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) {
+        NavigationSuiteType.NavigationRail
+    } else {
+        NavigationSuiteType.NavigationBar
+    }
