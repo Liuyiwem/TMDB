@@ -4,15 +4,22 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -24,12 +31,14 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
+import com.yiwenliu.core.ui.LocalSnackbarHostState
 import com.yiwenliu.core.ui.component.ErrorItem
 import com.yiwenliu.core.ui.component.MovieCategoryTab
 import com.yiwenliu.core.ui.component.MovieCategoryTabRow
 import com.yiwenliu.core.ui.component.MoviePagingGrid
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
 import com.yiwenliu.core.ui.util.toUiText
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -39,7 +48,10 @@ internal fun HomeRoot(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val movies = viewModel.moviesPager.collectAsLazyPagingItems()
+
+    val movies = key(state.selectedCategory) { viewModel.moviesPager.collectAsLazyPagingItems() }
+
+    RefreshErrorSnackbarEffect(movies)
 
     HomeScreen(
         state = state,
@@ -51,6 +63,28 @@ internal fun HomeRoot(
 }
 
 @Composable
+internal fun RefreshErrorSnackbarEffect(movies: LazyPagingItems<Movie>) {
+    val snackbarHostState = LocalSnackbarHostState.current
+    val context = LocalContext.current
+    val retryLabel = stringResource(com.yiwenliu.core.ui.R.string.retry)
+
+    LaunchedEffect(movies, snackbarHostState) {
+        snapshotFlow { movies.loadState.refresh as? LoadState.Error }
+            .filterNotNull()
+            .collect { refresh ->
+                if (movies.itemCount == 0) return@collect
+                val result =
+                    snackbarHostState.showSnackbar(
+                        message = refresh.error.toUiText().asString(context),
+                        actionLabel = retryLabel,
+                        duration = SnackbarDuration.Long,
+                    )
+                if (result == SnackbarResult.ActionPerformed) movies.retry()
+            }
+    }
+}
+
+@Composable
 internal fun HomeScreen(
     state: HomeUiState,
     movies: LazyPagingItems<Movie>,
@@ -58,9 +92,8 @@ internal fun HomeScreen(
     onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isRefreshing by remember {
-        derivedStateOf { movies.loadState.refresh is LoadState.Loading }
-    }
+    val refresh = movies.loadState.refresh
+    val hasItems = movies.itemCount > 0
 
     Column(modifier = modifier.fillMaxSize()) {
         MovieCategoryTabRow(
@@ -76,12 +109,20 @@ internal fun HomeScreen(
             }
         }
         PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = { movies.refresh() },
-            modifier = Modifier.fillMaxSize(),
+            isRefreshing = hasItems && refresh is LoadState.Loading,
+            onRefresh = movies::refresh,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
         ) {
-            when (val refresh = movies.loadState.refresh) {
-                is LoadState.Error -> Box(
+            when {
+                hasItems -> MoviePagingGrid(
+                    movies = movies,
+                    onMovieClick = onMovieClick,
+                    testTagPrefix = HomeTestTags.PREFIX,
+                )
+
+                refresh is LoadState.Error -> Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
@@ -92,13 +133,12 @@ internal fun HomeScreen(
                     )
                 }
 
-                is LoadState.NotLoading -> MoviePagingGrid(
-                    movies = movies,
-                    onMovieClick = onMovieClick,
-                    testTagPrefix = HomeTestTags.PREFIX,
-                )
-
-                else -> {}
+                refresh is LoadState.Loading -> Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.testTag(HomeTestTags.LOADING))
+                }
             }
         }
     }
@@ -151,6 +191,28 @@ private fun HomeScreenRefreshingPreview() {
         )
     val pagingItems =
         flowOf(PagingData.from(sampleMovies, sourceLoadStates = refreshing))
+            .collectAsLazyPagingItems()
+    MaterialTheme {
+        HomeScreen(
+            state = HomeUiState(),
+            movies = pagingItems,
+            onAction = {},
+            onMovieClick = { _, _ -> },
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 400)
+@Composable
+private fun HomeScreenLoadingPreview() {
+    val loading =
+        LoadStates(
+            refresh = LoadState.Loading,
+            prepend = LoadState.NotLoading(endOfPaginationReached = true),
+            append = LoadState.NotLoading(endOfPaginationReached = true),
+        )
+    val pagingItems =
+        flowOf(PagingData.from(emptyList<Movie>(), sourceLoadStates = loading))
             .collectAsLazyPagingItems()
     MaterialTheme {
         HomeScreen(
