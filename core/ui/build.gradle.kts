@@ -10,9 +10,9 @@ android {
 dependencies {
     api(projects.core.common)
     api(projects.core.model)
+    api(projects.core.navigation)
     api(libs.paging.compose)
 
-    implementation(projects.core.navigation)
     implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.material3)

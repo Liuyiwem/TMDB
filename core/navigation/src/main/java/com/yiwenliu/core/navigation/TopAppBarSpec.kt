@@ -19,3 +19,6 @@ fun topAppBarMetadata(spec: TopAppBarSpec): Map<String, Any> = mapOf(TOP_APP_BAR
 
 val NavEntry<NavKey>.topAppBarSpec: TopAppBarSpec?
     get() = metadata[TOP_APP_BAR_METADATA] as? TopAppBarSpec
+
+fun TopAppBarSpec.resolveTitle(key: NavKey, overrides: Map<NavKey, String>): String =
+    title(key)?.takeIf(String::isNotBlank) ?: overrides[key].orEmpty()

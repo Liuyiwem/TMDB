@@ -20,11 +20,14 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.yiwenliu.core.navigation.NavigationState
 import com.yiwenliu.core.navigation.Navigator
+import com.yiwenliu.core.navigation.resolveTitle
 import com.yiwenliu.core.navigation.toEntries
 import com.yiwenliu.core.navigation.topAppBarSpec
 import com.yiwenliu.core.ui.LocalSnackbarHostState
+import com.yiwenliu.core.ui.LocalTopAppBarTitleOverrides
 import com.yiwenliu.core.ui.component.TmdbNavItem
 import com.yiwenliu.core.ui.component.TmdbTopAppBar
+import com.yiwenliu.core.ui.rememberTopAppBarTitleOverrides
 import com.yiwenliu.feature.detail.impl.navigation.movieDetailEntry
 import com.yiwenliu.feature.favorite.impl.navigation.favoriteEntry
 import com.yiwenliu.feature.home.impl.navigation.homeEntry
@@ -38,11 +41,15 @@ fun TmdbApp(
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfo(),
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val titleOverrides = rememberTopAppBarTitleOverrides()
     val navigator = remember(navigationState) { Navigator(navigationState) }
     val navigationSuiteType = windowAdaptiveInfo.navigationSuiteType
     val usesBottomBar = navigationSuiteType == NavigationSuiteType.NavigationBar
 
-    CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+    CompositionLocalProvider(
+        LocalSnackbarHostState provides snackbarHostState,
+        LocalTopAppBarTitleOverrides provides titleOverrides,
+    ) {
         NavigationSuiteScaffold(
             navigationItems = {
                 TOP_LEVEL_NAV_ITEMS.forEach { (navKey, navItem) ->
@@ -69,6 +76,7 @@ fun TmdbApp(
 @Composable
 private fun TmdbAppContent(navigationState: NavigationState, navigator: Navigator, modifier: Modifier = Modifier) {
     val snackbarHostState = LocalSnackbarHostState.current
+    val titleOverrides = LocalTopAppBarTitleOverrides.current
     val entryProvider =
         entryProvider {
             homeEntry(navigator)
@@ -84,7 +92,7 @@ private fun TmdbAppContent(navigationState: NavigationState, navigator: Navigato
         topBar = {
             topAppBarSpec?.let { spec ->
                 TmdbTopAppBar(
-                    title = spec.title(navigationState.currentKey).orEmpty(),
+                    title = spec.resolveTitle(navigationState.currentKey, titleOverrides),
                     navIcon = spec.navIcon,
                     onNavIconClick = { if (navigator.canGoBack) navigator.goBack() },
                 )
