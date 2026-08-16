@@ -22,6 +22,21 @@ class Navigator(val state: NavigationState) {
         }
     }
 
+    fun replaceStack(subStack: List<NavKey>) {
+        require(subStack.isNotEmpty()) { "The replacement stack cannot be empty" }
+        val topLevelKey = subStack.first()
+        require(topLevelKey in state.topLevelKeys) { "$topLevelKey is not a top level route" }
+        state.subStacks.getValue(topLevelKey).apply {
+            clear()
+            addAll(subStack)
+        }
+        state.topLevelStack.apply {
+            clear()
+            add(state.startKey)
+            if (topLevelKey != state.startKey) add(topLevelKey)
+        }
+    }
+
     private fun goToKey(key: NavKey) {
         state.currentSubStack.apply {
             remove(key)
