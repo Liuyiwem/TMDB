@@ -9,11 +9,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(splashConfig: SplashConfig) : ViewModel() {
-    var isVisible by mutableStateOf(splashConfig.isEnabled)
+class MainViewModel @Inject constructor(splashConfig: SplashConfig) : ViewModel() {
+    var isSplashVisible by mutableStateOf(splashConfig.isEnabled)
         private set
 
     fun onSplashFinished() {
-        isVisible = false
+        isSplashVisible = false
     }
 }

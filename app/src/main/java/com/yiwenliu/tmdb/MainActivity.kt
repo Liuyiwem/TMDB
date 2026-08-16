@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val splashViewModel: SplashViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TmdbTheme {
-                val showSplash = splashViewModel.isVisible
+                val showSplash = viewModel.isSplashVisible
                 val navigationState =
                     rememberNavigationState(
                         startKey = HomeNavKey,
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                         LottieSplashScreen(
                             animationRes = R.raw.splash,
                             backgroundColor = colorResource(R.color.splash_background),
-                            onFinished = splashViewModel::onSplashFinished,
+                            onFinished = viewModel::onSplashFinished,
                         )
                     }
                 }
