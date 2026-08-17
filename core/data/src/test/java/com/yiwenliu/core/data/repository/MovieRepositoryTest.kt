@@ -1,10 +1,13 @@
 package com.yiwenliu.core.data.repository
 
 import androidx.paging.testing.asSnapshot
+import com.yiwenliu.core.common.di.TimeProvider
 import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.DataErrorException
 import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.data.testdoubles.TestMovieDao
 import com.yiwenliu.core.data.testdoubles.TestTmdbApiService
+import com.yiwenliu.core.database.model.MovieEntity
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
@@ -18,6 +21,7 @@ import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MovieRepositoryTest {
@@ -25,20 +29,39 @@ class MovieRepositoryTest {
 
     private lateinit var apiService: TestTmdbApiService
 
+    private lateinit var movieDao: TestMovieDao
+
     private lateinit var repository: MovieRepositoryImpl
 
     @Before
     fun setup() {
         apiService = TestTmdbApiService()
-        repository = MovieRepositoryImpl(apiService, testDispatcher)
+        movieDao = TestMovieDao()
+        repository = MovieRepositoryImpl(apiService, movieDao, TimeProvider { 0L }, testDispatcher)
     }
 
     @Test
-    fun `getMoviesByCategoryPager firstLoad returns CorrectMovies`() = runTest(testDispatcher) {
-        val movies = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
-        assertEquals(2, movies.size)
-        assertEquals(533535, movies[0].id)
-        assertEquals("Deadpool & Wolverine", movies[0].title)
+    fun `getMoviesByCategoryPager caches the fetched movies and emits them from the database`() =
+        runTest(testDispatcher) {
+            val movies = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
+
+            assertEquals(2, movies.size)
+            assertEquals(533535, movies[0].id)
+            assertEquals("Deadpool & Wolverine", movies[0].title)
+            assertEquals(
+                movies.map(Movie::id),
+                movieDao.moviesIn(MovieCategory.POPULAR.path).map(MovieEntity::id),
+            )
+        }
+
+    @Test
+    fun `getMoviesByCategoryPager serves the cache without hitting the network again`() = runTest(testDispatcher) {
+        repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
+        apiService.errorToThrow = IOException("boom")
+
+        val cached = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
+
+        assertEquals(listOf(533535, 1022789), cached.map(Movie::id))
     }
 
     @Test
@@ -56,6 +79,7 @@ class MovieRepositoryTest {
             repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
         }
         assertEquals(DataError.Remote.NO_INTERNET, thrown.error)
+        assertTrue(movieDao.storedMovies.isEmpty())
     }
 
     @Test

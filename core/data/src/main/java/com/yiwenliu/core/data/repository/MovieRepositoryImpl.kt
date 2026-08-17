@@ -1,13 +1,19 @@
 package com.yiwenliu.core.data.repository
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.yiwenliu.core.common.data.networking.safeApiCall
 import com.yiwenliu.core.common.di.Dispatcher
+import com.yiwenliu.core.common.di.TimeProvider
 import com.yiwenliu.core.common.di.TmdbDispatchers.IO
 import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.common.domain.util.map
 import com.yiwenliu.core.data.model.asExternalModel
+import com.yiwenliu.core.database.dao.MovieDao
+import com.yiwenliu.core.database.model.MovieEntity
 import com.yiwenliu.core.domain.repository.MovieRepository
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
@@ -19,6 +25,7 @@ import com.yiwenliu.core.network.model.MovieDetailResponse
 import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -26,12 +33,16 @@ internal class MovieRepositoryImpl
 @Inject
 constructor(
     private val apiService: TmdbApiService,
+    private val movieDao: MovieDao,
+    private val timeProvider: TimeProvider,
     @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
 ) : MovieRepository {
-    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> =
-        moviePagingFlow(ioDispatcher) { page ->
-            apiService.getMoviesByCategory(category.path, page)
-        }
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = Pager(
+        config = MOVIE_PAGING_CONFIG,
+        remoteMediator = MovieRemoteMediator(category, apiService, movieDao, timeProvider, ioDispatcher),
+        pagingSourceFactory = { movieDao.pagingSource(category.path) },
+    ).flow.map { pagingData -> pagingData.map(MovieEntity::asExternalModel) }
 
     override fun searchMoviesPager(queryString: String): Flow<PagingData<Movie>> =
         moviePagingFlow(ioDispatcher) { page ->

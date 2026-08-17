@@ -54,4 +54,4 @@ internal fun moviePagingFlow(
     pagingSourceFactory = { MoviePagingSource(ioDispatcher, fetchPage) },
 ).flow
 
-private val MOVIE_PAGING_CONFIG = PagingConfig(pageSize = 20, enablePlaceholders = false)
+internal val MOVIE_PAGING_CONFIG = PagingConfig(pageSize = 20, enablePlaceholders = false)
