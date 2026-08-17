@@ -71,12 +71,15 @@ class MovieRemoteMediatorTest {
 
     private val category = MovieCategory.POPULAR
 
+    private var cacheUpdates = 0
+
     private val mediator = MovieRemoteMediator(
         category = category,
         apiService = apiService,
         movieDao = movieDao,
         timeProvider = TimeProvider { currentTime },
         ioDispatcher = testDispatcher,
+        onCacheUpdated = { cacheUpdates++ },
     )
 
     private fun pagingState() = PagingState<Int, MovieEntity>(
@@ -191,6 +194,37 @@ class MovieRemoteMediatorTest {
 
         assertEquals(listOf(11, 20), movieDao.storedMovies.map(MovieEntity::id).sorted())
         assertEquals(listOf(11), movieDao.moviesIn(MovieCategory.NOW_PLAYING.path).map(MovieEntity::id))
+    }
+
+    @Test
+    fun `a successful load reports that the cache changed`() = runTest(testDispatcher) {
+        apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(10, 11)) }
+
+        mediator.load(LoadType.REFRESH, pagingState())
+        assertEquals(1, cacheUpdates)
+
+        mediator.load(LoadType.APPEND, pagingState())
+        assertEquals(2, cacheUpdates)
+    }
+
+    @Test
+    fun `a failed load does not report a cache change`() = runTest(testDispatcher) {
+        apiService.errorToThrow = IOException("boom")
+
+        mediator.load(LoadType.REFRESH, pagingState())
+
+        assertEquals(0, cacheUpdates)
+    }
+
+    @Test
+    fun `ending pagination without fetching does not report a cache change`() = runTest(testDispatcher) {
+        movieDao.seedRemoteKey(
+            MovieRemoteKeyEntity(category = category.path, nextPage = null, lastUpdated = currentTime),
+        )
+
+        mediator.load(LoadType.APPEND, pagingState())
+
+        assertEquals(0, cacheUpdates)
     }
 
     @Test

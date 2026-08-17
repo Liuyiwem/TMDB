@@ -1,6 +1,7 @@
 package com.yiwenliu.core.data.repository
 
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.map
@@ -38,11 +39,21 @@ constructor(
     @param:Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
 ) : MovieRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> = Pager(
-        config = MOVIE_PAGING_CONFIG,
-        remoteMediator = MovieRemoteMediator(category, apiService, movieDao, timeProvider, ioDispatcher),
-        pagingSourceFactory = { movieDao.pagingSource(category.path) },
-    ).flow.map { pagingData -> pagingData.map(MovieEntity::asExternalModel) }
+    override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> {
+        val pagingSourceFactory = InvalidatingPagingSourceFactory { movieDao.pagingSource(category.path) }
+        return Pager(
+            config = MOVIE_PAGING_CONFIG,
+            remoteMediator = MovieRemoteMediator(
+                category = category,
+                apiService = apiService,
+                movieDao = movieDao,
+                timeProvider = timeProvider,
+                ioDispatcher = ioDispatcher,
+                onCacheUpdated = pagingSourceFactory::invalidate,
+            ),
+            pagingSourceFactory = pagingSourceFactory,
+        ).flow.map { pagingData -> pagingData.map(MovieEntity::asExternalModel) }
+    }
 
     override fun searchMoviesPager(queryString: String): Flow<PagingData<Movie>> =
         moviePagingFlow(ioDispatcher) { page ->

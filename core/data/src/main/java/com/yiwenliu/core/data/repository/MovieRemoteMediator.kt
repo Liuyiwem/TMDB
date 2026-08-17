@@ -26,6 +26,7 @@ internal class MovieRemoteMediator(
     private val movieDao: MovieDao,
     private val timeProvider: TimeProvider,
     private val ioDispatcher: CoroutineDispatcher,
+    private val onCacheUpdated: () -> Unit,
 ) : RemoteMediator<Int, MovieEntity>() {
     override suspend fun initialize(): InitializeAction {
         val lastUpdated =
@@ -67,6 +68,7 @@ internal class MovieRemoteMediator(
                     ),
                     clearExisting = loadType == LoadType.REFRESH,
                 )
+                onCacheUpdated()
                 MediatorResult.Success(endOfPaginationReached = nextPage == null)
             }
         }
