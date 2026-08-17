@@ -5,8 +5,10 @@ import com.yiwenliu.core.navigation.Navigator
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MovieDetailNavKey(val movieId: Int, val title: String = "") : NavKey
+data class MovieDetailNavKey(val movieId: Int) : NavKey
 
-fun Navigator.navigateToMovieDetail(movieId: Int, title: String) {
-    navigate(MovieDetailNavKey(movieId, title))
+fun Navigator.navigateToMovieDetail(movieId: Int, title: String, titleOverrides: MutableMap<NavKey, String>) {
+    val key = MovieDetailNavKey(movieId)
+    if (title.isNotBlank()) titleOverrides[key] = title
+    navigate(key)
 }

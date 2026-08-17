@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="movie_detail_fallback_title">Movie Detail</string>
     <string name="overview">Overview</string>
     <string name="cast">Cast</string>
     <string name="recommendations">Recommendations</string>

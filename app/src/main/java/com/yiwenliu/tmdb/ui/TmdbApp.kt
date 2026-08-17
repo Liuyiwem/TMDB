@@ -22,7 +22,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import com.yiwenliu.core.navigation.NavigationState
 import com.yiwenliu.core.navigation.Navigator
-import com.yiwenliu.core.navigation.resolveTitle
+import com.yiwenliu.core.navigation.resolveTitleOverride
 import com.yiwenliu.core.navigation.toEntries
 import com.yiwenliu.core.navigation.topAppBarSpec
 import com.yiwenliu.core.ui.LocalSnackbarHostState
@@ -103,7 +103,8 @@ private fun TmdbAppContent(navigationState: NavigationState, navigator: Navigato
         topBar = {
             topAppBarSpec?.let { spec ->
                 TmdbTopAppBar(
-                    title = spec.resolveTitle(navigationState.currentKey, titleOverrides),
+                    title = resolveTitleOverride(navigationState.currentKey, titleOverrides)
+                        ?: spec.titleRes?.let { stringResource(it) }.orEmpty(),
                     navIcon = spec.navIcon,
                     onNavIconClick = { if (navigator.canGoBack) navigator.goBack() },
                 )

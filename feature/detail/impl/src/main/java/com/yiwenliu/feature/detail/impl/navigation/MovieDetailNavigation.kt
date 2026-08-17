@@ -10,11 +10,12 @@ import com.yiwenliu.core.ui.LocalTopAppBarTitleOverrides
 import com.yiwenliu.feature.detail.api.navigation.MovieDetailNavKey
 import com.yiwenliu.feature.detail.api.navigation.navigateToMovieDetail
 import com.yiwenliu.feature.detail.impl.MovieDetailRoot
+import com.yiwenliu.feature.detail.impl.R
 
 private val MovieDetailAppBarMetadata = topAppBarMetadata(
     TopAppBarSpec(
         navIcon = NavIcon.Back,
-        title = { key -> (key as? MovieDetailNavKey)?.title },
+        titleRes = R.string.movie_detail_fallback_title,
     ),
 )
 
@@ -24,7 +25,7 @@ fun EntryProviderScope<NavKey>.movieDetailEntry(navigator: Navigator) {
         MovieDetailRoot(
             movieId = key.movieId,
             onTitleLoaded = { title -> titleOverrides[key] = title },
-            onMovieClick = navigator::navigateToMovieDetail,
+            onMovieClick = { id, title -> navigator.navigateToMovieDetail(id, title, titleOverrides) },
         )
     }
 }

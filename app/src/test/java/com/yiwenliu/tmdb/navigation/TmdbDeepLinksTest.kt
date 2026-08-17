@@ -15,7 +15,7 @@ class TmdbDeepLinksTest {
     @Test
     fun `movie link resolves to home then detail`() {
         assertEquals(
-            listOf(HomeNavKey, MovieDetailNavKey(movieId = 1241982, title = "")),
+            listOf(HomeNavKey, MovieDetailNavKey(movieId = 1241982)),
             TmdbDeepLinks.parse("tmdb://movie?id=1241982"),
         )
     }

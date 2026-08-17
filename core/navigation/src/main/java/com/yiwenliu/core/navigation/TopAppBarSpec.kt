@@ -1,5 +1,6 @@
 package com.yiwenliu.core.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -13,12 +14,12 @@ enum class NavIcon {
 }
 
 @Immutable
-data class TopAppBarSpec(val navIcon: NavIcon = NavIcon.None, val title: (NavKey) -> String? = { null })
+data class TopAppBarSpec(val navIcon: NavIcon = NavIcon.None, @param:StringRes val titleRes: Int? = null)
 
 fun topAppBarMetadata(spec: TopAppBarSpec): Map<String, Any> = mapOf(TOP_APP_BAR_METADATA to spec)
 
 val NavEntry<NavKey>.topAppBarSpec: TopAppBarSpec?
     get() = metadata[TOP_APP_BAR_METADATA] as? TopAppBarSpec
 
-fun TopAppBarSpec.resolveTitle(key: NavKey, overrides: Map<NavKey, String>): String =
-    title(key)?.takeIf(String::isNotBlank) ?: overrides[key].orEmpty()
+fun resolveTitleOverride(key: NavKey, overrides: Map<NavKey, String>): String? =
+    overrides[key]?.takeIf(String::isNotBlank)
