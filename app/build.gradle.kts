@@ -70,6 +70,9 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test)
+
     kspAndroidTest(libs.hilt.compiler)
 
     androidTestImplementation(libs.androidx.junit)

@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,7 @@ import com.yiwenliu.core.ui.util.ObserveAsEvents
 @Composable
 internal fun MovieDetailRoot(
     movieId: Int,
+    onTitleLoaded: (String) -> Unit,
     onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MovieDetailViewModel = hiltViewModel<MovieDetailViewModel, MovieDetailViewModel.Factory>(
@@ -66,6 +68,11 @@ internal fun MovieDetailRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = LocalSnackbarHostState.current
     val context = LocalContext.current
+    val loadedTitle = state.detail?.title
+
+    LaunchedEffect(loadedTitle) {
+        if (!loadedTitle.isNullOrBlank()) onTitleLoaded(loadedTitle)
+    }
 
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {

@@ -1,5 +1,6 @@
 package com.yiwenliu.tmdb
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,15 +23,18 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val splashViewModel: SplashViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (savedInstanceState == null) {
+            viewModel.onDeepLink(intent?.data?.toString())
+        }
         setContent {
             TmdbTheme {
-                val showSplash = splashViewModel.isVisible
+                val showSplash = viewModel.isSplashVisible
                 val navigationState =
                     rememberNavigationState(
                         startKey = HomeNavKey,
@@ -45,16 +49,28 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Box {
-                    TmdbApp(navigationState = navigationState)
+                    TmdbApp(
+                        navigationState = navigationState,
+                        deepLinkStack = viewModel.deepLinkStack,
+                        onDeepLinkHandled = viewModel::onDeepLinkHandled,
+                    )
                     if (showSplash) {
                         LottieSplashScreen(
                             animationRes = R.raw.splash,
                             backgroundColor = colorResource(R.color.splash_background),
-                            onFinished = splashViewModel::onSplashFinished,
+                            onFinished = viewModel::onSplashFinished,
                         )
                     }
                 }
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent.action == Intent.ACTION_VIEW) {
+            viewModel.onDeepLink(intent.data?.toString())
         }
     }
 }

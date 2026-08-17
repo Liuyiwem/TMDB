@@ -246,4 +246,105 @@ class NavigatorTest {
         navigator.goBack()
         assertFalse(navigator.canGoBack)
     }
+
+    @Test
+    fun `replaceStack discards the previous sub-stack of the target top-level`() {
+        navigator.navigate(TestKeyFirst)
+        navigator.replaceStack(listOf(TestFirstTopLevelKey, TestKeySecond))
+        assertEquals(
+            listOf(TestFirstTopLevelKey, TestKeySecond),
+            navigationState.currentSubStack.toList(),
+        )
+        assertEquals(TestKeySecond, navigationState.currentKey)
+    }
+
+    @Test
+    fun `replaceStack makes the first key the current top-level`() {
+        navigator.replaceStack(listOf(TestSecondTopLevelKey, TestKeyFirst))
+        assertEquals(TestSecondTopLevelKey, navigationState.currentTopLevelKey)
+        assertEquals(TestKeyFirst, navigationState.currentKey)
+    }
+
+    @Test
+    fun `replaceStack to the start top-level resets the top-level history`() {
+        navigator.navigate(TestSecondTopLevelKey)
+        navigator.navigate(TestThirdTopLevelKey)
+        navigator.replaceStack(listOf(TestFirstTopLevelKey, TestKeyFirst))
+        assertEquals(listOf(TestFirstTopLevelKey), navigationState.topLevelStack.toList())
+    }
+
+    @Test
+    fun `replaceStack to a non-start top-level keeps the start key below it`() {
+        navigator.navigate(TestThirdTopLevelKey)
+        navigator.replaceStack(listOf(TestSecondTopLevelKey, TestKeyFirst))
+        assertEquals(
+            listOf(TestFirstTopLevelKey, TestSecondTopLevelKey),
+            navigationState.topLevelStack.toList(),
+        )
+    }
+
+    @Test
+    fun `replaceStack to a non-start top-level resets the start sub-stack`() {
+        navigator.navigate(TestKeyFirst)
+        navigator.replaceStack(listOf(TestSecondTopLevelKey, TestKeySecond))
+        assertEquals(
+            listOf(TestFirstTopLevelKey),
+            navigationState.subStacks[TestFirstTopLevelKey]?.toList(),
+        )
+    }
+
+    @Test
+    fun `replaceStack leaves the other sub-stacks untouched`() {
+        navigator.navigate(TestSecondTopLevelKey)
+        navigator.navigate(TestKeyFirst)
+        navigator.replaceStack(listOf(TestFirstTopLevelKey, TestKeySecond))
+        assertEquals(
+            listOf(TestSecondTopLevelKey, TestKeyFirst),
+            navigationState.subStacks[TestSecondTopLevelKey]?.toList(),
+        )
+    }
+
+    @Test
+    fun `goBack after replaceStack returns to the top-level root`() {
+        navigator.replaceStack(listOf(TestFirstTopLevelKey, TestKeySecond))
+        navigator.goBack()
+        assertEquals(listOf(TestFirstTopLevelKey), navigationState.currentSubStack.toList())
+        assertFalse(navigator.canGoBack)
+    }
+
+    @Test
+    fun `goBack after replaceStack to a non-start top-level unwinds to the start key`() {
+        navigator.replaceStack(listOf(TestSecondTopLevelKey, TestKeyFirst))
+        navigator.goBack()
+        navigator.goBack()
+        assertEquals(TestFirstTopLevelKey, navigationState.currentKey)
+        assertFalse(navigator.canGoBack)
+    }
+
+    @Test
+    fun `replaceStack with only the top-level key cannot go back`() {
+        navigator.navigate(TestKeyFirst)
+        navigator.replaceStack(listOf(TestFirstTopLevelKey))
+        assertFalse(navigator.canGoBack)
+        assertFailsWith<IllegalStateException> { navigator.goBack() }
+    }
+
+    @Test
+    fun `replaceStack is idempotent`() {
+        val stack = listOf(TestFirstTopLevelKey, TestKeyFirst)
+        navigator.replaceStack(stack)
+        navigator.replaceStack(stack)
+        assertEquals(stack, navigationState.currentSubStack.toList())
+        assertEquals(listOf(TestFirstTopLevelKey), navigationState.topLevelStack.toList())
+    }
+
+    @Test
+    fun `replaceStack with an empty stack throws`() {
+        assertFailsWith<IllegalArgumentException> { navigator.replaceStack(emptyList()) }
+    }
+
+    @Test
+    fun `replaceStack with a non top-level first key throws`() {
+        assertFailsWith<IllegalArgumentException> { navigator.replaceStack(listOf(TestKeyFirst)) }
+    }
 }
