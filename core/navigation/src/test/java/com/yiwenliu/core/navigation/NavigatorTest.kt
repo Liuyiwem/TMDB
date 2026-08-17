@@ -284,6 +284,16 @@ class NavigatorTest {
     }
 
     @Test
+    fun `replaceStack to a non-start top-level resets the start sub-stack`() {
+        navigator.navigate(TestKeyFirst)
+        navigator.replaceStack(listOf(TestSecondTopLevelKey, TestKeySecond))
+        assertEquals(
+            listOf(TestFirstTopLevelKey),
+            navigationState.subStacks[TestFirstTopLevelKey]?.toList(),
+        )
+    }
+
+    @Test
     fun `replaceStack leaves the other sub-stacks untouched`() {
         navigator.navigate(TestSecondTopLevelKey)
         navigator.navigate(TestKeyFirst)
