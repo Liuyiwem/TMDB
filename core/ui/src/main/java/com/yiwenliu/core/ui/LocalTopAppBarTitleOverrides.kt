@@ -7,7 +7,9 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavKey
 
-val LocalTopAppBarTitleOverrides = staticCompositionLocalOf { mutableStateMapOf<NavKey, String>() }
+val LocalTopAppBarTitleOverrides = staticCompositionLocalOf<SnapshotStateMap<NavKey, String>> {
+    error("No LocalTopAppBarTitleOverrides provided")
+}
 
 @Composable
 fun rememberTopAppBarTitleOverrides(): SnapshotStateMap<NavKey, String> = remember { mutableStateMapOf() }
