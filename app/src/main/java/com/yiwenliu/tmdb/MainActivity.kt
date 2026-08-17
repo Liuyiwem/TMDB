@@ -69,6 +69,8 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        viewModel.onDeepLink(intent.data?.toString())
+        if (intent.action == Intent.ACTION_VIEW) {
+            viewModel.onDeepLink(intent.data?.toString())
+        }
     }
 }

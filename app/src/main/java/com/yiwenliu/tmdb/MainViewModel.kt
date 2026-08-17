@@ -23,7 +23,7 @@ class MainViewModel @Inject constructor(splashConfig: SplashConfig) : ViewModel(
     }
 
     fun onDeepLink(uri: String?) {
-        deepLinkStack = TmdbDeepLinks.parse(uri)
+        TmdbDeepLinks.parse(uri).takeIf { it.isNotEmpty() }?.let { deepLinkStack = it }
     }
 
     fun onDeepLinkHandled() {
