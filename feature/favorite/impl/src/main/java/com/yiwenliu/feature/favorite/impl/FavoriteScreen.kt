@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yiwenliu.core.model.FavoriteMovie
 import com.yiwenliu.core.ui.LocalSnackbarHostState
 import com.yiwenliu.core.ui.component.TmdbConfirmDialog
+import com.yiwenliu.core.ui.component.TmdbMessageDialog
 import com.yiwenliu.core.ui.preview.FavoriteMoviePreviewParameterProvider
 import com.yiwenliu.core.ui.util.ObserveAsEvents
 
@@ -49,12 +50,8 @@ internal fun FavoriteRoot(
     FavoriteScreen(
         state = state,
         modifier = modifier,
-        onAction = { action ->
-            when (action) {
-                is FavoriteAction.OnMovieClick -> onMovieClick(action.movieId, action.title)
-                else -> viewModel.onAction(action)
-            }
-        },
+        onAction = viewModel::onAction,
+        onMovieClick = onMovieClick,
     )
 }
 
@@ -62,6 +59,7 @@ internal fun FavoriteRoot(
 internal fun FavoriteScreen(
     state: FavoriteUiState,
     onAction: (FavoriteAction) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -93,7 +91,7 @@ internal fun FavoriteScreen(
                 items(items = state.favorites, key = FavoriteMovie::id) { movie ->
                     FavoriteMovieItem(
                         movie = movie,
-                        onClick = { onAction(FavoriteAction.OnMovieClick(movie.id, movie.title)) },
+                        onClick = { onMovieClick(movie.id, movie.title) },
                         onRemoveClick = { onAction(FavoriteAction.OnRemoveClick(movie)) },
                     )
                 }
@@ -111,6 +109,14 @@ internal fun FavoriteScreen(
             onDismiss = { onAction(FavoriteAction.OnRemoveDismiss) },
         )
     }
+
+    state.error?.let { error ->
+        TmdbMessageDialog(
+            message = error.asString(),
+            confirmText = stringResource(com.yiwenliu.core.ui.R.string.ok),
+            onConfirm = { onAction(FavoriteAction.OnErrorDismiss) },
+        )
+    }
 }
 
 @Preview(showBackground = true, widthDp = 400)
@@ -121,6 +127,7 @@ private fun FavoriteScreenPreview() {
         FavoriteScreen(
             state = FavoriteUiState(isLoading = false, favorites = favorites),
             onAction = {},
+            onMovieClick = { _, _ -> },
         )
     }
 }
@@ -132,6 +139,7 @@ private fun FavoriteScreenEmptyPreview() {
         FavoriteScreen(
             state = FavoriteUiState(isLoading = false),
             onAction = {},
+            onMovieClick = { _, _ -> },
         )
     }
 }
@@ -145,6 +153,7 @@ private fun FavoriteScreenErrorPreview() {
             FavoriteScreen(
                 state = FavoriteUiState(isLoading = false, favorites = favorites),
                 onAction = {},
+                onMovieClick = { _, _ -> },
             )
             Snackbar(
                 modifier = Modifier
@@ -169,6 +178,7 @@ private fun FavoriteScreenRemoveDialogPreview() {
                 pendingRemoval = favorites.first(),
             ),
             onAction = {},
+            onMovieClick = { _, _ -> },
         )
     }
 }

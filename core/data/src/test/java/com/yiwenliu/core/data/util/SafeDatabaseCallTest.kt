@@ -1,4 +1,4 @@
-package com.yiwenliu.core.common.data.database
+package com.yiwenliu.core.data.util
 
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteFullException

@@ -4,6 +4,7 @@ import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.testing.data.favoriteMoviesTestData
 import com.yiwenliu.core.testing.repository.TestFavoriteMovieRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -14,12 +15,13 @@ import kotlin.test.assertIs
 class FavoriteMovieUseCasesTest {
     private val favoriteMovieRepository = TestFavoriteMovieRepository()
 
+    private suspend fun <T> Flow<Result<T, DataError.Local>>.awaitData(): T = assertIs<Result.Success<T>>(first()).data
+
     @Test
     fun `GetFavoriteMovies returns what the repository holds`() = runTest {
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
 
-        val favorites = GetFavoriteMoviesUseCase(favoriteMovieRepository)().first()
-        assertEquals(favoriteMoviesTestData, favorites)
+        assertEquals(favoriteMoviesTestData, GetFavoriteMoviesUseCase(favoriteMovieRepository)().awaitData())
     }
 
     @Test
@@ -28,7 +30,7 @@ class FavoriteMovieUseCasesTest {
 
         SetMovieFavoriteUseCase(favoriteMovieRepository)(movie, true)
         assertEquals(listOf(movie), favoriteMovieRepository.attemptedAdds)
-        assertEquals(listOf(movie), favoriteMovieRepository.getFavoriteMovies().first())
+        assertEquals(listOf(movie), favoriteMovieRepository.getFavoriteMovies().awaitData())
     }
 
     @Test
@@ -38,7 +40,7 @@ class FavoriteMovieUseCasesTest {
 
         SetMovieFavoriteUseCase(favoriteMovieRepository)(movie, false)
         assertEquals(listOf(movie.id), favoriteMovieRepository.attemptedRemovals)
-        assertFalse(favoriteMovieRepository.getFavoriteMovies().first().contains(movie))
+        assertFalse(favoriteMovieRepository.getFavoriteMovies().awaitData().contains(movie))
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.yiwenliu.core.common.domain.util.DataError
 import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.data.testdoubles.TestFavoriteMovieDao
 import com.yiwenliu.core.testing.data.favoriteMoviesTestData
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -35,10 +36,12 @@ class FavoriteMovieRepositoryTest {
         repository = FavoriteMovieRepositoryImpl(favoriteMovieDao, timeProvider)
     }
 
+    private suspend fun <T> Flow<Result<T, DataError.Local>>.awaitData(): T = assertIs<Result.Success<T>>(first()).data
+
     @Test
     fun `an added movie comes back unchanged`() = runTest {
         repository.addFavorite(movie)
-        assertEquals(listOf(movie), repository.getFavoriteMovies().first())
+        assertEquals(listOf(movie), repository.getFavoriteMovies().awaitData())
     }
 
     @Test
@@ -51,7 +54,7 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(movie)
         repository.addFavorite(otherMovie)
 
-        val favorites = repository.getFavoriteMovies().first()
+        val favorites = repository.getFavoriteMovies().awaitData()
         assertEquals(2, favorites.size)
         assertTrue(favorites.containsAll(listOf(movie, otherMovie)))
     }
@@ -60,7 +63,7 @@ class FavoriteMovieRepositoryTest {
     fun `adding the same movie twice does not duplicate it`() = runTest {
         repository.addFavorite(movie)
         repository.addFavorite(movie)
-        assertEquals(listOf(movie), repository.getFavoriteMovies().first())
+        assertEquals(listOf(movie), repository.getFavoriteMovies().awaitData())
     }
 
     @Test
@@ -77,7 +80,7 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(movie)
         repository.addFavorite(otherMovie)
         assertIs<Result.Success<Unit>>(repository.removeFavorite(movie.id))
-        assertEquals(listOf(otherMovie), repository.getFavoriteMovies().first())
+        assertEquals(listOf(otherMovie), repository.getFavoriteMovies().awaitData())
     }
 
     @Test
@@ -104,20 +107,34 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(movie)
         currentTime = 200L
         repository.addFavorite(otherMovie)
-        assertEquals(listOf(otherMovie, movie), repository.getFavoriteMovies().first())
+        assertEquals(listOf(otherMovie, movie), repository.getFavoriteMovies().awaitData())
     }
 
     @Test
-    fun `getFavoriteMovies degrades to an empty list when the read fails`() = runTest {
+    fun `getFavoriteMovies surfaces a read failure as a Result Failure`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteException("boom")
-        assertEquals(emptyList(), repository.getFavoriteMovies().first())
+
+        val result = repository.getFavoriteMovies().first()
+        assertIs<Result.Failure<DataError.Local>>(result)
+        assertEquals(DataError.Local.UNKNOWN, result.error)
+    }
+
+    @Test
+    fun `getFavoriteMovies surfaces a full disk as a Result Failure`() = runTest {
+        repository.addFavorite(movie)
+        favoriteMovieDao.readErrorToThrow = SQLiteFullException("disk full")
+
+        val result = repository.getFavoriteMovies().first()
+        assertIs<Result.Failure<DataError.Local>>(result)
+        assertEquals(DataError.Local.DISK_FULL, result.error)
     }
 
     @Test
     fun `isFavorite degrades to false when the read fails`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteException("boom")
+
         assertFalse(repository.isFavorite(movie.id).first())
     }
 }

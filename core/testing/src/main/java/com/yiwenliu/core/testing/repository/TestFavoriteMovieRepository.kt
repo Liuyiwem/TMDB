@@ -7,7 +7,7 @@ import com.yiwenliu.core.domain.repository.FavoriteMovieRepository
 import com.yiwenliu.core.model.FavoriteMovie
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
@@ -16,13 +16,20 @@ class TestFavoriteMovieRepository : FavoriteMovieRepository {
 
     private var writeError: DataError.Local? = null
 
+    private val readError = MutableStateFlow<DataError.Local?>(null)
+
     val attemptedAdds = mutableListOf<FavoriteMovie>()
 
     val attemptedRemovals = mutableListOf<Int>()
 
-    override fun getFavoriteMovies(): Flow<List<FavoriteMovie>> = favorites.asStateFlow()
+    override fun getFavoriteMovies(): Flow<Result<List<FavoriteMovie>, DataError.Local>> =
+        combine(favorites, readError) { movies, error ->
+            error?.let { Result.Failure(it) } ?: Result.Success(movies)
+        }
 
-    override fun isFavorite(movieId: Int): Flow<Boolean> = favorites.map { movies -> movies.any { it.id == movieId } }
+    override fun isFavorite(movieId: Int): Flow<Boolean> = favorites.map { movies ->
+        movies.any { it.id == movieId }
+    }
 
     override suspend fun addFavorite(movie: FavoriteMovie): EmptyResult<DataError.Local> {
         attemptedAdds += movie
@@ -44,5 +51,9 @@ class TestFavoriteMovieRepository : FavoriteMovieRepository {
 
     fun sendWriteError(error: DataError.Local?) {
         writeError = error
+    }
+
+    fun sendReadError(error: DataError.Local?) {
+        readError.value = error
     }
 }

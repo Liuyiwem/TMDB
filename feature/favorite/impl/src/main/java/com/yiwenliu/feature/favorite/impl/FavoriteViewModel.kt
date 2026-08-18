@@ -2,6 +2,8 @@ package com.yiwenliu.feature.favorite.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.domain.util.Result
 import com.yiwenliu.core.common.domain.util.onFailure
 import com.yiwenliu.core.domain.usecase.GetFavoriteMoviesUseCase
 import com.yiwenliu.core.domain.usecase.SetMovieFavoriteUseCase
@@ -14,10 +16,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private data class FavoritesResult(
+    val favorites: List<FavoriteMovie> = emptyList(),
+    val isLoading: Boolean = true,
+    val error: DataError.Local? = null,
+)
 
 @HiltViewModel
 internal class FavoriteViewModel
@@ -28,15 +38,28 @@ constructor(
 ) : ViewModel() {
     private val pendingRemoval = MutableStateFlow<FavoriteMovie?>(null)
 
+    private val errorDismissed = MutableStateFlow(false)
+
     private val _events = Channel<FavoriteEvent>()
     val events: Flow<FavoriteEvent> = _events.receiveAsFlow()
 
+    private val favoritesResult: Flow<FavoritesResult> =
+        getFavoriteMovies()
+            .scan(FavoritesResult()) { previous, result ->
+                when (result) {
+                    is Result.Success -> FavoritesResult(favorites = result.data, isLoading = false)
+                    is Result.Failure -> previous.copy(isLoading = false, error = result.error)
+                }
+            }
+            .onStart { errorDismissed.value = false }
+
     val state: StateFlow<FavoriteUiState> =
-        combine(getFavoriteMovies(), pendingRemoval) { favorites, movie ->
+        combine(favoritesResult, pendingRemoval, errorDismissed) { result, movie, dismissed ->
             FavoriteUiState(
-                isLoading = false,
-                favorites = favorites,
+                isLoading = result.isLoading,
+                favorites = result.favorites,
                 pendingRemoval = movie,
+                error = result.error?.takeUnless { dismissed }?.toUiText(),
             )
         }.stateIn(
             scope = viewModelScope,
@@ -49,7 +72,7 @@ constructor(
             is FavoriteAction.OnRemoveClick -> pendingRemoval.value = action.movie
             FavoriteAction.OnRemoveConfirm -> confirmRemoval()
             FavoriteAction.OnRemoveDismiss -> pendingRemoval.value = null
-            is FavoriteAction.OnMovieClick -> Unit
+            FavoriteAction.OnErrorDismiss -> errorDismissed.value = true
         }
     }
 

@@ -128,14 +128,33 @@ class FavoriteViewModelTest {
     }
 
     @Test
-    fun `OnMovieClick is ignored by the ViewModel`() = runTest(mainDispatcherRule.dispatcher) {
+    fun `a read failure keeps the loaded favorites and surfaces an error`() = runTest(mainDispatcherRule.dispatcher) {
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
         val viewModel = collectingViewModel()
         runCurrent()
-        val before = viewModel.state.value
 
-        viewModel.onAction(FavoriteAction.OnMovieClick(533535, "Deadpool & Wolverine"))
+        favoriteMovieRepository.sendReadError(DataError.Local.DISK_FULL)
         runCurrent()
-        assertEquals(before, viewModel.state.value)
+
+        assertEquals(favoriteMoviesTestData, viewModel.state.value.favorites)
+        assertEquals(
+            UiText.StringResource(com.yiwenliu.core.ui.R.string.error_disk_full),
+            viewModel.state.value.error,
+        )
+    }
+
+    @Test
+    fun `OnErrorDismiss clears the error and keeps the favorites`() = runTest(mainDispatcherRule.dispatcher) {
+        favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
+        val viewModel = collectingViewModel()
+        runCurrent()
+        favoriteMovieRepository.sendReadError(DataError.Local.DISK_FULL)
+        runCurrent()
+
+        viewModel.onAction(FavoriteAction.OnErrorDismiss)
+        runCurrent()
+
+        assertNull(viewModel.state.value.error)
+        assertEquals(favoriteMoviesTestData, viewModel.state.value.favorites)
     }
 }
