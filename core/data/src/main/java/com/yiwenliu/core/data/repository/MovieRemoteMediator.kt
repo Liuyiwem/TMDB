@@ -58,6 +58,7 @@ internal class MovieRemoteMediator(
 
             is Result.Success -> {
                 val nextPage = nextPageKeyOf(page, response.data.totalPages)
+                val clearExisting = loadType == LoadType.REFRESH
                 movieDao.saveCategoryPage(
                     category = category.path,
                     movies = response.data.results.map(MovieResult::asEntity),
@@ -66,9 +67,9 @@ internal class MovieRemoteMediator(
                         nextPage = nextPage,
                         lastUpdated = timeProvider.now(),
                     ),
-                    clearExisting = loadType == LoadType.REFRESH,
+                    clearExisting = clearExisting,
                 )
-                onCacheUpdated()
+                if (clearExisting) onCacheUpdated()
                 MediatorResult.Success(endOfPaginationReached = nextPage == null)
             }
         }

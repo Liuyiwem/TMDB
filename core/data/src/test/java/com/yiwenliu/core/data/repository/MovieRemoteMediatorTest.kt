@@ -197,14 +197,14 @@ class MovieRemoteMediatorTest {
     }
 
     @Test
-    fun `a successful load reports that the cache changed`() = runTest(testDispatcher) {
+    fun `only a refresh reports that the cache changed`() = runTest(testDispatcher) {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(10, 11)) }
 
         mediator.load(LoadType.REFRESH, pagingState())
         assertEquals(1, cacheUpdates)
 
         mediator.load(LoadType.APPEND, pagingState())
-        assertEquals(2, cacheUpdates)
+        assertEquals(1, cacheUpdates)
     }
 
     @Test
