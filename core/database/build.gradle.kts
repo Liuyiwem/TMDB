@@ -10,6 +10,9 @@ android {
 
 dependencies {
     api(libs.coroutines)
+    api(libs.paging.runtime)
+
+    implementation(libs.androidx.room.paging)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)

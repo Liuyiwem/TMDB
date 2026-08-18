@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.yiwenliu.core.database.TmdbDatabase
 import com.yiwenliu.core.database.dao.FavoriteMovieDao
+import com.yiwenliu.core.database.dao.MovieDao
 import com.yiwenliu.core.database.di.DatabaseModule
 import dagger.Module
 import dagger.Provides
@@ -25,4 +26,7 @@ internal object TestDatabaseModule {
 
     @Provides
     fun providesFavoriteMovieDao(database: TmdbDatabase): FavoriteMovieDao = database.favoriteMovieDao()
+
+    @Provides
+    fun providesMovieDao(database: TmdbDatabase): MovieDao = database.movieDao()
 }

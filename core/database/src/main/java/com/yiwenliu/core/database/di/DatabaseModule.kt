@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.yiwenliu.core.database.TmdbDatabase
 import com.yiwenliu.core.database.dao.FavoriteMovieDao
+import com.yiwenliu.core.database.dao.MovieDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +25,9 @@ object DatabaseModule {
 
     @Provides
     fun providesFavoriteMovieDao(database: TmdbDatabase): FavoriteMovieDao = database.favoriteMovieDao()
+
+    @Provides
+    fun providesMovieDao(database: TmdbDatabase): MovieDao = database.movieDao()
 
     private const val DATABASE_NAME = "tmdb-database"
 }
