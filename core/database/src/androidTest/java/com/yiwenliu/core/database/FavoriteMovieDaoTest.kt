@@ -35,6 +35,11 @@ class FavoriteMovieDaoTest {
     }
 
     @Test
+    fun emptyTableEmitsAnEmptyList() = runTest {
+        assertTrue(favoriteMovieDao.getFavoriteMovies().first().isEmpty())
+    }
+
+    @Test
     fun upsertedMovieIsReturnedAsFavorite() = runTest {
         favoriteMovieDao.upsert(entity(id = 1, createdAt = 100L))
         assertTrue(favoriteMovieDao.isFavorite(1).first())

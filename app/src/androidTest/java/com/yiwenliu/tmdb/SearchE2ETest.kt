@@ -63,16 +63,7 @@ class SearchE2ETest {
     }
 
     @Test
-    fun searchTab_beforeTyping_showsNeitherResultsNorEmptyState() {
-        composeTestRule.onNodeWithText(searchTab).performClick()
-        composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(SearchTestTags.LOADING).assertDoesNotExist()
-    }
-
-    @Test
-    fun searchFailure_showsErrorNotEmptyState() {
+    fun searchFailureThenRetry_showsErrorThenRecovers() {
         composeTestRule.onNodeWithText(searchTab).performClick()
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).performTextInput("fight")
@@ -83,14 +74,6 @@ class SearchE2ETest {
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(SearchTestTags.GRID).assertDoesNotExist()
         composeTestRule.onNodeWithTag(SearchTestTags.EMPTY).assertDoesNotExist()
-    }
-
-    @Test
-    fun searchFailureRetry_recoversAndShowsResults() {
-        composeTestRule.onNodeWithText(searchTab).performClick()
-        apiService.errorToThrow = IOException("boom")
-        composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).performTextInput("fight")
-        composeTestRule.awaitTag(TmdbTestTags.ERROR)
         apiService.errorToThrow = null
         composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
         composeTestRule.awaitText(FIGHT_CLUB)

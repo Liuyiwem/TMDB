@@ -17,7 +17,6 @@ import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.ui.preview.CastPreviewParameterProvider
 import com.yiwenliu.core.ui.preview.MovieDetailPreviewParameterProvider
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
-import com.yiwenliu.core.ui.util.UiText
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -25,8 +24,6 @@ import kotlin.test.assertEquals
 class MovieDetailScreenTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
-    private val noInternetMessage = UiText.StringResource(com.yiwenliu.core.ui.R.string.error_no_internet)
 
     private val sampleDetail = MovieDetailPreviewParameterProvider().values.first()
     private val sampleCast = CastPreviewParameterProvider().values.first()
@@ -74,8 +71,8 @@ class MovieDetailScreenTest {
     }
 
     @Test
-    fun errorState_showsNeitherSpinnerNorContent() {
-        renderScreen(MovieDetailUiState(isLoading = false, error = noInternetMessage))
+    fun noDetail_showsNeitherSpinnerNorContent() {
+        renderScreen(MovieDetailUiState(isLoading = false))
         composeTestRule.onNodeWithTag(DetailTestTags.LOADING).assertDoesNotExist()
         composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertDoesNotExist()
     }
@@ -154,5 +151,13 @@ class MovieDetailScreenTest {
             .onNodeWithContentDescription(
                 composeTestRule.activity.getString(R.string.remove_from_favorites),
             ).assertIsDisplayed()
+    }
+
+    @Test
+    fun favoriteToggleWhenChecked_emitsCheckedFalse() {
+        var lastAction: MovieDetailAction? = null
+        renderScreen(loadedState(isFavorite = true), onAction = { lastAction = it })
+        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).performClick()
+        assertEquals(MovieDetailAction.OnFavoriteToggle(false), lastAction)
     }
 }

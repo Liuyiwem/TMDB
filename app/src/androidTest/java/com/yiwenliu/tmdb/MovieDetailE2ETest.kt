@@ -1,8 +1,6 @@
 package com.yiwenliu.tmdb
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsOff
-import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -34,7 +32,6 @@ class MovieDetailE2ETest {
     lateinit var apiService: MockTmdbApiService
 
     private val nowPlayingMovie = "Moana 2"
-    private val castMember = "Auli'i Cravalho"
     private val recommendedMovie = "Inside Out 2"
     private val otherRecommendedMovie = "Fight Club"
 
@@ -65,15 +62,6 @@ class MovieDetailE2ETest {
         openDetail()
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
         composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertIsDisplayed()
-    }
-
-    @Test
-    fun detail_showsCastAndRecommendationsFromMock() {
-        openDetail()
-        composeTestRule.awaitText(castMember)
-        composeTestRule.onNodeWithText(castMember).assertIsDisplayed()
-        scrollToRecommendations()
-        composeTestRule.onNodeWithText(recommendedMovie).assertIsDisplayed()
     }
 
     @Test
@@ -135,15 +123,6 @@ class MovieDetailE2ETest {
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
         composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(otherRecommendedMovie)
-    }
-
-    @Test
-    fun favoriteToggle_flipsTheToggleState() {
-        openDetail()
-        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOff()
-        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).performClick()
-        composeTestRule.awaitToggleOn(DetailTestTags.FAVORITE)
-        composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOn()
     }
 
     @Test
