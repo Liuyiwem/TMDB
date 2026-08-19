@@ -25,8 +25,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.ui.LocalSnackbarHostState

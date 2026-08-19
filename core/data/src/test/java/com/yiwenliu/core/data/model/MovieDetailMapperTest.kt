@@ -6,6 +6,7 @@ import com.yiwenliu.core.network.model.GenreResult
 import com.yiwenliu.core.network.model.MovieDetailResponse
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class MovieDetailMapperTest {
@@ -43,15 +44,15 @@ class MovieDetailMapperTest {
     @Test
     fun `asExternalModel builds poster and backdrop urls with different sizes`() {
         val detail = detailResponse.asExternalModel()
-        assertTrue(detail.posterUrl.endsWith("w500/poster.jpg"))
-        assertTrue(detail.backdropUrl.endsWith("w780/backdrop.jpg"))
+        assertTrue(detail.posterUrl!!.endsWith("w500/poster.jpg"))
+        assertTrue(detail.backdropUrl!!.endsWith("w780/backdrop.jpg"))
     }
 
     @Test
-    fun `asExternalModel maps a blank image path to an empty string`() {
+    fun `asExternalModel maps a blank image path to null`() {
         val detail = detailResponse.copy(posterPath = "", backdropPath = "").asExternalModel()
-        assertEquals("", detail.posterUrl)
-        assertEquals("", detail.backdropUrl)
+        assertNull(detail.posterUrl)
+        assertNull(detail.backdropUrl)
     }
 
     @Test
@@ -66,14 +67,14 @@ class MovieDetailMapperTest {
         assertEquals(10859, member.id)
         assertEquals("Ryan Reynolds", member.name)
         assertEquals("Deadpool", member.character)
-        assertTrue(member.profileUrl.endsWith("w185/ryan.jpg"))
+        assertTrue(member.profileUrl!!.endsWith("w185/ryan.jpg"))
     }
 
     @Test
-    fun `CastResult asExternalModel maps a blank profile path to an empty string`() {
+    fun `CastResult asExternalModel maps a blank profile path to null`() {
         val member =
             CastResult(id = 1667888, name = "Emma Corrin", character = "Cassandra Nova").asExternalModel()
-        assertEquals("", member.profileUrl)
+        assertNull(member.profileUrl)
     }
 
     @Test

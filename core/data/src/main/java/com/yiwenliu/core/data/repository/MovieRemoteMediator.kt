@@ -4,11 +4,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.yiwenliu.core.common.data.networking.safeApiCall
 import com.yiwenliu.core.common.di.TimeProvider
-import com.yiwenliu.core.common.domain.util.DataErrorException
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataErrorException
+import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.model.asEntity
+import com.yiwenliu.core.data.util.safeApiCall
 import com.yiwenliu.core.database.dao.MovieDao
 import com.yiwenliu.core.database.model.MovieEntity
 import com.yiwenliu.core.database.model.MovieRemoteKeyEntity
@@ -30,7 +30,7 @@ internal class MovieRemoteMediator(
 ) : RemoteMediator<Int, MovieEntity>() {
     override suspend fun initialize(): InitializeAction {
         val lastUpdated =
-            movieDao.remoteKey(category.path)?.lastUpdated ?: return InitializeAction.LAUNCH_INITIAL_REFRESH
+            movieDao.remoteKey(category.apiPath)?.lastUpdated ?: return InitializeAction.LAUNCH_INITIAL_REFRESH
         return if (timeProvider.now() - lastUpdated <= CACHE_TIMEOUT_MILLIS) {
             InitializeAction.SKIP_INITIAL_REFRESH
         } else {
@@ -45,12 +45,12 @@ internal class MovieRemoteMediator(
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
 
             LoadType.APPEND ->
-                movieDao.remoteKey(category.path)?.nextPage
+                movieDao.remoteKey(category.apiPath)?.nextPage
                     ?: return MediatorResult.Success(endOfPaginationReached = true)
         }
 
         val response = withContext(ioDispatcher) {
-            safeApiCall { apiService.getMoviesByCategory(category.path, page) }
+            safeApiCall { apiService.getMoviesByCategory(category.apiPath, page) }
         }
 
         return when (response) {
@@ -60,10 +60,10 @@ internal class MovieRemoteMediator(
                 val nextPage = nextPageKeyOf(page, response.data.totalPages)
                 val clearExisting = loadType == LoadType.REFRESH
                 movieDao.saveCategoryPage(
-                    category = category.path,
+                    category = category.apiPath,
                     movies = response.data.results.map(MovieResult::asEntity),
                     remoteKey = MovieRemoteKeyEntity(
-                        category = category.path,
+                        category = category.apiPath,
                         nextPage = nextPage,
                         lastUpdated = timeProvider.now(),
                     ),

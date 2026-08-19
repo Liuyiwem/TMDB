@@ -12,9 +12,6 @@ android {
 dependencies {
     api(libs.coroutines)
 
-    implementation(libs.retrofit2)
-    implementation(libs.kotlinx.serialization.json)
-
     testImplementation(libs.junit)
     testImplementation(libs.test.coroutines)
 

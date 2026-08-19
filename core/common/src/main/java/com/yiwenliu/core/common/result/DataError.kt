@@ -1,4 +1,4 @@
-package com.yiwenliu.core.common.domain.util
+package com.yiwenliu.core.common.result
 
 sealed interface DataError : Error {
     enum class Remote : DataError {

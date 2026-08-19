@@ -2,8 +2,8 @@ package com.yiwenliu.core.data.util
 
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteFullException
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.coroutines.cancellation.CancellationException

@@ -3,8 +3,8 @@ package com.yiwenliu.core.data.repository
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteFullException
 import com.yiwenliu.core.common.di.TimeProvider
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.testdoubles.TestFavoriteMovieDao
 import com.yiwenliu.core.testing.data.favoriteMoviesTestData
 import kotlinx.coroutines.flow.Flow

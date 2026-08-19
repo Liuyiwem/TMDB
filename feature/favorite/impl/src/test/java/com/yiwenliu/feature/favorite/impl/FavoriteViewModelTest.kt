@@ -1,7 +1,7 @@
 package com.yiwenliu.feature.favorite.impl
 
 import app.cash.turbine.test
-import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.result.DataError
 import com.yiwenliu.core.domain.usecase.GetFavoriteMoviesUseCase
 import com.yiwenliu.core.domain.usecase.SetMovieFavoriteUseCase
 import com.yiwenliu.core.testing.data.favoriteMoviesTestData

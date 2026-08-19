@@ -2,9 +2,9 @@ package com.yiwenliu.core.data.repository
 
 import androidx.paging.testing.asSnapshot
 import com.yiwenliu.core.common.di.TimeProvider
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
+import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.testdoubles.TestMovieDao
 import com.yiwenliu.core.data.testdoubles.TestTmdbApiService
 import com.yiwenliu.core.database.model.MovieEntity
@@ -50,7 +50,7 @@ class MovieRepositoryTest {
             assertEquals("Deadpool & Wolverine", movies[0].title)
             assertEquals(
                 movies.map(Movie::id),
-                movieDao.moviesIn(MovieCategory.POPULAR.path).map(MovieEntity::id),
+                movieDao.moviesIn(MovieCategory.POPULAR.apiPath).map(MovieEntity::id),
             )
         }
 

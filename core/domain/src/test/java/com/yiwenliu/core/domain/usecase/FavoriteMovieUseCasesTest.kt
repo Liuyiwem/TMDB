@@ -1,7 +1,7 @@
 package com.yiwenliu.core.domain.usecase
 
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.testing.data.favoriteMoviesTestData
 import com.yiwenliu.core.testing.repository.TestFavoriteMovieRepository
 import kotlinx.coroutines.flow.Flow

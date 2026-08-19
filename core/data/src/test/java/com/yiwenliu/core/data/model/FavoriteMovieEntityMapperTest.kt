@@ -6,6 +6,7 @@ import com.yiwenliu.core.database.model.FavoriteMovieEntity
 import com.yiwenliu.core.model.FavoriteMovie
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class FavoriteMovieEntityMapperTest {
     @Test
@@ -57,6 +58,6 @@ class FavoriteMovieEntityMapperTest {
     fun `a blank poster path stays blank in both directions`() {
         assertEquals("", "".asImagePath())
         val entity = FavoriteMovieEntity(id = 1, title = "T", posterPath = "", createdAt = 0L)
-        assertEquals("", entity.asExternalModel().posterUrl)
+        assertNull(entity.asExternalModel().posterUrl)
     }
 }

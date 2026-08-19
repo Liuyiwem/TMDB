@@ -1,7 +1,7 @@
 package com.yiwenliu.core.ui.util
 
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.ui.R
 import org.junit.Test
 import java.io.IOException

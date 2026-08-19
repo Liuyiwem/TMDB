@@ -2,8 +2,8 @@ package com.yiwenliu.feature.detail.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yiwenliu.core.common.domain.util.Result
-import com.yiwenliu.core.common.domain.util.onFailure
+import com.yiwenliu.core.common.result.Result
+import com.yiwenliu.core.common.result.onFailure
 import com.yiwenliu.core.domain.usecase.GetMovieDetailUseCase
 import com.yiwenliu.core.domain.usecase.SetMovieFavoriteUseCase
 import com.yiwenliu.core.model.asFavoriteMovie

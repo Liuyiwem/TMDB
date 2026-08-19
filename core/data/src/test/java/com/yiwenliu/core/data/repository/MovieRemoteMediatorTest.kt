@@ -7,8 +7,8 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator.InitializeAction
 import androidx.paging.RemoteMediator.MediatorResult
 import com.yiwenliu.core.common.di.TimeProvider
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.data.testdoubles.TestMovieDao
 import com.yiwenliu.core.database.model.MovieCategoryIndexEntity
 import com.yiwenliu.core.database.model.MovieEntity
@@ -97,10 +97,10 @@ class MovieRemoteMediatorTest {
 
         assertIs<MediatorResult.Success>(result)
         assertFalse(result.endOfPaginationReached)
-        assertEquals(listOf(10, 11), movieDao.moviesIn(category.path).map(MovieEntity::id))
-        assertEquals(listOf(0, 1), movieDao.indexOf(category.path).map(MovieCategoryIndexEntity::position))
-        assertEquals(2, movieDao.remoteKey(category.path)?.nextPage)
-        assertEquals(currentTime, movieDao.remoteKey(category.path)?.lastUpdated)
+        assertEquals(listOf(10, 11), movieDao.moviesIn(category.apiPath).map(MovieEntity::id))
+        assertEquals(listOf(0, 1), movieDao.indexOf(category.apiPath).map(MovieCategoryIndexEntity::position))
+        assertEquals(2, movieDao.remoteKey(category.apiPath)?.nextPage)
+        assertEquals(currentTime, movieDao.remoteKey(category.apiPath)?.lastUpdated)
     }
 
     @Test
@@ -112,8 +112,8 @@ class MovieRemoteMediatorTest {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(20, 21)) }
         mediator.load(LoadType.REFRESH, pagingState())
 
-        assertEquals(listOf(20, 21), movieDao.moviesIn(category.path).map(MovieEntity::id))
-        assertEquals(listOf(0, 1), movieDao.indexOf(category.path).map(MovieCategoryIndexEntity::position))
+        assertEquals(listOf(20, 21), movieDao.moviesIn(category.apiPath).map(MovieEntity::id))
+        assertEquals(listOf(0, 1), movieDao.indexOf(category.apiPath).map(MovieCategoryIndexEntity::position))
     }
 
     @Test
@@ -129,10 +129,10 @@ class MovieRemoteMediatorTest {
         val appended = mediator.load(LoadType.APPEND, pagingState())
 
         assertIs<MediatorResult.Success>(appended)
-        assertEquals(listOf(1, 2, 3, 4, 5), movieDao.moviesIn(category.path).map(MovieEntity::id))
+        assertEquals(listOf(1, 2, 3, 4, 5), movieDao.moviesIn(category.apiPath).map(MovieEntity::id))
         assertEquals(
             listOf(0, 1, 2, 3, 4),
-            movieDao.indexOf(category.path).map(MovieCategoryIndexEntity::position),
+            movieDao.indexOf(category.apiPath).map(MovieCategoryIndexEntity::position),
         )
         assertEquals(listOf(1, 2), apiService.requestedPages)
     }
@@ -140,7 +140,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `append without a next page ends pagination without calling the api`() = runTest(testDispatcher) {
         movieDao.seedRemoteKey(
-            MovieRemoteKeyEntity(category = category.path, nextPage = null, lastUpdated = currentTime),
+            MovieRemoteKeyEntity(category = category.apiPath, nextPage = null, lastUpdated = currentTime),
         )
 
         val result = mediator.load(LoadType.APPEND, pagingState())
@@ -158,7 +158,7 @@ class MovieRemoteMediatorTest {
 
         assertIs<MediatorResult.Success>(result)
         assertTrue(result.endOfPaginationReached)
-        assertNull(movieDao.remoteKey(category.path)?.nextPage)
+        assertNull(movieDao.remoteKey(category.apiPath)?.nextPage)
     }
 
     @Test
@@ -186,14 +186,14 @@ class MovieRemoteMediatorTest {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(10, 11)) }
         mediator.load(LoadType.REFRESH, pagingState())
         movieDao.insertCategoryIndex(
-            listOf(MovieCategoryIndexEntity(MovieCategory.NOW_PLAYING.path, movieId = 11, position = 0)),
+            listOf(MovieCategoryIndexEntity(MovieCategory.NOW_PLAYING.apiPath, movieId = 11, position = 0)),
         )
 
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(20)) }
         mediator.load(LoadType.REFRESH, pagingState())
 
         assertEquals(listOf(11, 20), movieDao.storedMovies.map(MovieEntity::id).sorted())
-        assertEquals(listOf(11), movieDao.moviesIn(MovieCategory.NOW_PLAYING.path).map(MovieEntity::id))
+        assertEquals(listOf(11), movieDao.moviesIn(MovieCategory.NOW_PLAYING.apiPath).map(MovieEntity::id))
     }
 
     @Test
@@ -219,7 +219,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `ending pagination without fetching does not report a cache change`() = runTest(testDispatcher) {
         movieDao.seedRemoteKey(
-            MovieRemoteKeyEntity(category = category.path, nextPage = null, lastUpdated = currentTime),
+            MovieRemoteKeyEntity(category = category.apiPath, nextPage = null, lastUpdated = currentTime),
         )
 
         mediator.load(LoadType.APPEND, pagingState())
@@ -235,7 +235,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `initialize skips a refresh within the cache timeout`() = runTest(testDispatcher) {
         movieDao.seedRemoteKey(
-            MovieRemoteKeyEntity(category.path, nextPage = 2, lastUpdated = currentTime - 29 * 60 * 1000L),
+            MovieRemoteKeyEntity(category.apiPath, nextPage = 2, lastUpdated = currentTime - 29 * 60 * 1000L),
         )
 
         assertEquals(InitializeAction.SKIP_INITIAL_REFRESH, mediator.initialize())
@@ -244,7 +244,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `initialize launches a refresh after the cache timeout`() = runTest(testDispatcher) {
         movieDao.seedRemoteKey(
-            MovieRemoteKeyEntity(category.path, nextPage = 2, lastUpdated = currentTime - 31 * 60 * 1000L),
+            MovieRemoteKeyEntity(category.apiPath, nextPage = 2, lastUpdated = currentTime - 31 * 60 * 1000L),
         )
 
         assertEquals(InitializeAction.LAUNCH_INITIAL_REFRESH, mediator.initialize())
@@ -253,7 +253,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `initialize reads only the remote key of its own category`() = runTest(testDispatcher) {
         movieDao.seedRemoteKey(
-            MovieRemoteKeyEntity(MovieCategory.TOP_RATED.path, nextPage = 2, lastUpdated = currentTime),
+            MovieRemoteKeyEntity(MovieCategory.TOP_RATED.apiPath, nextPage = 2, lastUpdated = currentTime),
         )
 
         assertEquals(InitializeAction.LAUNCH_INITIAL_REFRESH, mediator.initialize())

@@ -6,8 +6,8 @@ data class MovieDetail(
     val tagline: String,
     val overview: String,
     val releaseDate: String,
-    val posterUrl: String,
-    val backdropUrl: String,
+    val posterUrl: String?,
+    val backdropUrl: String?,
     val runtimeMinutes: Int,
     val voteAverage: Double,
     val voteCount: Int,
@@ -16,7 +16,7 @@ data class MovieDetail(
 
 data class Genre(val id: Int, val name: String)
 
-data class CastMember(val id: Int, val name: String, val character: String, val profileUrl: String)
+data class CastMember(val id: Int, val name: String, val character: String, val profileUrl: String?)
 
 data class MovieDetailBundle(
     val detail: MovieDetail,

@@ -1,7 +1,7 @@
 package com.yiwenliu.core.data.util
 
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
 import kotlinx.coroutines.CancellationException
 
 internal suspend inline fun <T> safeDatabaseCall(execute: suspend () -> T): Result<T, DataError.Local> = try {

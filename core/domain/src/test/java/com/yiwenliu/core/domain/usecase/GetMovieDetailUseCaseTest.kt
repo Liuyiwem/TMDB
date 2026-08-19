@@ -1,8 +1,8 @@
 package com.yiwenliu.core.domain.usecase
 
 import app.cash.turbine.test
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.model.MovieDetailBundle
 import com.yiwenliu.core.testing.data.castTestData
 import com.yiwenliu.core.testing.data.favoriteMoviesTestData

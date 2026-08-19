@@ -1,10 +1,10 @@
 package com.yiwenliu.core.data.repository
 
 import com.yiwenliu.core.common.di.TimeProvider
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.EmptyResult
-import com.yiwenliu.core.common.domain.util.Result
-import com.yiwenliu.core.common.domain.util.asEmptyResult
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.EmptyResult
+import com.yiwenliu.core.common.result.Result
+import com.yiwenliu.core.common.result.asEmptyResult
 import com.yiwenliu.core.data.model.asEntity
 import com.yiwenliu.core.data.model.asExternalModel
 import com.yiwenliu.core.data.util.asDatabaseResult
