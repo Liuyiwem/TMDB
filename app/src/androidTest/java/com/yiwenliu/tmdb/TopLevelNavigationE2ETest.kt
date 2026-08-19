@@ -54,7 +54,6 @@ class TopLevelNavigationE2ETest {
         composeTestRule.onNodeWithText(searchTab).performClick()
         composeTestRule.awaitTag(searchMarkerTag)
         composeTestRule.onNodeWithTag(searchMarkerTag).assertIsDisplayed()
-
         composeTestRule.onNodeWithText(homeTab).performClick()
         composeTestRule.awaitTag(homeMarkerTag)
         composeTestRule.onNodeWithTag(homeMarkerTag).assertIsDisplayed()

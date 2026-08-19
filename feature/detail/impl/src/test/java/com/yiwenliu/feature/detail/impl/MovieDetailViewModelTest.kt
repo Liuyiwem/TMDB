@@ -109,7 +109,6 @@ class MovieDetailViewModelTest {
         viewModel.state.test {
             awaitItem()
             assertFalse(awaitItem().isFavorite)
-
             viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
             assertTrue(awaitItem().isFavorite)
             expectNoEvents()
@@ -122,7 +121,6 @@ class MovieDetailViewModelTest {
     fun `an already favorited movie starts with isFavorite true`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
-
         val viewModel = collectingViewModel()
         runCurrent()
         assertTrue(viewModel.state.value.isFavorite)
@@ -134,7 +132,6 @@ class MovieDetailViewModelTest {
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
         val viewModel = collectingViewModel()
         runCurrent()
-
         viewModel.onAction(MovieDetailAction.OnFavoriteToggle(false))
         runCurrent()
         assertEquals(listOf(533535), favoriteMovieRepository.attemptedRemovals)
@@ -147,7 +144,6 @@ class MovieDetailViewModelTest {
         favoriteMovieRepository.sendWriteError(DataError.Local.DISK_FULL)
         val viewModel = collectingViewModel()
         runCurrent()
-
         viewModel.events.test {
             viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
             runCurrent()

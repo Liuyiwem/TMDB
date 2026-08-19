@@ -111,14 +111,11 @@ class MovieDetailE2ETest {
         scrollToRecommendations()
         composeTestRule.onNodeWithText(recommendedMovie).performClick()
         composeTestRule.awaitAppBarTitle(recommendedMovie)
-
         scrollToRecommendations()
         composeTestRule.onNodeWithText(otherRecommendedMovie).performClick()
         composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
-
         scrollToRecommendations()
         composeTestRule.onNodeWithText(recommendedMovie).performClick()
-
         composeTestRule.awaitAppBarTitle(recommendedMovie)
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(recommendedMovie)
     }
@@ -129,17 +126,13 @@ class MovieDetailE2ETest {
         scrollToRecommendations()
         composeTestRule.onNodeWithText(recommendedMovie).performClick()
         composeTestRule.awaitAppBarTitle(recommendedMovie)
-
         scrollToRecommendations()
         composeTestRule.onNodeWithText(otherRecommendedMovie).performClick()
         composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
-
         scrollToRecommendations()
         composeTestRule.onNodeWithText(recommendedMovie).performClick()
         composeTestRule.awaitAppBarTitle(recommendedMovie)
-
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
-
         composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(otherRecommendedMovie)
     }
@@ -158,7 +151,6 @@ class MovieDetailE2ETest {
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
         composeTestRule.awaitTag(TmdbTestTags.MESSAGE_DIALOG)
-
         composeTestRule
             .onNodeWithText(
                 composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
@@ -171,9 +163,7 @@ class MovieDetailE2ETest {
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
         composeTestRule.awaitTag(TmdbTestTags.MESSAGE_DIALOG)
-
         composeTestRule.onNodeWithTag(TmdbTestTags.MESSAGE_DIALOG_CONFIRM).performClick()
-
         composeTestRule.awaitTag(TmdbTestTags.TAB_ROW)
         composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TmdbTestTags.MESSAGE_DIALOG).assertDoesNotExist()

@@ -53,7 +53,6 @@ class FavoriteMovieRepositoryTest {
     fun `adding two movies returns both`() = runTest {
         repository.addFavorite(movie)
         repository.addFavorite(otherMovie)
-
         val favorites = repository.getFavoriteMovies().awaitData()
         assertEquals(2, favorites.size)
         assertTrue(favorites.containsAll(listOf(movie, otherMovie)))
@@ -69,7 +68,6 @@ class FavoriteMovieRepositoryTest {
     @Test
     fun `isFavorite reflects what is stored`() = runTest {
         assertFalse(repository.isFavorite(movie.id).first())
-
         repository.addFavorite(movie)
         assertTrue(repository.isFavorite(movie.id).first())
         assertFalse(repository.isFavorite(otherMovie.id).first())
@@ -86,7 +84,6 @@ class FavoriteMovieRepositoryTest {
     @Test
     fun `addFavorite surfaces a full disk as a Result Failure`() = runTest {
         favoriteMovieDao.errorToThrow = SQLiteFullException("disk full")
-
         val result = repository.addFavorite(movie)
         assertIs<Result.Failure<DataError.Local>>(result)
         assertEquals(DataError.Local.DISK_FULL, result.error)
@@ -95,7 +92,6 @@ class FavoriteMovieRepositoryTest {
     @Test
     fun `removeFavorite surfaces an unknown database failure as a Result Failure`() = runTest {
         favoriteMovieDao.errorToThrow = SQLiteException("boom")
-
         val result = repository.removeFavorite(movie.id)
         assertIs<Result.Failure<DataError.Local>>(result)
         assertEquals(DataError.Local.UNKNOWN, result.error)
@@ -114,7 +110,6 @@ class FavoriteMovieRepositoryTest {
     fun `getFavoriteMovies surfaces a read failure as a Result Failure`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteException("boom")
-
         val result = repository.getFavoriteMovies().first()
         assertIs<Result.Failure<DataError.Local>>(result)
         assertEquals(DataError.Local.UNKNOWN, result.error)
@@ -124,7 +119,6 @@ class FavoriteMovieRepositoryTest {
     fun `getFavoriteMovies surfaces a full disk as a Result Failure`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteFullException("disk full")
-
         val result = repository.getFavoriteMovies().first()
         assertIs<Result.Failure<DataError.Local>>(result)
         assertEquals(DataError.Local.DISK_FULL, result.error)
@@ -134,7 +128,6 @@ class FavoriteMovieRepositoryTest {
     fun `isFavorite degrades to false when the read fails`() = runTest {
         repository.addFavorite(movie)
         favoriteMovieDao.readErrorToThrow = SQLiteException("boom")
-
         assertFalse(repository.isFavorite(movie.id).first())
     }
 }

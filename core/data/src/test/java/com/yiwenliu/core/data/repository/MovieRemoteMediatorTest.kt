@@ -92,9 +92,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `refresh stores the movies the index and the remote key`() = runTest(testDispatcher) {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(10, 11)) }
-
         val result = mediator.load(LoadType.REFRESH, pagingState())
-
         assertIs<MediatorResult.Success>(result)
         assertFalse(result.endOfPaginationReached)
         assertEquals(listOf(10, 11), movieDao.moviesIn(category.apiPath).map(MovieEntity::id))
@@ -108,10 +106,8 @@ class MovieRemoteMediatorTest {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(10, 11)) }
         mediator.load(LoadType.REFRESH, pagingState())
         mediator.load(LoadType.APPEND, pagingState())
-
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(20, 21)) }
         mediator.load(LoadType.REFRESH, pagingState())
-
         assertEquals(listOf(20, 21), movieDao.moviesIn(category.apiPath).map(MovieEntity::id))
         assertEquals(listOf(0, 1), movieDao.indexOf(category.apiPath).map(MovieCategoryIndexEntity::position))
     }
@@ -124,10 +120,8 @@ class MovieRemoteMediatorTest {
                 else -> responseOf(page, totalPages = 3, ids = listOf(4, 5))
             }
         }
-
         mediator.load(LoadType.REFRESH, pagingState())
         val appended = mediator.load(LoadType.APPEND, pagingState())
-
         assertIs<MediatorResult.Success>(appended)
         assertEquals(listOf(1, 2, 3, 4, 5), movieDao.moviesIn(category.apiPath).map(MovieEntity::id))
         assertEquals(
@@ -142,9 +136,7 @@ class MovieRemoteMediatorTest {
         movieDao.seedRemoteKey(
             MovieRemoteKeyEntity(category = category.apiPath, nextPage = null, lastUpdated = currentTime),
         )
-
         val result = mediator.load(LoadType.APPEND, pagingState())
-
         assertIs<MediatorResult.Success>(result)
         assertTrue(result.endOfPaginationReached)
         assertTrue(apiService.requestedPages.isEmpty())
@@ -153,9 +145,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `a single page refresh reaches the end of pagination`() = runTest(testDispatcher) {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 1, ids = listOf(10, 11)) }
-
         val result = mediator.load(LoadType.REFRESH, pagingState())
-
         assertIs<MediatorResult.Success>(result)
         assertTrue(result.endOfPaginationReached)
         assertNull(movieDao.remoteKey(category.apiPath)?.nextPage)
@@ -164,7 +154,6 @@ class MovieRemoteMediatorTest {
     @Test
     fun `prepend ends pagination without calling the api`() = runTest(testDispatcher) {
         val result = mediator.load(LoadType.PREPEND, pagingState())
-
         assertIs<MediatorResult.Success>(result)
         assertTrue(result.endOfPaginationReached)
         assertTrue(apiService.requestedPages.isEmpty())
@@ -173,9 +162,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `a network failure maps to a mediator error carrying the remote error`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
-
         val result = mediator.load(LoadType.REFRESH, pagingState())
-
         assertIs<MediatorResult.Error>(result)
         assertEquals(DataError.Remote.NO_INTERNET, (result.throwable as DataErrorException).error)
         assertTrue(movieDao.storedMovies.isEmpty())
@@ -188,10 +175,8 @@ class MovieRemoteMediatorTest {
         movieDao.insertCategoryIndex(
             listOf(MovieCategoryIndexEntity(MovieCategory.NOW_PLAYING.apiPath, movieId = 11, position = 0)),
         )
-
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(20)) }
         mediator.load(LoadType.REFRESH, pagingState())
-
         assertEquals(listOf(11, 20), movieDao.storedMovies.map(MovieEntity::id).sorted())
         assertEquals(listOf(11), movieDao.moviesIn(MovieCategory.NOW_PLAYING.apiPath).map(MovieEntity::id))
     }
@@ -199,10 +184,8 @@ class MovieRemoteMediatorTest {
     @Test
     fun `only a refresh reports that the cache changed`() = runTest(testDispatcher) {
         apiService.fetchPage = { page -> responseOf(page, totalPages = 3, ids = listOf(10, 11)) }
-
         mediator.load(LoadType.REFRESH, pagingState())
         assertEquals(1, cacheUpdates)
-
         mediator.load(LoadType.APPEND, pagingState())
         assertEquals(1, cacheUpdates)
     }
@@ -210,9 +193,7 @@ class MovieRemoteMediatorTest {
     @Test
     fun `a failed load does not report a cache change`() = runTest(testDispatcher) {
         apiService.errorToThrow = IOException("boom")
-
         mediator.load(LoadType.REFRESH, pagingState())
-
         assertEquals(0, cacheUpdates)
     }
 
@@ -221,9 +202,7 @@ class MovieRemoteMediatorTest {
         movieDao.seedRemoteKey(
             MovieRemoteKeyEntity(category = category.apiPath, nextPage = null, lastUpdated = currentTime),
         )
-
         mediator.load(LoadType.APPEND, pagingState())
-
         assertEquals(0, cacheUpdates)
     }
 
@@ -237,7 +216,6 @@ class MovieRemoteMediatorTest {
         movieDao.seedRemoteKey(
             MovieRemoteKeyEntity(category.apiPath, nextPage = 2, lastUpdated = currentTime - 29 * 60 * 1000L),
         )
-
         assertEquals(InitializeAction.SKIP_INITIAL_REFRESH, mediator.initialize())
     }
 
@@ -246,7 +224,6 @@ class MovieRemoteMediatorTest {
         movieDao.seedRemoteKey(
             MovieRemoteKeyEntity(category.apiPath, nextPage = 2, lastUpdated = currentTime - 31 * 60 * 1000L),
         )
-
         assertEquals(InitializeAction.LAUNCH_INITIAL_REFRESH, mediator.initialize())
     }
 
@@ -255,7 +232,6 @@ class MovieRemoteMediatorTest {
         movieDao.seedRemoteKey(
             MovieRemoteKeyEntity(MovieCategory.TOP_RATED.apiPath, nextPage = 2, lastUpdated = currentTime),
         )
-
         assertEquals(InitializeAction.LAUNCH_INITIAL_REFRESH, mediator.initialize())
     }
 }

@@ -48,7 +48,6 @@ class SearchViewModelTest {
     fun `onAction writes through to SavedStateHandle`() = runTest(testDispatcher) {
         val handle = SavedStateHandle()
         val searchViewModel = SearchViewModel(handle, SearchMoviesPagerUseCase(movieRepository))
-
         searchViewModel.state.test {
             assertEquals("", awaitItem().queryString)
             searchViewModel.onAction(SearchAction.OnQueryStringChanged("batman"))

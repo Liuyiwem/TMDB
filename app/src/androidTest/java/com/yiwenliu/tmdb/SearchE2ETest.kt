@@ -76,7 +76,6 @@ class SearchE2ETest {
         composeTestRule.onNodeWithText(searchTab).performClick()
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).performTextInput("fight")
-
         composeTestRule.awaitTag(TmdbTestTags.ERROR)
         composeTestRule
             .onNodeWithText(
@@ -92,10 +91,8 @@ class SearchE2ETest {
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithTag(SearchTestTags.TEXT_FIELD).performTextInput("fight")
         composeTestRule.awaitTag(TmdbTestTags.ERROR)
-
         apiService.errorToThrow = null
         composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
-
         composeTestRule.awaitText(FIGHT_CLUB)
         composeTestRule.onNodeWithText(FIGHT_CLUB).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TmdbTestTags.ERROR).assertDoesNotExist()

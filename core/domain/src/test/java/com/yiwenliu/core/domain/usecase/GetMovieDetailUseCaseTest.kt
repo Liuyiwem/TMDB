@@ -70,7 +70,6 @@ class GetMovieDetailUseCaseTest {
     @Test
     fun `a stored movie is reported as favorite`() = runTest {
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
-
         val result = useCase(533535).first()
         assertIs<Result.Success<MovieDetailBundle>>(result)
         assertTrue(result.data.isFavorite)
@@ -80,7 +79,6 @@ class GetMovieDetailUseCaseTest {
     fun `favoriting re-emits the bundle without refetching`() = runTest {
         useCase(533535).test {
             assertFalse(assertIs<Result.Success<MovieDetailBundle>>(awaitItem()).data.isFavorite)
-
             favoriteMovieRepository.addFavorite(favoriteMoviesTestData.first())
             assertTrue(assertIs<Result.Success<MovieDetailBundle>>(awaitItem()).data.isFavorite)
             assertEquals(listOf(533535), movieRepository.requestedDetailIds)

@@ -87,7 +87,6 @@ class SafeApiCallTest {
                 500 to DataError.Remote.SERVER_ERROR,
                 503 to DataError.Remote.SERVICE_UNAVAILABLE,
             )
-
         expected.forEach { (code, error) ->
             assertEquals(error, code.asRemoteError(), "Failed for code $code")
         }

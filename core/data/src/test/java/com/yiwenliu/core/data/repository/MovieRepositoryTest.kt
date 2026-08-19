@@ -44,7 +44,6 @@ class MovieRepositoryTest {
     fun `getMoviesByCategoryPager caches the fetched movies and emits them from the database`() =
         runTest(testDispatcher) {
             val movies = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
-
             assertEquals(2, movies.size)
             assertEquals(533535, movies[0].id)
             assertEquals("Deadpool & Wolverine", movies[0].title)
@@ -58,9 +57,7 @@ class MovieRepositoryTest {
     fun `getMoviesByCategoryPager serves the cache without hitting the network again`() = runTest(testDispatcher) {
         repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
         apiService.errorToThrow = IOException("boom")
-
         val cached = repository.getMoviesByCategoryPager(MovieCategory.POPULAR).asSnapshot()
-
         assertEquals(listOf(533535, 1022789), cached.map(Movie::id))
     }
 

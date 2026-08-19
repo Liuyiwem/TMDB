@@ -43,7 +43,6 @@ class SearchResultsStateTest {
     @Test
     fun `refresh error is Error, not Empty`() {
         val cause = IllegalStateException("boom")
-
         val state = searchResultsStateOf(
             isIdle = false,
             isPending = false,
