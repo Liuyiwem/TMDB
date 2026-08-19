@@ -3,8 +3,10 @@ package com.yiwenliu.core.ui.util
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.res.stringResource
 
+@Immutable
 sealed interface UiText {
     data class DynamicString(val value: String) : UiText
 
