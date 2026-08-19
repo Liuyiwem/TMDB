@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel
+internal class SearchViewModel
 @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val searchMoviesPagerUseCase: SearchMoviesPagerUseCase,

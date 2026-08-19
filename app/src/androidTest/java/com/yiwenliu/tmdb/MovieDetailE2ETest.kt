@@ -36,6 +36,7 @@ class MovieDetailE2ETest {
     private val nowPlayingMovie = "Moana 2"
     private val castMember = "Auli'i Cravalho"
     private val recommendedMovie = "Inside Out 2"
+    private val otherRecommendedMovie = "Fight Club"
 
     @Before
     fun setup() {
@@ -102,6 +103,45 @@ class MovieDetailE2ETest {
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
         composeTestRule.awaitAppBarTitle(nowPlayingMovie)
         composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
+    }
+
+    @Test
+    fun revisitDetailAlreadyInBackStack_keepsItsTitle() {
+        openDetail()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(otherRecommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
+
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(recommendedMovie)
+    }
+
+    @Test
+    fun backFromRevisitedDetail_returnsToThePreviousDetail() {
+        openDetail()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(otherRecommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
+
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
+
+        composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(otherRecommendedMovie)
     }
 
     @Test

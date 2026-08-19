@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
@@ -88,14 +89,21 @@ fun TmdbApp(
 private fun TmdbAppContent(navigationState: NavigationState, navigator: Navigator, modifier: Modifier = Modifier) {
     val snackbarHostState = LocalSnackbarHostState.current
     val titleOverrides = LocalTopAppBarTitleOverrides.current
-    val entryProvider =
+    val entryProvider = remember(navigator) {
         entryProvider {
             homeEntry(navigator)
             searchEntry(navigator)
             favoriteEntry(navigator)
             movieDetailEntry(navigator)
         }
+    }
     val entries = navigationState.toEntries(entryProvider)
+
+    LaunchedEffect(navigationState, titleOverrides) {
+        snapshotFlow { navigationState.subStacks.values.flatten().toSet() }
+            .collect { liveKeys -> titleOverrides.keys.retainAll(liveKeys) }
+    }
+
     val topAppBarSpec = entries.lastOrNull()?.topAppBarSpec
 
     Scaffold(

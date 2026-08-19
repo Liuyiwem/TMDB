@@ -9,6 +9,6 @@ data class MovieDetailNavKey(val movieId: Int) : NavKey
 
 fun Navigator.navigateToMovieDetail(movieId: Int, title: String, titleOverrides: MutableMap<NavKey, String>) {
     val key = MovieDetailNavKey(movieId)
-    if (title.isNotBlank()) titleOverrides[key] = title
     navigate(key)
+    if (title.isNotBlank()) titleOverrides[key] = title
 }
