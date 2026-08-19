@@ -46,9 +46,9 @@ import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieDetail
 import com.yiwenliu.core.ui.LocalSnackbarHostState
 import com.yiwenliu.core.ui.component.DynamicAsyncImage
-import com.yiwenliu.core.ui.component.ErrorItem
 import com.yiwenliu.core.ui.component.MovieItem
 import com.yiwenliu.core.ui.component.TmdbIconToggleButton
+import com.yiwenliu.core.ui.component.TmdbMessageDialog
 import com.yiwenliu.core.ui.preview.CastPreviewParameterProvider
 import com.yiwenliu.core.ui.preview.MovieDetailPreviewParameterProvider
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
@@ -59,6 +59,7 @@ internal fun MovieDetailRoot(
     movieId: Int,
     onTitleLoaded: (String) -> Unit,
     onMovieClick: (Int, String) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MovieDetailViewModel = hiltViewModel<MovieDetailViewModel, MovieDetailViewModel.Factory>(
         key = movieId.toString(),
@@ -83,19 +84,24 @@ internal fun MovieDetailRoot(
     MovieDetailScreen(
         state = state,
         modifier = modifier,
-        onAction = { action ->
-            when (action) {
-                is MovieDetailAction.OnRecommendationClick -> onMovieClick(action.movieId, action.title)
-                else -> viewModel.onAction(action)
-            }
-        },
+        onAction = viewModel::onAction,
+        onRecommendationClick = onMovieClick,
     )
+
+    state.error?.let { error ->
+        TmdbMessageDialog(
+            message = error.asString(),
+            confirmText = stringResource(com.yiwenliu.core.ui.R.string.ok),
+            onConfirm = onBack,
+        )
+    }
 }
 
 @Composable
 internal fun MovieDetailScreen(
     state: MovieDetailUiState,
     onAction: (MovieDetailAction) -> Unit,
+    onRecommendationClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -103,17 +109,11 @@ internal fun MovieDetailScreen(
         contentAlignment = Alignment.Center,
     ) {
         when {
-            state.error != null -> ErrorItem(
-                errorMessage = state.error.asString(),
-                retryText = stringResource(com.yiwenliu.core.ui.R.string.retry),
-                onRetry = { onAction(MovieDetailAction.OnRetry) },
-            )
-
-            state.detail == null -> CircularProgressIndicator(
+            state.isLoading -> CircularProgressIndicator(
                 modifier = Modifier.testTag(DetailTestTags.LOADING),
             )
 
-            else -> MovieDetailContent(
+            state.detail != null -> MovieDetailContent(
                 detail = state.detail,
                 cast = state.cast,
                 recommendations = state.recommendations,
@@ -121,9 +121,7 @@ internal fun MovieDetailScreen(
                 onFavoriteToggle = { checked ->
                     onAction(MovieDetailAction.OnFavoriteToggle(checked))
                 },
-                onRecommendationClick = { movieId, title ->
-                    onAction(MovieDetailAction.OnRecommendationClick(movieId, title))
-                },
+                onRecommendationClick = onRecommendationClick,
             )
         }
     }
@@ -372,6 +370,7 @@ private fun MovieDetailScreenPreview() {
                 recommendations = MoviePreviewParameterProvider().values.first(),
             ),
             onAction = {},
+            onRecommendationClick = { _, _ -> },
         )
     }
 }
@@ -389,6 +388,7 @@ private fun MovieDetailScreenFavoritePreview() {
                 isFavorite = true,
             ),
             onAction = {},
+            onRecommendationClick = { _, _ -> },
         )
     }
 }
@@ -397,6 +397,10 @@ private fun MovieDetailScreenFavoritePreview() {
 @Composable
 private fun MovieDetailScreenLoadingPreview() {
     MaterialTheme {
-        MovieDetailScreen(state = MovieDetailUiState(), onAction = {})
+        MovieDetailScreen(
+            state = MovieDetailUiState(),
+            onAction = {},
+            onRecommendationClick = { _, _ -> },
+        )
     }
 }

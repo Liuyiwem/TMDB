@@ -25,8 +25,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.ui.LocalSnackbarHostState
@@ -94,17 +94,11 @@ class HomeScreenTest {
     }
 
     @Test
-    fun homeScreen_errorRefresh_showsRetry() {
-        val errorStates =
-            LoadStates(
-                refresh = LoadState.Error(RuntimeException("boom")),
-                prepend = LoadState.NotLoading(endOfPaginationReached = true),
-                append = LoadState.NotLoading(endOfPaginationReached = true),
-            )
+    fun homeScreen_refreshErrorWithoutItems_showsErrorWithRetry() {
         composeTestRule.setContent {
             val items =
                 flowOf(
-                    PagingData.from(emptyList<Movie>(), sourceLoadStates = errorStates),
+                    PagingData.from(emptyList<Movie>(), sourceLoadStates = REFRESH_ERROR),
                 ).collectAsLazyPagingItems()
             MaterialTheme {
                 HomeScreen(
@@ -115,8 +109,11 @@ class HomeScreenTest {
                 )
             }
         }
+        composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TmdbTestTags.ERROR).assertIsDisplayed()
         composeTestRule.onNodeWithText(retryLabel).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(HomeTestTags.GRID).assertDoesNotExist()
+        composeTestRule.onNodeWithTag(HomeTestTags.LOADING).assertDoesNotExist()
     }
 
     @Test
@@ -267,13 +264,14 @@ class HomeScreenTest {
     }
 
     @Test
-    fun loadingAfterRefreshError_keepsSnackbarOnScreen() {
+    fun loadingAfterRefreshError_dismissesSnackbar() {
         val pagingData =
             MutableStateFlow(PagingData.from(sampleMovies, sourceLoadStates = REFRESH_ERROR))
         setSnackbarEffect(pagingData)
         awaitText(noInternetMessage)
         pagingData.value = PagingData.from(sampleMovies, sourceLoadStates = REFRESHING)
-        composeTestRule.onNodeWithText(noInternetMessage).assertIsDisplayed()
+        awaitNoText(noInternetMessage)
+        composeTestRule.onNodeWithText(noInternetMessage).assertDoesNotExist()
     }
 
     @Test
@@ -317,6 +315,10 @@ class HomeScreenTest {
 
     private fun awaitText(text: String) = composeTestRule.waitUntil(TIMEOUT_MILLIS) {
         composeTestRule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+    }
+
+    private fun awaitNoText(text: String) = composeTestRule.waitUntil(TIMEOUT_MILLIS) {
+        composeTestRule.onAllNodesWithText(text).fetchSemanticsNodes().isEmpty()
     }
 
     private companion object {

@@ -36,6 +36,7 @@ class MovieDetailE2ETest {
     private val nowPlayingMovie = "Moana 2"
     private val castMember = "Auli'i Cravalho"
     private val recommendedMovie = "Inside Out 2"
+    private val otherRecommendedMovie = "Fight Club"
 
     @Before
     fun setup() {
@@ -105,6 +106,38 @@ class MovieDetailE2ETest {
     }
 
     @Test
+    fun revisitDetailAlreadyInBackStack_keepsItsTitle() {
+        openDetail()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(otherRecommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(recommendedMovie)
+    }
+
+    @Test
+    fun backFromRevisitedDetail_returnsToThePreviousDetail() {
+        openDetail()
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(otherRecommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
+        scrollToRecommendations()
+        composeTestRule.onNodeWithText(recommendedMovie).performClick()
+        composeTestRule.awaitAppBarTitle(recommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
+        composeTestRule.awaitAppBarTitle(otherRecommendedMovie)
+        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(otherRecommendedMovie)
+    }
+
+    @Test
     fun favoriteToggle_flipsTheToggleState() {
         openDetail()
         composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).assertIsOff()
@@ -114,41 +147,25 @@ class MovieDetailE2ETest {
     }
 
     @Test
-    fun detailLoadFailure_showsErrorInsteadOfContent() {
+    fun detailLoadFailure_showsErrorDialogWithoutContent() {
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
-        composeTestRule.awaitTag(TmdbTestTags.ERROR)
-
+        composeTestRule.awaitTag(TmdbTestTags.MESSAGE_DIALOG)
         composeTestRule
             .onNodeWithText(
                 composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
             ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_TITLE).assertTextEquals(nowPlayingMovie)
     }
 
     @Test
-    fun detailErrorRetry_recoversAndShowsContent() {
+    fun detailErrorDialogConfirm_returnsToHome() {
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
-        composeTestRule.awaitTag(TmdbTestTags.ERROR)
-
-        apiService.errorToThrow = null
-        composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
-
-        composeTestRule.awaitTag(DetailTestTags.CONTENT)
-        composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(TmdbTestTags.ERROR).assertDoesNotExist()
-    }
-
-    @Test
-    fun backFromDetailError_returnsToHome() {
-        apiService.errorToThrow = IOException("boom")
-        composeTestRule.onNodeWithText(nowPlayingMovie).performClick()
-        composeTestRule.awaitTag(TmdbTestTags.ERROR)
-
-        composeTestRule.onNodeWithTag(TmdbTestTags.APP_BAR_NAV_ICON).performClick()
+        composeTestRule.awaitTag(TmdbTestTags.MESSAGE_DIALOG)
+        composeTestRule.onNodeWithTag(TmdbTestTags.MESSAGE_DIALOG_CONFIRM).performClick()
         composeTestRule.awaitTag(TmdbTestTags.TAB_ROW)
         composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TmdbTestTags.MESSAGE_DIALOG).assertDoesNotExist()
     }
 }

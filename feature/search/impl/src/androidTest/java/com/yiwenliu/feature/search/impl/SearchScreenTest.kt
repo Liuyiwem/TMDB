@@ -16,8 +16,8 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.ui.TmdbTestTags
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider

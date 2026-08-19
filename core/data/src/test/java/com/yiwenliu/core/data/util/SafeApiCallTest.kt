@@ -1,7 +1,7 @@
-package com.yiwenliu.core.common.data.networking
+package com.yiwenliu.core.data.util
 
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.SerializationException
 import okhttp3.ResponseBody
@@ -87,7 +87,6 @@ class SafeApiCallTest {
                 500 to DataError.Remote.SERVER_ERROR,
                 503 to DataError.Remote.SERVICE_UNAVAILABLE,
             )
-
         expected.forEach { (code, error) ->
             assertEquals(error, code.asRemoteError(), "Failed for code $code")
         }

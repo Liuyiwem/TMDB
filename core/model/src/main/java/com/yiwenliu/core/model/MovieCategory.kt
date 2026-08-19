@@ -1,8 +1,8 @@
 package com.yiwenliu.core.model
 
-enum class MovieCategory(val path: String) {
-    NOW_PLAYING("now_playing"),
-    POPULAR("popular"),
-    TOP_RATED("top_rated"),
-    UPCOMING("upcoming"),
+enum class MovieCategory {
+    NOW_PLAYING,
+    POPULAR,
+    TOP_RATED,
+    UPCOMING,
 }

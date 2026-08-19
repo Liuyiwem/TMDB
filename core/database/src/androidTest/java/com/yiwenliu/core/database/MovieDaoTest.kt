@@ -43,7 +43,6 @@ class MovieDaoTest {
     @Test
     fun pagingSourceReturnsTheCategoryInPositionOrder() = runTest {
         savePage(POPULAR, ids = listOf(30, 10, 20), clearExisting = true)
-
         assertEquals(listOf(30, 10, 20), loadedIds(POPULAR))
     }
 
@@ -51,7 +50,6 @@ class MovieDaoTest {
     fun pagingSourceExcludesOtherCategories() = runTest {
         savePage(POPULAR, ids = listOf(1, 2), clearExisting = true)
         savePage(NOW_PLAYING, ids = listOf(3, 4), clearExisting = true)
-
         assertEquals(listOf(1, 2), loadedIds(POPULAR))
         assertEquals(listOf(3, 4), loadedIds(NOW_PLAYING))
     }
@@ -60,7 +58,6 @@ class MovieDaoTest {
     fun appendContinuesPositionsAcrossPages() = runTest {
         savePage(POPULAR, ids = listOf(1, 2, 3), clearExisting = true)
         savePage(POPULAR, ids = listOf(4, 5), clearExisting = false)
-
         assertEquals(listOf(1, 2, 3, 4, 5), loadedIds(POPULAR))
         assertEquals(4, movieDao.maxPosition(POPULAR))
     }
@@ -69,7 +66,6 @@ class MovieDaoTest {
     fun aMovieSharedByTwoCategoriesIsStoredOnce() = runTest {
         savePage(POPULAR, ids = listOf(1, 2), clearExisting = true)
         savePage(NOW_PLAYING, ids = listOf(2, 3), clearExisting = true)
-
         assertEquals(listOf(1, 2, 3), allMovieIds())
         assertEquals(listOf(2, 3), loadedIds(NOW_PLAYING))
     }
@@ -78,9 +74,7 @@ class MovieDaoTest {
     fun refreshClearsTheCategoryButKeepsMoviesReferencedElsewhere() = runTest {
         savePage(POPULAR, ids = listOf(1, 2), clearExisting = true)
         savePage(NOW_PLAYING, ids = listOf(2), clearExisting = true)
-
         savePage(POPULAR, ids = listOf(9), clearExisting = true)
-
         assertEquals(listOf(2, 9), allMovieIds())
         assertEquals(listOf(9), loadedIds(POPULAR))
         assertEquals(listOf(2), loadedIds(NOW_PLAYING))
@@ -90,9 +84,7 @@ class MovieDaoTest {
     fun refreshRenumbersPositionsFromZero() = runTest {
         savePage(POPULAR, ids = listOf(1, 2), clearExisting = true)
         savePage(POPULAR, ids = listOf(3, 4), clearExisting = false)
-
         savePage(POPULAR, ids = listOf(5, 6), clearExisting = true)
-
         assertEquals(1, movieDao.maxPosition(POPULAR))
         assertEquals(listOf(5, 6), loadedIds(POPULAR))
     }
@@ -101,7 +93,6 @@ class MovieDaoTest {
     fun duplicateIndexRowsKeepTheOriginalPosition() = runTest {
         savePage(POPULAR, ids = listOf(1, 2), clearExisting = true)
         savePage(POPULAR, ids = listOf(2, 3), clearExisting = false)
-
         assertEquals(listOf(1, 2, 3), loadedIds(POPULAR))
     }
 
@@ -113,7 +104,6 @@ class MovieDaoTest {
     @Test
     fun remoteKeyRoundTripsAndIsScopedToItsCategory() = runTest {
         movieDao.upsertRemoteKey(MovieRemoteKeyEntity(POPULAR, nextPage = 3, lastUpdated = 42L))
-
         val stored = movieDao.remoteKey(POPULAR)
         assertEquals(3, stored?.nextPage)
         assertEquals(42L, stored?.lastUpdated)
@@ -123,7 +113,6 @@ class MovieDaoTest {
     @Test
     fun aNullNextPageRoundTrips() = runTest {
         movieDao.upsertRemoteKey(MovieRemoteKeyEntity(POPULAR, nextPage = null, lastUpdated = 1L))
-
         assertNull(movieDao.remoteKey(POPULAR)?.nextPage)
     }
 
@@ -131,7 +120,6 @@ class MovieDaoTest {
     fun genreIdsRoundTripThroughTheTypeConverter() = runTest {
         movieDao.upsertMovies(listOf(movieEntity(id = 1, genreIds = listOf(28, 12, 878))))
         movieDao.insertCategoryIndex(listOf(MovieCategoryIndexEntity(POPULAR, movieId = 1, position = 0)))
-
         assertEquals(listOf(28, 12, 878), loadedMovies(POPULAR).single().genreIds)
     }
 
@@ -139,7 +127,6 @@ class MovieDaoTest {
     fun emptyGenreIdsRoundTrip() = runTest {
         movieDao.upsertMovies(listOf(movieEntity(id = 1, genreIds = emptyList())))
         movieDao.insertCategoryIndex(listOf(MovieCategoryIndexEntity(POPULAR, movieId = 1, position = 0)))
-
         assertEquals(emptyList<Int>(), loadedMovies(POPULAR).single().genreIds)
     }
 

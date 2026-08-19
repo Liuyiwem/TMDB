@@ -1,7 +1,7 @@
 package com.yiwenliu.core.ui.util
 
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.ui.R
 import org.junit.Test
 import java.io.IOException
@@ -26,7 +26,6 @@ class DataErrorToUiTextTest {
                 DataError.Remote.SERIALIZATION to R.string.error_serialization,
                 DataError.Remote.UNKNOWN to R.string.error_unknown,
             )
-
         expected.forEach { (error, stringRes) ->
             assertEquals(UiText.StringResource(stringRes), error.toUiText(), "Failed for $error")
         }
@@ -39,7 +38,6 @@ class DataErrorToUiTextTest {
                 DataError.Local.DISK_FULL to R.string.error_disk_full,
                 DataError.Local.UNKNOWN to R.string.error_unknown,
             )
-
         expected.forEach { (error, stringRes) ->
             assertEquals(UiText.StringResource(stringRes), error.toUiText(), "Failed for $error")
         }

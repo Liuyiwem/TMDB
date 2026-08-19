@@ -4,6 +4,7 @@ import com.yiwenliu.core.network.model.MovieResponse
 import com.yiwenliu.core.network.model.MovieResult
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class MovieResultMapperTest {
@@ -28,7 +29,7 @@ class MovieResultMapperTest {
         assertEquals(7.7, movie.voteAverage, 0.0)
         assertEquals(100, movie.voteCount)
         assertEquals(listOf(28, 35), movie.genreIds)
-        assertTrue(movie.posterUrl.endsWith("w500/poster.jpg"))
+        assertTrue(movie.posterUrl!!.endsWith("w500/poster.jpg"))
     }
 
     @Test
@@ -40,15 +41,15 @@ class MovieResultMapperTest {
                 posterPath = "/poster.jpg",
                 backdropPath = "/backdrop.jpg",
             ).asExternalModel()
-        assertTrue(movie.posterUrl.endsWith("w500/poster.jpg"))
-        assertTrue(movie.backdropUrl.endsWith("w780/backdrop.jpg"))
+        assertTrue(movie.posterUrl!!.endsWith("w500/poster.jpg"))
+        assertTrue(movie.backdropUrl!!.endsWith("w780/backdrop.jpg"))
     }
 
     @Test
-    fun `asExternalModel maps a blank image path to an empty string`() {
+    fun `asExternalModel maps a blank image path to null`() {
         val movie = MovieResult(id = 533535, posterPath = "", backdropPath = "").asExternalModel()
-        assertEquals("", movie.posterUrl)
-        assertEquals("", movie.backdropUrl)
+        assertNull(movie.posterUrl)
+        assertNull(movie.backdropUrl)
     }
 
     @Test

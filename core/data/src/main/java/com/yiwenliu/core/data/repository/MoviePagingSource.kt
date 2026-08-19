@@ -5,10 +5,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.yiwenliu.core.common.data.networking.safeApiCall
-import com.yiwenliu.core.common.domain.util.DataErrorException
-import com.yiwenliu.core.common.domain.util.Result
+import com.yiwenliu.core.common.result.DataErrorException
+import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.model.asExternalModel
+import com.yiwenliu.core.data.util.safeApiCall
 import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.CoroutineDispatcher

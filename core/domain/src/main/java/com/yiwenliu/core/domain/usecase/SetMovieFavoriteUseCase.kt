@@ -1,7 +1,7 @@
 package com.yiwenliu.core.domain.usecase
 
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.EmptyResult
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.EmptyResult
 import com.yiwenliu.core.domain.repository.FavoriteMovieRepository
 import com.yiwenliu.core.model.FavoriteMovie
 import javax.inject.Inject

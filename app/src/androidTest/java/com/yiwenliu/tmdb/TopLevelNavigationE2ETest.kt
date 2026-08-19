@@ -38,6 +38,7 @@ class TopLevelNavigationE2ETest {
     @Test
     fun selectSearchTab_showsSearchScreen() {
         composeTestRule.onNodeWithText(searchTab).performClick()
+        composeTestRule.awaitTag(searchMarkerTag)
         composeTestRule.onNodeWithTag(searchMarkerTag).assertIsDisplayed()
     }
 
@@ -51,9 +52,10 @@ class TopLevelNavigationE2ETest {
     @Test
     fun returnToHomeTab_showsHomeScreen() {
         composeTestRule.onNodeWithText(searchTab).performClick()
+        composeTestRule.awaitTag(searchMarkerTag)
         composeTestRule.onNodeWithTag(searchMarkerTag).assertIsDisplayed()
-
         composeTestRule.onNodeWithText(homeTab).performClick()
+        composeTestRule.awaitTag(homeMarkerTag)
         composeTestRule.onNodeWithTag(homeMarkerTag).assertIsDisplayed()
     }
 }

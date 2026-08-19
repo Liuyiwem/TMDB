@@ -14,6 +14,6 @@ internal fun FavoriteMovieEntity.asExternalModel(): FavoriteMovie = FavoriteMovi
 internal fun FavoriteMovie.asEntity(createdAt: Long): FavoriteMovieEntity = FavoriteMovieEntity(
     id = id,
     title = title,
-    posterPath = posterUrl.asImagePath(),
+    posterPath = posterUrl?.asImagePath().orEmpty(),
     createdAt = createdAt,
 )

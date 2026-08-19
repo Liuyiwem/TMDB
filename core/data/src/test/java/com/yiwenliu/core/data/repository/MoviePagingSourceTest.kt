@@ -4,8 +4,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingState
 import androidx.paging.testing.TestPager
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.DataErrorException
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.data.testdoubles.TestTmdbApiService
 import com.yiwenliu.core.model.MovieCategory
 import com.yiwenliu.core.network.model.MovieResponse
@@ -34,7 +34,7 @@ class MoviePagingSourceTest {
     }
 
     private fun categorySource() = MoviePagingSource(testDispatcher) { page ->
-        apiService.getMoviesByCategory(MovieCategory.POPULAR.path, page)
+        apiService.getMoviesByCategory(MovieCategory.POPULAR.apiPath, page)
     }
 
     private fun searchSource() = MoviePagingSource(testDispatcher) { page ->

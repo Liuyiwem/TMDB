@@ -46,7 +46,6 @@ class FavoriteMovieDaoTest {
         favoriteMovieDao.upsert(entity(id = 1, title = "Oldest", createdAt = 100L))
         favoriteMovieDao.upsert(entity(id = 2, title = "Newest", createdAt = 300L))
         favoriteMovieDao.upsert(entity(id = 3, title = "Middle", createdAt = 200L))
-
         val titles = favoriteMovieDao.getFavoriteMovies().first().map { it.title }
         assertEquals(listOf("Newest", "Middle", "Oldest"), titles)
     }
@@ -55,7 +54,6 @@ class FavoriteMovieDaoTest {
     fun upsertReplacesTheExistingRow() = runTest {
         favoriteMovieDao.upsert(entity(id = 1, title = "Before", createdAt = 100L))
         favoriteMovieDao.upsert(entity(id = 1, title = "After", createdAt = 200L))
-
         val favorites = favoriteMovieDao.getFavoriteMovies().first()
         assertEquals(1, favorites.size)
         assertEquals("After", favorites.first().title)

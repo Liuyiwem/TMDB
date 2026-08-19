@@ -1,7 +1,7 @@
 package com.yiwenliu.feature.detail.impl
 
 import app.cash.turbine.test
-import com.yiwenliu.core.common.domain.util.DataError
+import com.yiwenliu.core.common.result.DataError
 import com.yiwenliu.core.domain.usecase.GetMovieDetailUseCase
 import com.yiwenliu.core.domain.usecase.SetMovieFavoriteUseCase
 import com.yiwenliu.core.testing.data.castTestData
@@ -12,7 +12,10 @@ import com.yiwenliu.core.testing.repository.TestFavoriteMovieRepository
 import com.yiwenliu.core.testing.repository.TestMovieRepository
 import com.yiwenliu.core.testing.util.MainDispatcherRule
 import com.yiwenliu.core.ui.util.UiText
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -37,6 +40,10 @@ class MovieDetailViewModelTest {
         getMovieDetail = GetMovieDetailUseCase(movieRepository, favoriteMovieRepository),
         setMovieFavorite = SetMovieFavoriteUseCase(favoriteMovieRepository),
     )
+
+    private fun TestScope.collectingViewModel(movieId: Int = 533535) = viewModel(movieId).also { viewModel ->
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.state.collect { } }
+    }
 
     private fun seedSuccess() {
         movieRepository.sendMovieDetail(movieDetailTestData)
@@ -74,7 +81,7 @@ class MovieDetailViewModelTest {
     @Test
     fun `the assisted movieId reaches the repository`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
-        viewModel(movieId = 1022789)
+        collectingViewModel(movieId = 1022789)
         runCurrent()
         assertEquals(listOf(1022789), movieRepository.requestedDetailIds)
         assertEquals(listOf(1022789), movieRepository.requestedCreditsIds)
@@ -96,31 +103,12 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun `OnRetry reloads and clears the previous error`() = runTest(mainDispatcherRule.dispatcher) {
-        seedSuccess()
-        movieRepository.sendDetailError(DataError.Remote.NO_INTERNET)
-        val viewModel = viewModel()
-        viewModel.state.test {
-            awaitItem()
-            assertEquals(noInternetMessage, awaitItem().error)
-
-            movieRepository.sendDetailError(null)
-            viewModel.onAction(MovieDetailAction.OnRetry)
-            assertTrue(awaitItem().isLoading)
-            val reloaded = awaitItem()
-            assertNull(reloaded.error)
-            assertEquals(movieDetailTestData, reloaded.detail)
-        }
-    }
-
-    @Test
     fun `OnFavoriteToggle persists the movie without refetching`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         val viewModel = viewModel()
         viewModel.state.test {
             awaitItem()
             assertFalse(awaitItem().isFavorite)
-
             viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
             assertTrue(awaitItem().isFavorite)
             expectNoEvents()
@@ -133,8 +121,7 @@ class MovieDetailViewModelTest {
     fun `an already favorited movie starts with isFavorite true`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
-
-        val viewModel = viewModel()
+        val viewModel = collectingViewModel()
         runCurrent()
         assertTrue(viewModel.state.value.isFavorite)
     }
@@ -143,9 +130,8 @@ class MovieDetailViewModelTest {
     fun `OnFavoriteToggle false removes the movie`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
-        val viewModel = viewModel()
+        val viewModel = collectingViewModel()
         runCurrent()
-
         viewModel.onAction(MovieDetailAction.OnFavoriteToggle(false))
         runCurrent()
         assertEquals(listOf(533535), favoriteMovieRepository.attemptedRemovals)
@@ -156,9 +142,8 @@ class MovieDetailViewModelTest {
     fun `a failed favorite write emits an error event`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendWriteError(DataError.Local.DISK_FULL)
-        val viewModel = viewModel()
+        val viewModel = collectingViewModel()
         runCurrent()
-
         viewModel.events.test {
             viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
             runCurrent()
@@ -168,29 +153,5 @@ class MovieDetailViewModelTest {
             )
         }
         assertFalse(viewModel.state.value.isFavorite)
-    }
-
-    @Test
-    fun `OnFavoriteToggle survives a reload`() = runTest(mainDispatcherRule.dispatcher) {
-        seedSuccess()
-        val viewModel = viewModel()
-        runCurrent()
-        viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
-        viewModel.onAction(MovieDetailAction.OnRetry)
-        runCurrent()
-        assertTrue(viewModel.state.value.isFavorite)
-    }
-
-    @Test
-    fun `OnRecommendationClick is ignored by the ViewModel`() = runTest(mainDispatcherRule.dispatcher) {
-        seedSuccess()
-        val viewModel = viewModel()
-        runCurrent()
-        val before = viewModel.state.value
-
-        viewModel.onAction(MovieDetailAction.OnRecommendationClick(1022789, "Inside Out 2"))
-        runCurrent()
-        assertEquals(before, viewModel.state.value)
-        assertEquals(listOf(533535), movieRepository.requestedDetailIds)
     }
 }

@@ -34,11 +34,9 @@ class FavoriteE2ETest {
     private fun favoriteFromDetail() {
         composeTestRule.awaitText(movieTitle)
         composeTestRule.onNodeWithText(movieTitle).performClick()
-
         composeTestRule.awaitTag(DetailTestTags.FAVORITE)
         composeTestRule.onNodeWithTag(DetailTestTags.FAVORITE).performClick()
         composeTestRule.awaitToggleOn(DetailTestTags.FAVORITE)
-
         composeTestRule.onNodeWithText(favoriteTab).performClick()
         composeTestRule.awaitTag(FavoriteTestTags.GRID)
     }
@@ -46,7 +44,6 @@ class FavoriteE2ETest {
     @Test
     fun favoritingFromDetail_showsTheMovieInFavorites() {
         favoriteFromDetail()
-
         composeTestRule.onNodeWithTag(FavoriteTestTags.item(movieId)).assertIsDisplayed()
         composeTestRule.onNodeWithText(movieTitle).assertIsDisplayed()
     }
@@ -54,7 +51,6 @@ class FavoriteE2ETest {
     @Test
     fun favoritesTab_startsEmpty() {
         composeTestRule.onNodeWithText(favoriteTab).performClick()
-
         composeTestRule.awaitTag(FavoriteTestTags.EMPTY)
         composeTestRule.onNodeWithTag(FavoriteTestTags.EMPTY).assertIsDisplayed()
     }
@@ -62,16 +58,13 @@ class FavoriteE2ETest {
     @Test
     fun removingFromFavorites_requiresConfirmation() {
         favoriteFromDetail()
-
         composeTestRule.onNodeWithTag(FavoriteTestTags.remove(movieId)).performClick()
         composeTestRule.awaitTag(TmdbTestTags.CONFIRM_DIALOG)
         composeTestRule.onNodeWithTag(TmdbTestTags.CONFIRM_DIALOG_DISMISS).performClick()
         composeTestRule.onNodeWithTag(FavoriteTestTags.GRID).assertIsDisplayed()
-
         composeTestRule.onNodeWithTag(FavoriteTestTags.remove(movieId)).performClick()
         composeTestRule.awaitTag(TmdbTestTags.CONFIRM_DIALOG)
         composeTestRule.onNodeWithTag(TmdbTestTags.CONFIRM_DIALOG_CONFIRM).performClick()
-
         composeTestRule.awaitTag(FavoriteTestTags.EMPTY)
     }
 }

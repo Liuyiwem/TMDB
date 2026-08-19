@@ -21,6 +21,10 @@ object TmdbTestTags {
 
     const val CONFIRM_DIALOG_DISMISS = "confirmDialog:dismiss"
 
+    const val MESSAGE_DIALOG = "messageDialog"
+
+    const val MESSAGE_DIALOG_CONFIRM = "messageDialog:confirm"
+
     fun tab(category: MovieCategory) = "tab:${category.name}"
 
     fun grid(prefix: String) = "$prefix:grid"

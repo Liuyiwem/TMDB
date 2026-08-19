@@ -32,6 +32,10 @@ class HomeScreenE2ETest {
     private val nowPlayingMovie = "Moana 2"
     private val popularMovie = "Deadpool & Wolverine"
 
+    private val noInternetMessage by lazy {
+        composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet)
+    }
+
     @Before
     fun setup() {
         hiltRule.inject()
@@ -61,14 +65,9 @@ class HomeScreenE2ETest {
     fun categorySwitchFailure_showsErrorAndKeepsTabs() {
         awaitText(nowPlayingMovie)
         apiService.errorToThrow = IOException("boom")
-
         composeTestRule.onNodeWithTag(TmdbTestTags.tab(MovieCategory.POPULAR)).performClick()
         composeTestRule.awaitTag(TmdbTestTags.ERROR)
-
-        composeTestRule
-            .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
-            ).assertIsDisplayed()
+        composeTestRule.onNodeWithText(noInternetMessage).assertIsDisplayed()
         composeTestRule.onNodeWithTag(HomeTestTags.GRID).assertDoesNotExist()
         composeTestRule.onNodeWithTag(TmdbTestTags.TAB_ROW).assertIsDisplayed()
     }
@@ -79,10 +78,8 @@ class HomeScreenE2ETest {
         apiService.errorToThrow = IOException("boom")
         composeTestRule.onNodeWithTag(TmdbTestTags.tab(MovieCategory.POPULAR)).performClick()
         composeTestRule.awaitTag(TmdbTestTags.ERROR)
-
         apiService.errorToThrow = null
         composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
-
         awaitText(popularMovie)
         composeTestRule.onNodeWithText(popularMovie).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TmdbTestTags.ERROR).assertDoesNotExist()

@@ -26,6 +26,7 @@ fun EntryProviderScope<NavKey>.movieDetailEntry(navigator: Navigator) {
             movieId = key.movieId,
             onTitleLoaded = { title -> titleOverrides[key] = title },
             onMovieClick = { id, title -> navigator.navigateToMovieDetail(id, title, titleOverrides) },
+            onBack = { if (navigator.canGoBack) navigator.goBack() },
         )
     }
 }

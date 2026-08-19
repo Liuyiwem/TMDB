@@ -31,6 +31,6 @@ val castTestData: List<CastMember> =
             id = 6968,
             name = "Hugh Jackman",
             character = "Logan / Wolverine",
-            profileUrl = "",
+            profileUrl = null,
         ),
     )

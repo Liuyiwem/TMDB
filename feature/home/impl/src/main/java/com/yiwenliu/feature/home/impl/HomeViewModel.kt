@@ -18,10 +18,11 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel
+internal class HomeViewModel
 @Inject
-constructor(private val getMoviesByCategoryPager: GetMoviesByCategoryPagerUseCase) :
-    ViewModel() {
+constructor(
+    private val getMoviesByCategoryPager: GetMoviesByCategoryPagerUseCase,
+) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 

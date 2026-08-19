@@ -38,7 +38,8 @@ import com.yiwenliu.core.ui.component.MovieCategoryTabRow
 import com.yiwenliu.core.ui.component.MoviePagingGrid
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
 import com.yiwenliu.core.ui.util.toUiText
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -69,13 +70,16 @@ internal fun RefreshErrorSnackbarEffect(movies: LazyPagingItems<Movie>) {
     val retryLabel = stringResource(com.yiwenliu.core.ui.R.string.retry)
 
     LaunchedEffect(movies, snackbarHostState) {
-        snapshotFlow { movies.loadState.refresh as? LoadState.Error }
-            .filterNotNull()
-            .collect { refresh ->
-                if (movies.itemCount == 0) return@collect
+        snapshotFlow {
+            val refresh = movies.loadState.refresh
+            if (refresh is LoadState.Error && movies.itemCount > 0) refresh.error else null
+        }
+            .distinctUntilChanged()
+            .collectLatest { error ->
+                if (error == null) return@collectLatest
                 val result =
                     snackbarHostState.showSnackbar(
-                        message = refresh.error.toUiText().asString(context),
+                        message = error.toUiText().asString(context),
                         actionLabel = retryLabel,
                         duration = SnackbarDuration.Long,
                     )

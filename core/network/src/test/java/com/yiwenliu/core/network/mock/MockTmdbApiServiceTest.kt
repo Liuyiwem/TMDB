@@ -107,7 +107,6 @@ class MockTmdbApiServiceTest {
         assertEquals(3, response.cast.size)
         assertEquals("Ryan Reynolds", response.cast[0].name)
         assertEquals("Wade Wilson / Deadpool", response.cast[0].character)
-
         val moana = apiService.getMovieCredits(1241982)
         assertEquals("Auli'i Cravalho", moana.cast[0].name)
     }

@@ -5,14 +5,14 @@ import androidx.paging.InvalidatingPagingSourceFactory
 import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.yiwenliu.core.common.data.networking.safeApiCall
 import com.yiwenliu.core.common.di.Dispatcher
 import com.yiwenliu.core.common.di.TimeProvider
 import com.yiwenliu.core.common.di.TmdbDispatchers.IO
-import com.yiwenliu.core.common.domain.util.DataError
-import com.yiwenliu.core.common.domain.util.Result
-import com.yiwenliu.core.common.domain.util.map
+import com.yiwenliu.core.common.result.DataError
+import com.yiwenliu.core.common.result.Result
+import com.yiwenliu.core.common.result.map
 import com.yiwenliu.core.data.model.asExternalModel
+import com.yiwenliu.core.data.util.safeApiCall
 import com.yiwenliu.core.database.dao.MovieDao
 import com.yiwenliu.core.database.model.MovieEntity
 import com.yiwenliu.core.domain.repository.MovieRepository
@@ -40,7 +40,7 @@ constructor(
 ) : MovieRepository {
     @OptIn(ExperimentalPagingApi::class)
     override fun getMoviesByCategoryPager(category: MovieCategory): Flow<PagingData<Movie>> {
-        val pagingSourceFactory = InvalidatingPagingSourceFactory { movieDao.pagingSource(category.path) }
+        val pagingSourceFactory = InvalidatingPagingSourceFactory { movieDao.pagingSource(category.apiPath) }
         return Pager(
             config = MOVIE_PAGING_CONFIG,
             remoteMediator = MovieRemoteMediator(

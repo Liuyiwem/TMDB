@@ -14,7 +14,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import com.yiwenliu.core.model.CastMember
 import com.yiwenliu.core.model.Movie
-import com.yiwenliu.core.ui.TmdbTestTags
 import com.yiwenliu.core.ui.preview.CastPreviewParameterProvider
 import com.yiwenliu.core.ui.preview.MovieDetailPreviewParameterProvider
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
@@ -45,10 +44,18 @@ class MovieDetailScreenTest {
         isFavorite = isFavorite,
     )
 
-    private fun renderScreen(state: MovieDetailUiState, onAction: (MovieDetailAction) -> Unit = {}) {
+    private fun renderScreen(
+        state: MovieDetailUiState,
+        onAction: (MovieDetailAction) -> Unit = {},
+        onRecommendationClick: (Int, String) -> Unit = { _, _ -> },
+    ) {
         composeTestRule.setContent {
             MaterialTheme {
-                MovieDetailScreen(state = state, onAction = onAction)
+                MovieDetailScreen(
+                    state = state,
+                    onAction = onAction,
+                    onRecommendationClick = onRecommendationClick,
+                )
             }
         }
     }
@@ -67,24 +74,10 @@ class MovieDetailScreenTest {
     }
 
     @Test
-    fun errorState_showsMappedMessage() {
+    fun errorState_showsNeitherSpinnerNorContent() {
         renderScreen(MovieDetailUiState(isLoading = false, error = noInternetMessage))
-        composeTestRule
-            .onNodeWithText(
-                composeTestRule.activity.getString(com.yiwenliu.core.ui.R.string.error_no_internet),
-            ).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(DetailTestTags.LOADING).assertDoesNotExist()
         composeTestRule.onNodeWithTag(DetailTestTags.CONTENT).assertDoesNotExist()
-    }
-
-    @Test
-    fun errorState_retryClick_emitsOnRetry() {
-        var lastAction: MovieDetailAction? = null
-        renderScreen(
-            MovieDetailUiState(isLoading = false, error = noInternetMessage),
-            onAction = { lastAction = it },
-        )
-        composeTestRule.onNodeWithTag(TmdbTestTags.RETRY).performClick()
-        assertEquals(MovieDetailAction.OnRetry, lastAction)
     }
 
     @Test
@@ -136,12 +129,12 @@ class MovieDetailScreenTest {
 
     @Test
     fun recommendationClick_emitsIdAndTitle() {
-        var lastAction: MovieDetailAction? = null
-        renderScreen(loadedState(), onAction = { lastAction = it })
+        var clicked: Pair<Int, String>? = null
+        renderScreen(loadedState(), onRecommendationClick = { id, title -> clicked = id to title })
         scrollTo(DetailTestTags.RECOMMENDATIONS)
         val first = sampleRecommendations.first()
         composeTestRule.onNodeWithText(first.title).performClick()
-        assertEquals(MovieDetailAction.OnRecommendationClick(first.id, first.title), lastAction)
+        assertEquals(first.id to first.title, clicked)
     }
 
     @Test
