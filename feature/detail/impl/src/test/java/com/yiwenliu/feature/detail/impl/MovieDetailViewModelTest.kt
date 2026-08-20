@@ -12,10 +12,7 @@ import com.yiwenliu.core.testing.repository.TestFavoriteMovieRepository
 import com.yiwenliu.core.testing.repository.TestMovieRepository
 import com.yiwenliu.core.testing.util.MainDispatcherRule
 import com.yiwenliu.core.ui.util.UiText
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -40,10 +37,6 @@ class MovieDetailViewModelTest {
         getMovieDetail = GetMovieDetailUseCase(movieRepository, favoriteMovieRepository),
         setMovieFavorite = SetMovieFavoriteUseCase(favoriteMovieRepository),
     )
-
-    private fun TestScope.collectingViewModel(movieId: Int = 533535) = viewModel(movieId).also { viewModel ->
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.state.collect { } }
-    }
 
     private fun seedSuccess() {
         movieRepository.sendMovieDetail(movieDetailTestData)
@@ -81,11 +74,13 @@ class MovieDetailViewModelTest {
     @Test
     fun `the assisted movieId reaches the repository`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
-        collectingViewModel(movieId = 1022789)
-        runCurrent()
-        assertEquals(listOf(1022789), movieRepository.requestedDetailIds)
-        assertEquals(listOf(1022789), movieRepository.requestedCreditsIds)
-        assertEquals(listOf(1022789), movieRepository.requestedRecommendationIds)
+        viewModel(movieId = 1022789).state.test {
+            runCurrent()
+            assertEquals(listOf(1022789), movieRepository.requestedDetailIds)
+            assertEquals(listOf(1022789), movieRepository.requestedCreditsIds)
+            assertEquals(listOf(1022789), movieRepository.requestedRecommendationIds)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -121,37 +116,45 @@ class MovieDetailViewModelTest {
     fun `an already favorited movie starts with isFavorite true`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
-        val viewModel = collectingViewModel()
-        runCurrent()
-        assertTrue(viewModel.state.value.isFavorite)
+        viewModel().state.test {
+            awaitItem()
+            assertTrue(awaitItem().isFavorite)
+            expectNoEvents()
+        }
     }
 
     @Test
     fun `OnFavoriteToggle false removes the movie`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendFavoriteMovies(favoriteMoviesTestData)
-        val viewModel = collectingViewModel()
-        runCurrent()
-        viewModel.onAction(MovieDetailAction.OnFavoriteToggle(false))
-        runCurrent()
+        val viewModel = viewModel()
+        viewModel.state.test {
+            awaitItem()
+            assertTrue(awaitItem().isFavorite)
+            viewModel.onAction(MovieDetailAction.OnFavoriteToggle(false))
+            assertFalse(awaitItem().isFavorite)
+            expectNoEvents()
+        }
         assertEquals(listOf(533535), favoriteMovieRepository.attemptedRemovals)
-        assertFalse(viewModel.state.value.isFavorite)
     }
 
     @Test
     fun `a failed favorite write emits an error event`() = runTest(mainDispatcherRule.dispatcher) {
         seedSuccess()
         favoriteMovieRepository.sendWriteError(DataError.Local.DISK_FULL)
-        val viewModel = collectingViewModel()
-        runCurrent()
-        viewModel.events.test {
-            viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
-            runCurrent()
-            assertEquals(
-                MovieDetailEvent.ShowError(UiText.StringResource(com.yiwenliu.core.ui.R.string.error_disk_full)),
-                awaitItem(),
-            )
+        val viewModel = viewModel()
+        viewModel.state.test {
+            awaitItem()
+            assertFalse(awaitItem().isFavorite)
+            viewModel.events.test {
+                viewModel.onAction(MovieDetailAction.OnFavoriteToggle(true))
+                runCurrent()
+                assertEquals(
+                    MovieDetailEvent.ShowError(UiText.StringResource(com.yiwenliu.core.ui.R.string.error_disk_full)),
+                    awaitItem(),
+                )
+            }
+            expectNoEvents()
         }
-        assertFalse(viewModel.state.value.isFavorite)
     }
 }

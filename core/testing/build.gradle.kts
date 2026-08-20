@@ -18,4 +18,5 @@ dependencies {
     api(libs.test.paging.testing)
     api(libs.hilt.testing)
     api(libs.junit)
+    api(libs.kotlin.test)
 }
