@@ -6,8 +6,9 @@ import com.yiwenliu.core.common.di.TimeProvider
 import com.yiwenliu.core.common.result.DataError
 import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.testdoubles.TestFavoriteMovieDao
-import com.yiwenliu.core.testing.data.favoriteMoviesTestData
-import kotlinx.coroutines.flow.Flow
+import com.yiwenliu.core.data.util.asImageUrl
+import com.yiwenliu.core.model.FavoriteMovie
+import com.yiwenliu.core.testing.util.firstData
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -22,9 +23,17 @@ class FavoriteMovieRepositoryTest {
 
     private lateinit var repository: FavoriteMovieRepositoryImpl
 
-    private val movie = favoriteMoviesTestData.first()
+    private val movie = FavoriteMovie(
+        id = 533535,
+        title = "Deadpool & Wolverine",
+        posterUrl = "/poster.jpg".asImageUrl(),
+    )
 
-    private val otherMovie = favoriteMoviesTestData.last()
+    private val otherMovie = FavoriteMovie(
+        id = 1022789,
+        title = "Inside Out 2",
+        posterUrl = "/poster2.jpg".asImageUrl(),
+    )
 
     private var currentTime = 0L
 
@@ -36,12 +45,10 @@ class FavoriteMovieRepositoryTest {
         repository = FavoriteMovieRepositoryImpl(favoriteMovieDao, timeProvider)
     }
 
-    private suspend fun <T> Flow<Result<T, DataError.Local>>.awaitData(): T = assertIs<Result.Success<T>>(first()).data
-
     @Test
     fun `an added movie comes back unchanged`() = runTest {
         repository.addFavorite(movie)
-        assertEquals(listOf(movie), repository.getFavoriteMovies().awaitData())
+        assertEquals(listOf(movie), repository.getFavoriteMovies().firstData())
     }
 
     @Test
@@ -53,7 +60,7 @@ class FavoriteMovieRepositoryTest {
     fun `adding two movies returns both`() = runTest {
         repository.addFavorite(movie)
         repository.addFavorite(otherMovie)
-        val favorites = repository.getFavoriteMovies().awaitData()
+        val favorites = repository.getFavoriteMovies().firstData()
         assertEquals(2, favorites.size)
         assertTrue(favorites.containsAll(listOf(movie, otherMovie)))
     }
@@ -62,7 +69,7 @@ class FavoriteMovieRepositoryTest {
     fun `adding the same movie twice does not duplicate it`() = runTest {
         repository.addFavorite(movie)
         repository.addFavorite(movie)
-        assertEquals(listOf(movie), repository.getFavoriteMovies().awaitData())
+        assertEquals(listOf(movie), repository.getFavoriteMovies().firstData())
     }
 
     @Test
@@ -78,7 +85,7 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(movie)
         repository.addFavorite(otherMovie)
         assertIs<Result.Success<Unit>>(repository.removeFavorite(movie.id))
-        assertEquals(listOf(otherMovie), repository.getFavoriteMovies().awaitData())
+        assertEquals(listOf(otherMovie), repository.getFavoriteMovies().firstData())
     }
 
     @Test
@@ -103,7 +110,7 @@ class FavoriteMovieRepositoryTest {
         repository.addFavorite(movie)
         currentTime = 200L
         repository.addFavorite(otherMovie)
-        assertEquals(listOf(otherMovie, movie), repository.getFavoriteMovies().awaitData())
+        assertEquals(listOf(otherMovie, movie), repository.getFavoriteMovies().firstData())
     }
 
     @Test

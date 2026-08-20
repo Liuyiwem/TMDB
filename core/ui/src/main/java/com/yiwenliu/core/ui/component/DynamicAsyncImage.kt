@@ -38,7 +38,7 @@ fun DynamicAsyncImage(imageUrl: String?, contentDescription: String?, modifier: 
 private fun DynamicAsyncImagePreview() {
     MaterialTheme {
         DynamicAsyncImage(
-            imageUrl = "https://image.tmdb.org/t/p/w500/poster.jpg",
+            imageUrl = "https://images.invalid/t/p/w500/poster.jpg",
             contentDescription = "Deadpool & Wolverine",
             modifier = Modifier.fillMaxSize(),
         )
@@ -50,7 +50,7 @@ private fun DynamicAsyncImagePreview() {
 private fun DynamicAsyncImageDarkPreview() {
     MaterialTheme(colorScheme = darkColorScheme()) {
         DynamicAsyncImage(
-            imageUrl = "https://image.tmdb.org/t/p/w500/poster.jpg",
+            imageUrl = "https://images.invalid/t/p/w500/poster.jpg",
             contentDescription = "Deadpool & Wolverine",
             modifier = Modifier.fillMaxSize(),
         )

@@ -7,11 +7,11 @@ val favoriteMoviesTestData: List<FavoriteMovie> =
         FavoriteMovie(
             id = 533535,
             title = "Deadpool & Wolverine",
-            posterUrl = "https://image.tmdb.org/t/p/w500/poster.jpg",
+            posterUrl = "/poster.jpg",
         ),
         FavoriteMovie(
             id = 1022789,
             title = "Inside Out 2",
-            posterUrl = "https://image.tmdb.org/t/p/w500/poster2.jpg",
+            posterUrl = "/poster2.jpg",
         ),
     )

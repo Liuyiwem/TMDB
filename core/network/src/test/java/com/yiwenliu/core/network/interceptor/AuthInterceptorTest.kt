@@ -32,7 +32,7 @@ class AuthInterceptorTest {
         val request =
             Request
                 .Builder()
-                .url("https://api.themoviedb.org/3/movie/popular")
+                .url("https://api.invalid/3/movie/popular")
                 .apply(build)
                 .build()
         client.newCall(request).execute().close()
