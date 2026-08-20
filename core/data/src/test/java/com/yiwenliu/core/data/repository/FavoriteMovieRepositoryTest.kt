@@ -6,7 +6,8 @@ import com.yiwenliu.core.common.di.TimeProvider
 import com.yiwenliu.core.common.result.DataError
 import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.testdoubles.TestFavoriteMovieDao
-import com.yiwenliu.core.testing.data.favoriteMoviesTestData
+import com.yiwenliu.core.data.util.asImageUrl
+import com.yiwenliu.core.model.FavoriteMovie
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -22,21 +23,29 @@ class FavoriteMovieRepositoryTest {
 
     private lateinit var repository: FavoriteMovieRepositoryImpl
 
-    private val movie = favoriteMoviesTestData.first()
+    private val movie = FavoriteMovie(
+        id = 533535,
+        title = "Deadpool & Wolverine",
+        posterUrl = "/poster.jpg".asImageUrl(),
+    )
 
-    private val otherMovie = favoriteMoviesTestData.last()
+    private val otherMovie = FavoriteMovie(
+        id = 1022789,
+        title = "Inside Out 2",
+        posterUrl = "/poster2.jpg".asImageUrl(),
+    )
 
     private var currentTime = 0L
 
     private val timeProvider = TimeProvider { currentTime }
+
+    private suspend fun <T> Flow<Result<T, DataError.Local>>.awaitData(): T = assertIs<Result.Success<T>>(first()).data
 
     @Before
     fun setup() {
         favoriteMovieDao = TestFavoriteMovieDao()
         repository = FavoriteMovieRepositoryImpl(favoriteMovieDao, timeProvider)
     }
-
-    private suspend fun <T> Flow<Result<T, DataError.Local>>.awaitData(): T = assertIs<Result.Success<T>>(first()).data
 
     @Test
     fun `an added movie comes back unchanged`() = runTest {

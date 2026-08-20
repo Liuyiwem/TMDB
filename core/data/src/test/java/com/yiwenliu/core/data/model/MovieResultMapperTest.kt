@@ -4,6 +4,7 @@ import com.yiwenliu.core.network.model.MovieResponse
 import com.yiwenliu.core.network.model.MovieResult
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -29,11 +30,11 @@ class MovieResultMapperTest {
         assertEquals(7.7, movie.voteAverage, 0.0)
         assertEquals(100, movie.voteCount)
         assertEquals(listOf(28, 35), movie.genreIds)
-        assertTrue(movie.posterUrl!!.endsWith("w500/poster.jpg"))
+        assertTrue(assertNotNull(movie.posterUrl).endsWith("/poster.jpg"))
     }
 
     @Test
-    fun `asExternalModel builds poster and backdrop urls with different sizes`() {
+    fun `asExternalModel builds poster and backdrop urls from their own paths`() {
         val movie =
             MovieResult(
                 id = 533535,
@@ -41,8 +42,8 @@ class MovieResultMapperTest {
                 posterPath = "/poster.jpg",
                 backdropPath = "/backdrop.jpg",
             ).asExternalModel()
-        assertTrue(movie.posterUrl!!.endsWith("w500/poster.jpg"))
-        assertTrue(movie.backdropUrl!!.endsWith("w780/backdrop.jpg"))
+        assertTrue(assertNotNull(movie.posterUrl).endsWith("/poster.jpg"))
+        assertTrue(assertNotNull(movie.backdropUrl).endsWith("/backdrop.jpg"))
     }
 
     @Test

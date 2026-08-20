@@ -26,7 +26,7 @@ class SafeApiCallTest {
     fun `safeApiCall returns NO_INTERNET for UnknownHostException`() = runTest {
         val result =
             safeApiCall<String> {
-                throw UnknownHostException("api.themoviedb.org")
+                throw UnknownHostException("api.invalid")
             }
         assertTrue(result is Result.Failure)
         assertEquals(DataError.Remote.NO_INTERNET, result.error)

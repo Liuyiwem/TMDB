@@ -75,7 +75,7 @@ class FavoriteMovieDaoTest {
     private fun entity(id: Int, title: String = "Movie $id", createdAt: Long) = FavoriteMovieEntity(
         id = id,
         title = title,
-        posterPath = "https://image.tmdb.org/t/p/w500/poster$id.jpg",
+        posterPath = "/poster$id.jpg",
         createdAt = createdAt,
     )
 }

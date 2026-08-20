@@ -35,7 +35,7 @@ class TmdbApiServiceContractTest {
     private val api =
         Retrofit
             .Builder()
-            .baseUrl("https://api.themoviedb.org/3/")
+            .baseUrl("https://api.invalid/3/")
             .client(client)
             .addConverterFactory(NETWORK_JSON.asConverterFactory(JSON_MEDIA_TYPE))
             .build()

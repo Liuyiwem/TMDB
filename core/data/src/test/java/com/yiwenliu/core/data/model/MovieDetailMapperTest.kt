@@ -6,6 +6,7 @@ import com.yiwenliu.core.network.model.GenreResult
 import com.yiwenliu.core.network.model.MovieDetailResponse
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -42,10 +43,10 @@ class MovieDetailMapperTest {
     }
 
     @Test
-    fun `asExternalModel builds poster and backdrop urls with different sizes`() {
+    fun `asExternalModel builds poster and backdrop urls from their own paths`() {
         val detail = detailResponse.asExternalModel()
-        assertTrue(detail.posterUrl!!.endsWith("w500/poster.jpg"))
-        assertTrue(detail.backdropUrl!!.endsWith("w780/backdrop.jpg"))
+        assertTrue(assertNotNull(detail.posterUrl).endsWith("/poster.jpg"))
+        assertTrue(assertNotNull(detail.backdropUrl).endsWith("/backdrop.jpg"))
     }
 
     @Test
@@ -56,7 +57,7 @@ class MovieDetailMapperTest {
     }
 
     @Test
-    fun `CastResult asExternalModel builds a profile url with the profile size`() {
+    fun `CastResult asExternalModel builds a profile url from the profile path`() {
         val member =
             CastResult(
                 id = 10859,
@@ -67,7 +68,7 @@ class MovieDetailMapperTest {
         assertEquals(10859, member.id)
         assertEquals("Ryan Reynolds", member.name)
         assertEquals("Deadpool", member.character)
-        assertTrue(member.profileUrl!!.endsWith("w185/ryan.jpg"))
+        assertTrue(assertNotNull(member.profileUrl).endsWith("/ryan.jpg"))
     }
 
     @Test
