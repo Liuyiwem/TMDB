@@ -1,6 +1,8 @@
 import com.android.build.api.dsl.LibraryExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.yiwenliu.tmdb.configureFlavors
+import com.yiwenliu.tmdb.configureGradleManagedDevices
+import com.yiwenliu.tmdb.configureJacoco
 import com.yiwenliu.tmdb.configureKotlinAndroid
 import com.yiwenliu.tmdb.configureSpotlessForAndroid
 import com.yiwenliu.tmdb.disableUnnecessaryAndroidTests
@@ -10,6 +12,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.testing.jacoco.plugins.JacocoPlugin
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
@@ -17,6 +20,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             apply(plugin = "com.android.library")
             apply(plugin = "org.jetbrains.kotlin.android")
             apply(plugin = "tmdb.lint")
+            apply<JacocoPlugin>()
             configureSpotlessForAndroid()
 
             extensions.configure<LibraryExtension> {
@@ -26,10 +30,17 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 @Suppress("UnstableApiUsage")
                 testOptions.animationsDisabled = true
                 configureFlavors(this)
+                configureGradleManagedDevices(this)
+                buildTypes {
+                    debug {
+                        enableUnitTestCoverage = true
+                    }
+                }
             }
 
             extensions.configure<LibraryAndroidComponentsExtension> {
                 disableUnnecessaryAndroidTests(target)
+                configureJacoco(this)
             }
 
             dependencies {
