@@ -1,6 +1,3 @@
-import com.android.ide.common.resources.AndroidAaptIgnore
-import com.android.ide.common.resources.PatternBasedFileFilter
-
 plugins {
     alias(libs.plugins.tmdb.android.application)
     alias(libs.plugins.tmdb.android.application.compose)
@@ -30,19 +27,6 @@ android {
     }
 }
 
-val aaptDefaultIgnoredAssets =
-    PatternBasedFileFilter(AndroidAaptIgnore(null)).aaptStyleIgnoredPattern.split(":")
-
-androidComponents {
-    onVariants(
-        selector()
-            .withBuildType("release")
-            .withFlavor("contentType" to "prod"),
-    ) { variant ->
-        variant.androidResources.ignoreAssetsPatterns.addAll(aaptDefaultIgnoredAssets + "*.json")
-    }
-}
-
 dependencies {
     implementation(projects.core.data)
     implementation(projects.core.navigation)
@@ -69,6 +53,8 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
     debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(projects.core.networkMock)
+    mockImplementation(projects.core.networkMock)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
@@ -82,4 +68,5 @@ dependencies {
     androidTestImplementation(projects.core.testing)
     androidTestImplementation(projects.core.model)
     androidTestImplementation(projects.core.network)
+    androidTestImplementation(projects.core.networkMock)
 }
