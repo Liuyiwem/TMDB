@@ -1,5 +1,7 @@
 package com.yiwenliu.core.data.model
 
+import com.yiwenliu.core.data.util.BACKDROP_SIZE
+import com.yiwenliu.core.data.util.PROFILE_SIZE
 import com.yiwenliu.core.data.util.asImagePath
 import com.yiwenliu.core.data.util.asImageUrl
 import com.yiwenliu.core.database.model.FavoriteMovieEntity
@@ -56,5 +58,11 @@ class FavoriteMovieEntityMapperTest {
         assertEquals("", "".asImagePath())
         val entity = FavoriteMovieEntity(id = 1, title = "T", posterPath = "", createdAt = 0L)
         assertNull(entity.asExternalModel().posterUrl)
+    }
+
+    @Test
+    fun `asImagePath strips the url whatever size it was built with`() {
+        assertEquals("/poster.jpg", "/poster.jpg".asImageUrl(size = BACKDROP_SIZE).orEmpty().asImagePath())
+        assertEquals("/poster.jpg", "/poster.jpg".asImageUrl(size = PROFILE_SIZE).orEmpty().asImagePath())
     }
 }

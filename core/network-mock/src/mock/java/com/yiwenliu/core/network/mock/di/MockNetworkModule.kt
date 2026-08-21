@@ -1,4 +1,4 @@
-package com.yiwenliu.core.network.di
+package com.yiwenliu.core.network.mock.di
 
 import com.yiwenliu.core.network.api.TmdbApiService
 import com.yiwenliu.core.network.mock.MockTmdbApiService
@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal interface FlavoredNetworkModule {
+internal interface MockNetworkModule {
     @Binds
     @Singleton
     fun bindsTmdbApiService(mock: MockTmdbApiService): TmdbApiService

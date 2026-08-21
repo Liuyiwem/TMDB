@@ -11,8 +11,6 @@ android {
     buildConfigSecrets {
         keys = listOf("BASE_URL", "API_TOKEN")
     }
-
-    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {

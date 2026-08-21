@@ -30,5 +30,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.kotlinx.serialization.json)
+    testImplementation(projects.core.networkMock)
     testImplementation(projects.core.testing)
 }

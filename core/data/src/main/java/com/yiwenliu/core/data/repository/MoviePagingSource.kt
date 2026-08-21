@@ -14,12 +14,13 @@ import com.yiwenliu.core.network.model.MovieResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.util.concurrent.ConcurrentHashMap
 
 internal class MoviePagingSource(
     private val ioDispatcher: CoroutineDispatcher,
     private val fetchPage: suspend (page: Int) -> MovieResponse,
 ) : PagingSource<Int, Movie>() {
-    private val seenIds = mutableSetOf<Int>()
+    private val seenIds: MutableSet<Int> = ConcurrentHashMap.newKeySet()
 
     override fun getRefreshKey(state: PagingState<Int, Movie>): Int? = state.anchorPosition?.let { anchor ->
         state.closestPageToPosition(anchor)?.prevKey?.plus(1)

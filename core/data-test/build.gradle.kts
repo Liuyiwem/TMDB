@@ -10,6 +10,7 @@ android {
 dependencies {
     implementation(projects.core.database)
     implementation(projects.core.network)
+    implementation(projects.core.networkMock)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.test.runner)
