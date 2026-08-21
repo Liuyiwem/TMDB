@@ -2,6 +2,10 @@
 *.apk
 *.ap_
 
+# signing keys - never commit these
+*.jks
+*.keystore
+
 # files for the dex VM
 *.dex
 

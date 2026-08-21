@@ -5,18 +5,32 @@ plugins {
     alias(libs.plugins.tmdb.android.hilt)
 }
 
+val releaseKeystorePath = providers.environmentVariable("KEYSTORE_PATH")
+
 android {
     namespace = "com.yiwenliu.tmdb"
 
     defaultConfig {
         applicationId = "com.yiwenliu.tmdb"
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = providers.environmentVariable("VERSION_CODE").map(String::toInt).getOrElse(1)
+        versionName = providers.environmentVariable("VERSION_NAME").getOrElse("1.0")
         testInstrumentationRunner = "com.yiwenliu.core.data.test.HiltTestRunner"
+    }
+
+    signingConfigs {
+        if (releaseKeystorePath.isPresent) {
+            create("release") {
+                storeFile = file(releaseKeystorePath.get())
+                storePassword = providers.environmentVariable("KEYSTORE_PASSWORD").get()
+                keyAlias = providers.environmentVariable("KEY_ALIAS").get()
+                keyPassword = providers.environmentVariable("KEY_PASSWORD").get()
+            }
+        }
     }
 
     buildTypes {
         release {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
