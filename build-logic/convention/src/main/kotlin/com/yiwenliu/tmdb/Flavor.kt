@@ -21,10 +21,10 @@ fun configureFlavors(
     flavorConfigurationBlock: ProductFlavor.(flavor: TmdbFlavor) -> Unit = {},
 ) {
     commonExtension.apply {
-        FlavorDimension.values().forEach { flavorDimensions += it.name }
+        FlavorDimension.entries.forEach { flavorDimensions += it.name }
 
         productFlavors {
-            TmdbFlavor.values().forEach { tmdbFlavor ->
+            TmdbFlavor.entries.forEach { tmdbFlavor ->
                 register(tmdbFlavor.name) {
                     dimension = tmdbFlavor.dimension.name
                     flavorConfigurationBlock(this, tmdbFlavor)

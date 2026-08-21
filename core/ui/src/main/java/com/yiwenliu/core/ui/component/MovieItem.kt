@@ -21,7 +21,7 @@ import com.yiwenliu.core.model.Movie
 import com.yiwenliu.core.ui.preview.MoviePreviewParameterProvider
 
 @Composable
-fun MovieItem(movie: Movie, onClick: () -> Unit, modifier: Modifier) {
+fun MovieItem(movie: Movie, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier = modifier.clickable(onClick = onClick)) {
         DynamicAsyncImage(
             imageUrl = movie.posterUrl,

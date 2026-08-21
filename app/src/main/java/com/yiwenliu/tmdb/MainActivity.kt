@@ -29,8 +29,8 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        if (savedInstanceState == null) {
-            viewModel.onDeepLink(intent?.data?.toString())
+        if (savedInstanceState == null && intent?.action == Intent.ACTION_VIEW) {
+            viewModel.onDeepLink(intent.data?.toString())
         }
         setContent {
             TmdbTheme {

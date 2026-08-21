@@ -11,4 +11,9 @@ internal const val PROFILE_SIZE = "w185"
 internal fun String?.asImageUrl(size: String = POSTER_SIZE): String? =
     if (this.isNullOrBlank() || size.isBlank()) null else "${BuildConfig.IMAGE_URL}$size$this"
 
-internal fun String.asImagePath(size: String = POSTER_SIZE): String = removePrefix("${BuildConfig.IMAGE_URL}$size")
+internal fun String.asImagePath(): String {
+    val sizedPath = removePrefix(BuildConfig.IMAGE_URL)
+    if (sizedPath.length == length) return this
+    val separator = sizedPath.indexOf('/')
+    return if (separator == -1) this else sizedPath.substring(separator)
+}

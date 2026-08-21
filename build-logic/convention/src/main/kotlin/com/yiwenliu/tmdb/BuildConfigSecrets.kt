@@ -33,10 +33,20 @@ private fun Project.requiredSecret(key: String): String = providers.of(LocalProp
     parameters.key.set(key)
 }.orElse(
     providers.environmentVariable(key).map { it.trim() }.filter { it.isNotEmpty() },
-).orNull ?: error(
+).orNull?.also { validateSecret(key, it) } ?: error(
     "Missing build secret `$key`. Add `$key=<value>` to local.properties, " +
         "or export $key as an environment variable.",
 )
+
+private fun validateSecret(key: String, value: String) {
+    if (!key.endsWith("_URL")) return
+    if (!value.startsWith("https://")) {
+        error("Build secret `$key` must start with `https://`, but was `$value`.")
+    }
+    if (!value.endsWith("/")) {
+        error("Build secret `$key` must end with `/`, but was `$value`.")
+    }
+}
 
 private fun String.escapedForJavaLiteral(): String = replace("\\", "\\\\")
     .replace("\"", "\\\"")
