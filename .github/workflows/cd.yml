@@ -81,8 +81,6 @@ jobs:
         if: github.ref_type != 'tag'
         uses: actions/upload-artifact@v7
         with:
-          name: prod-release-apk
-          path: |
-            app/build/outputs/apk/prod/release/*.apk
-            app/build/outputs/mapping/prodRelease/mapping.txt
+          path: app/build/outputs/apk/prod/release/tmdb-${{ env.VERSION_NAME }}.apk
+          archive: false
           retention-days: 7
