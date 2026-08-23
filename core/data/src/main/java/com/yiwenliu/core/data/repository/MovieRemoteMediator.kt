@@ -9,6 +9,7 @@ import com.yiwenliu.core.common.result.DataErrorException
 import com.yiwenliu.core.common.result.Result
 import com.yiwenliu.core.data.model.asEntity
 import com.yiwenliu.core.data.util.safeApiCall
+import com.yiwenliu.core.data.util.safeDatabaseCall
 import com.yiwenliu.core.database.dao.MovieDao
 import com.yiwenliu.core.database.model.MovieEntity
 import com.yiwenliu.core.database.model.MovieRemoteKeyEntity
@@ -29,8 +30,13 @@ internal class MovieRemoteMediator(
     private val onCacheUpdated: () -> Unit,
 ) : RemoteMediator<Int, MovieEntity>() {
     override suspend fun initialize(): InitializeAction {
-        val lastUpdated =
-            movieDao.remoteKey(category.apiPath)?.lastUpdated ?: return InitializeAction.LAUNCH_INITIAL_REFRESH
+        val remoteKey = safeDatabaseCall { movieDao.remoteKey(category.apiPath) }
+        val lastUpdated = when (remoteKey) {
+            is Result.Failure -> return InitializeAction.LAUNCH_INITIAL_REFRESH
+
+            is Result.Success ->
+                remoteKey.data?.lastUpdated ?: return InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
         return if (timeProvider.now() - lastUpdated <= CACHE_TIMEOUT_MILLIS) {
             InitializeAction.SKIP_INITIAL_REFRESH
         } else {
@@ -44,9 +50,16 @@ internal class MovieRemoteMediator(
 
             LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
 
-            LoadType.APPEND ->
-                movieDao.remoteKey(category.apiPath)?.nextPage
-                    ?: return MediatorResult.Success(endOfPaginationReached = true)
+            LoadType.APPEND -> {
+                val remoteKey = safeDatabaseCall { movieDao.remoteKey(category.apiPath) }
+                when (remoteKey) {
+                    is Result.Failure -> return MediatorResult.Error(DataErrorException(remoteKey.error))
+
+                    is Result.Success ->
+                        remoteKey.data?.nextPage
+                            ?: return MediatorResult.Success(endOfPaginationReached = true)
+                }
+            }
         }
 
         val response = withContext(ioDispatcher) {
@@ -59,18 +72,26 @@ internal class MovieRemoteMediator(
             is Result.Success -> {
                 val nextPage = nextPageKeyOf(page, response.data.totalPages)
                 val clearExisting = loadType == LoadType.REFRESH
-                movieDao.saveCategoryPage(
-                    category = category.apiPath,
-                    movies = response.data.results.map(MovieResult::asEntity),
-                    remoteKey = MovieRemoteKeyEntity(
+                val saved = safeDatabaseCall {
+                    movieDao.saveCategoryPage(
                         category = category.apiPath,
-                        nextPage = nextPage,
-                        lastUpdated = timeProvider.now(),
-                    ),
-                    clearExisting = clearExisting,
-                )
-                if (clearExisting) onCacheUpdated()
-                MediatorResult.Success(endOfPaginationReached = nextPage == null)
+                        movies = response.data.results.map(MovieResult::asEntity),
+                        remoteKey = MovieRemoteKeyEntity(
+                            category = category.apiPath,
+                            nextPage = nextPage,
+                            lastUpdated = timeProvider.now(),
+                        ),
+                        clearExisting = clearExisting,
+                    )
+                }
+                when (saved) {
+                    is Result.Failure -> MediatorResult.Error(DataErrorException(saved.error))
+
+                    is Result.Success -> {
+                        if (clearExisting) onCacheUpdated()
+                        MediatorResult.Success(endOfPaginationReached = nextPage == null)
+                    }
+                }
             }
         }
     }
