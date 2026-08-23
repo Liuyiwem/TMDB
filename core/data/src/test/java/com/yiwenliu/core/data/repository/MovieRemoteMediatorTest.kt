@@ -1,5 +1,6 @@
 package com.yiwenliu.core.data.repository
 
+import android.database.sqlite.SQLiteFullException
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingConfig
@@ -232,6 +233,42 @@ class MovieRemoteMediatorTest {
         movieDao.seedRemoteKey(
             MovieRemoteKeyEntity(MovieCategory.TOP_RATED.apiPath, nextPage = 2, lastUpdated = currentTime),
         )
+        assertEquals(InitializeAction.LAUNCH_INITIAL_REFRESH, mediator.initialize())
+    }
+
+    @Test
+    fun `a database write failure maps to a mediator error carrying the local error`() = runTest(testDispatcher) {
+        movieDao.errorToThrow = SQLiteFullException("disk full")
+        val result = mediator.load(LoadType.REFRESH, pagingState())
+        assertIs<MediatorResult.Error>(result)
+        assertEquals(DataError.Local.DISK_FULL, (result.throwable as DataErrorException).error)
+    }
+
+    @Test
+    fun `a failed database write does not report a cache change`() = runTest(testDispatcher) {
+        movieDao.errorToThrow = SQLiteFullException("disk full")
+        mediator.load(LoadType.REFRESH, pagingState())
+        assertEquals(0, cacheUpdates)
+    }
+
+    @Test
+    fun `a remote key read failure maps to a mediator error`() = runTest(testDispatcher) {
+        movieDao.seedRemoteKey(
+            MovieRemoteKeyEntity(category = category.apiPath, nextPage = 2, lastUpdated = currentTime),
+        )
+        movieDao.errorToThrow = SQLiteFullException("disk full")
+        val result = mediator.load(LoadType.APPEND, pagingState())
+        assertIs<MediatorResult.Error>(result)
+        assertEquals(DataError.Local.DISK_FULL, (result.throwable as DataErrorException).error)
+        assertTrue(apiService.requestedPages.isEmpty())
+    }
+
+    @Test
+    fun `initialize launches a refresh when the remote key cannot be read`() = runTest(testDispatcher) {
+        movieDao.seedRemoteKey(
+            MovieRemoteKeyEntity(category.apiPath, nextPage = 2, lastUpdated = currentTime),
+        )
+        movieDao.errorToThrow = SQLiteFullException("disk full")
         assertEquals(InitializeAction.LAUNCH_INITIAL_REFRESH, mediator.initialize())
     }
 }

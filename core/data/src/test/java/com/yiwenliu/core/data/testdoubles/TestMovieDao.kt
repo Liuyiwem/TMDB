@@ -42,7 +42,10 @@ class TestMovieDao : MovieDao {
         sources.forEach(PagingSource<Int, MovieEntity>::invalidate)
     }
 
-    override suspend fun remoteKey(category: String): MovieRemoteKeyEntity? = remoteKeys[category]
+    override suspend fun remoteKey(category: String): MovieRemoteKeyEntity? {
+        errorToThrow?.let { throw it }
+        return remoteKeys[category]
+    }
 
     override suspend fun maxPosition(category: String): Int =
         categoryIndex.filter { it.category == category }.maxOfOrNull(MovieCategoryIndexEntity::position) ?: -1
