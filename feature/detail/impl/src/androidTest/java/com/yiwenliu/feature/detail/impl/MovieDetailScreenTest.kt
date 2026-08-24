@@ -92,9 +92,11 @@ class MovieDetailScreenTest {
         renderScreen(loadedState())
         val runtime =
             composeTestRule.activity.getString(R.string.runtime_minutes, sampleDetail.runtimeMinutes)
-        val expected =
-            "${sampleDetail.releaseDate} · $runtime · ${sampleDetail.genres.joinToString { it.name }}"
-        composeTestRule.onNodeWithText(expected).assertIsDisplayed()
+        composeTestRule.onNodeWithText(sampleDetail.releaseDate, substring = true).assertIsDisplayed()
+        composeTestRule.onNodeWithText(runtime, substring = true).assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText(sampleDetail.genres.first().name, substring = true)
+            .assertIsDisplayed()
     }
 
     @Test

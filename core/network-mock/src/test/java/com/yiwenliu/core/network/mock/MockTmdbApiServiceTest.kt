@@ -49,12 +49,18 @@ class MockTmdbApiServiceTest {
 
     @Test
     fun `getMoviesByCategory top_rated loads top_rated_movies asset`() = runTest(testDispatcher) {
-        assertTrue(apiService.getMoviesByCategory("top_rated").results.isNotEmpty())
+        val response = apiService.getMoviesByCategory("top_rated")
+        assertEquals(2, response.results.size)
+        assertEquals(238, response.results[0].id)
+        assertEquals("The Godfather", response.results[0].title)
     }
 
     @Test
     fun `getMoviesByCategory upcoming loads upcoming_movies asset`() = runTest(testDispatcher) {
-        assertTrue(apiService.getMoviesByCategory("upcoming").results.isNotEmpty())
+        val response = apiService.getMoviesByCategory("upcoming")
+        assertEquals(2, response.results.size)
+        assertEquals(1184918, response.results[0].id)
+        assertEquals("The Wild Robot", response.results[0].title)
     }
 
     @Test
