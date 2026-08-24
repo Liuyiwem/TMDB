@@ -44,7 +44,7 @@ class MoviePagingSourceTest {
     private fun pagerOf(source: MoviePagingSource) = TestPager(PagingConfig(pageSize = 20), source)
 
     @Test
-    fun `load firstPage returns Movies With Correct PagingKeys`() = runTest(testDispatcher) {
+    fun `the first page returns movies with the correct paging keys`() = runTest(testDispatcher) {
         val result = pagerOf(categorySource()).refresh() as LoadResult.Page
         assertEquals(2, result.data.size)
         assertEquals(533535, result.data.first().id)
@@ -60,7 +60,7 @@ class MoviePagingSourceTest {
     }
 
     @Test
-    fun `load singlePage endsPagination`() = runTest(testDispatcher) {
+    fun `a single page ends pagination`() = runTest(testDispatcher) {
         val pager = pagerOf(categorySource())
         pager.refresh()
         assertNull(pager.append())
@@ -101,7 +101,7 @@ class MoviePagingSourceTest {
     }
 
     @Test
-    fun `retrying after an error still returns the page`() = runTest(testDispatcher) {
+    fun `a second load after an error returns the page`() = runTest(testDispatcher) {
         var attempts = 0
         val source = MoviePagingSource(testDispatcher) { page ->
             if (attempts++ == 0) throw IOException("boom") else responseOf(page, totalPages = 1, ids = listOf(550, 551))
@@ -112,7 +112,7 @@ class MoviePagingSourceTest {
     }
 
     @Test
-    fun `getRefreshKey returns CorrectKey`() = runTest(testDispatcher) {
+    fun `getRefreshKey returns the key around the anchor position`() = runTest(testDispatcher) {
         val page =
             LoadResult.Page(
                 data = moviesTestData,

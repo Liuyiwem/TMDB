@@ -79,82 +79,27 @@ class TmdbDeepLinksTest {
     }
 
     @Test
-    fun `null link resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse(null).isEmpty())
-    }
-
-    @Test
-    fun `blank link resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("").isEmpty())
-    }
-
-    @Test
-    fun `another scheme resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("https://movie?id=550").isEmpty())
-    }
-
-    @Test
-    fun `an unknown host resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://settings").isEmpty())
-    }
-
-    @Test
-    fun `a missing host resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://").isEmpty())
-    }
-
-    @Test
-    fun `a nested path resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie/detail?id=550").isEmpty())
-    }
-
-    @Test
-    fun `a movie link without an id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie").isEmpty())
-    }
-
-    @Test
-    fun `a movie link with an empty id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?id=").isEmpty())
-    }
-
-    @Test
-    fun `a non numeric id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?id=abc").isEmpty())
-    }
-
-    @Test
-    fun `a zero id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?id=0").isEmpty())
-    }
-
-    @Test
-    fun `a negative id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?id=-1").isEmpty())
-    }
-
-    @Test
-    fun `an overflowing id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?id=99999999999999").isEmpty())
-    }
-
-    @Test
-    fun `a misnamed id parameter resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?movieId=550").isEmpty())
-    }
-
-    @Test
-    fun `a parameter merely starting with id resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?identifier=550").isEmpty())
-    }
-
-    @Test
-    fun `a malformed link resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("not a uri at all").isEmpty())
-    }
-
-    @Test
-    fun `a link with an unencoded space resolves to nothing`() {
-        assertTrue(TmdbDeepLinks.parse("tmdb://movie?id=5 5").isEmpty())
+    fun `these links resolve to nothing`() {
+        val rejected: List<Pair<String, String?>> = listOf(
+            "a null link" to null,
+            "a blank link" to "",
+            "another scheme" to "https://movie?id=550",
+            "an unknown host" to "tmdb://settings",
+            "a missing host" to "tmdb://",
+            "a nested path" to "tmdb://movie/detail?id=550",
+            "a movie link without an id" to "tmdb://movie",
+            "a movie link with an empty id" to "tmdb://movie?id=",
+            "a non numeric id" to "tmdb://movie?id=abc",
+            "a zero id" to "tmdb://movie?id=0",
+            "a negative id" to "tmdb://movie?id=-1",
+            "an overflowing id" to "tmdb://movie?id=99999999999999",
+            "a misnamed id parameter" to "tmdb://movie?movieId=550",
+            "a parameter merely starting with id" to "tmdb://movie?identifier=550",
+            "a malformed link" to "not a uri at all",
+            "a link with an unencoded space" to "tmdb://movie?id=5 5",
+        )
+        rejected.forEach { (label, uri) ->
+            assertTrue(TmdbDeepLinks.parse(uri).isEmpty(), "Expected no destination for $label: $uri")
+        }
     }
 }
