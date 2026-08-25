@@ -62,7 +62,7 @@ class MovieRepositoryTest {
     }
 
     @Test
-    fun `searchMoviesPager firstLoad returns CorrectMovies`() = runTest(testDispatcher) {
+    fun `searchMoviesPager returns the matching movies`() = runTest(testDispatcher) {
         val movies = repository.searchMoviesPager("fight").asSnapshot()
         assertEquals(1, movies.size)
         assertEquals(550, movies[0].id)
